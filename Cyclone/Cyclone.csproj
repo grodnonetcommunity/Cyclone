@@ -141,6 +141,12 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EmptyLines\EmptyLine.cs" />
+    <Compile Include="EmptyLines\EmptyLineAdornmentManager.cs" />
+    <Compile Include="EmptyLines\EmptyLineAdornmentManagerFactory.cs" />
+    <Compile Include="EmptyLines\EmptyLineTransformSource.cs" />
+    <Compile Include="EmptyLines\EmptyLineTransformSourceProvider.cs" />
+    <Compile Include="EmptyLines\ErrorTagProvider.cs" />
     <Compile Include="Guids.cs" />
     <Compile Include="Margin\Margin.cs" />
     <Compile Include="Margin\MarginBase.cs" />
