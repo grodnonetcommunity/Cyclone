@@ -7,13 +7,13 @@ namespace AV.Cyclone.Katrina.SyntaxProcessor
 {
     public class AddExecuteLoggerVisitor : CSharpSyntaxRewriter
     {
-        public string LogAssignMember { get; set; } = "AV.Cyclone.Katrina.Executor.Context.ExecuteLogger.LogAssign";
+        public string LogAssignMember { get; set; } = "AV.Cyclone.Katrina.Executor.Interfaces.Context.ExecuteLogger.LogAssign";
 
-        public string BeginLoopMember { get; set; } = "AV.Cyclone.Katrina.Executor.Context.ExecuteLogger.BeginLoop";
+        public string BeginLoopMember { get; set; } = "AV.Cyclone.Katrina.Executor.Interfaces.Context.ExecuteLogger.BeginLoop";
 
-        public string LoopIterationMember { get; set; } = "AV.Cyclone.Katrina.Executor.Context.ExecuteLogger.LoopIteration";
+        public string LoopIterationMember { get; set; } = "AV.Cyclone.Katrina.Executor.Interfaces.Context.ExecuteLogger.LoopIteration";
 
-        public string EndLoopMember { get; set; } = "AV.Cyclone.Katrina.Executor.Context.ExecuteLogger.EndLoop";
+        public string EndLoopMember { get; set; } = "AV.Cyclone.Katrina.Executor.Interfaces.Context.ExecuteLogger.EndLoop";
 
         public override SyntaxNode VisitVariableDeclarator(VariableDeclaratorSyntax node)
         {

@@ -90,6 +90,7 @@
   <ItemGroup>
     <Compile Include="CodeExecutorTest.cs" />
     <Compile Include="ExecuteLoggerTest.cs" />
+    <Compile Include="ForecastExecutorTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MockExecuteLogger.cs" />
   </ItemGroup>

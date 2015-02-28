@@ -33,6 +33,7 @@ namespace AV.Cyclone.Katrina.Executor
 
         public void Emit()
         {
+            // TODO: Delete emit
             tempDir = Path.Combine(Path.GetTempPath(), "_Cyclon_" + Guid.NewGuid());
             Directory.CreateDirectory(tempDir);
             File.Copy(typeof(AssemblyLoader).Assembly.Location, Path.Combine(tempDir, typeof(AssemblyLoader).Assembly.GetName().Name + ".dll"));
