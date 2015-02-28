@@ -49,6 +49,7 @@ namespace AV.Cyclone.Katrina.Executor
 
         public CSharpCompilation[] GetCompilations()
         {
+            if (HasSyntaxErrors) return null;
             return projectMapping.Values
                 .Select(p => (CSharpCompilation)p.GetCompilationAsync().Result)
                 .ToArray();
