@@ -1,4 +1,5 @@
 ﻿using AV.Cyclone.Katrina.Executor;
+using AV.Cyclone.Katrina.Executor.Interfaces;
 using NUnit.Framework;
 
 namespace Test.Executor

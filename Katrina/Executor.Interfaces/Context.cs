@@ -1,6 +1,4 @@
-﻿using AV.Cyclone.Katrina.Executor.Interfaces;
-
-namespace AV.Cyclone.Katrina.Executor
+﻿namespace AV.Cyclone.Katrina.Executor.Interfaces
 {
     public static class Context
     {
