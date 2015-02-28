@@ -7,7 +7,7 @@
     <ProjectGuid>{FA9622F9-ABCB-4BCB-A337-CA11AF9546BA}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Executor.Interfaces</RootNamespace>
+    <RootNamespace>AV.Cyclone.Katrina.Executor.Interfaces</RootNamespace>
     <AssemblyName>Executor.Interfaces</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -39,6 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IExecuteLogger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
