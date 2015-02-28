@@ -5,6 +5,10 @@ VisualStudioVersion = 14.0.22512.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cyclone", "Cyclone\Cyclone.csproj", "{838807FC-FABA-4715-B581-703813D94FB9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Katrina.SyntaxProcessor", "Katrina\SyntaxProcessor\Katrina.SyntaxProcessor.csproj", "{293805D7-C134-41F2-9A91-D75C3A9A4351}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Katrina", "Katrina", "{ED2644FD-9E00-4264-B59D-D244ECC7004B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,8 +19,15 @@ Global
 		{838807FC-FABA-4715-B581-703813D94FB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{838807FC-FABA-4715-B581-703813D94FB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{838807FC-FABA-4715-B581-703813D94FB9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{293805D7-C134-41F2-9A91-D75C3A9A4351}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{293805D7-C134-41F2-9A91-D75C3A9A4351}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{293805D7-C134-41F2-9A91-D75C3A9A4351}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{293805D7-C134-41F2-9A91-D75C3A9A4351}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{293805D7-C134-41F2-9A91-D75C3A9A4351} = {ED2644FD-9E00-4264-B59D-D244ECC7004B}
 	EndGlobalSection
 EndGlobal
