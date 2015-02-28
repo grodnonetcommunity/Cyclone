@@ -15,17 +15,17 @@ namespace Test.Executor
 
         public void BeginLoop(string fileName, int lineNumber)
         {
-            throw new System.NotImplementedException();
+            //throw new System.NotImplementedException();
         }
 
         public void LoopIteration(string fileName, int lineNumber)
         {
-            throw new System.NotImplementedException();
+            //throw new System.NotImplementedException();
         }
 
         public void EndLoop(string fileName, int lineNumber)
         {
-            throw new System.NotImplementedException();
+            //throw new System.NotImplementedException();
         }
     }
 }

@@ -37,7 +37,7 @@ class Class
 
             executor.AddCompilation(null, compilaton);
             executor.SetExecuteLogger(executeLogger);
-            executor.Execute(compilaton.AssemblyName, "Class", "Method");
+            executor.Execute(compilaton.AssemblyName, null, "Class", "Method");
 
             CollectionAssert.AreEqual(new [] {"a = 1", "b = 1"}, executeLogger.assigns);
         }
@@ -76,7 +76,7 @@ class Class
             var stopwatch = Stopwatch.StartNew();
             executor.AddCompilation(null, compilation1);
             executor.SetExecuteLogger(executeLogger);
-            executor.Execute(compilation1.AssemblyName, "Class", "Method");
+            executor.Execute(compilation1.AssemblyName, null, "Class", "Method");
             stopwatch.Stop();
             Debug.WriteLine("First execute in: {0} ms", stopwatch.ElapsedMilliseconds);
 
@@ -90,7 +90,7 @@ class Class
 
             stopwatch.Restart();
             executor.AddCompilation(compilation1, compilation2);
-            executor.Execute(compilation2.AssemblyName, "Class", "Method");
+            executor.Execute(compilation2.AssemblyName, null, "Class", "Method");
             Debug.WriteLine("Second execute in: {0} ms", stopwatch.ElapsedMilliseconds);
 
             CollectionAssert.AreEqual(new [] {"a = 1", "b = 1"}, executeLogger.assigns);

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using AV.Cyclone.Katrina.Executor.Interfaces;
 using AV.Cyclone.Katrina.SyntaxProcessor;
@@ -41,6 +42,23 @@ namespace AV.Cyclone.Katrina.Executor
             return projectMapping.Values
                 .Select(p => (CSharpCompilation)p.GetCompilationAsync().Result)
                 .ToArray();
+        }
+
+        public string[] GetReferences()
+        {
+            var files = new HashSet<string>();
+            foreach (var projectReference in projectMapping.Values)
+            {
+                var project = projectReference;
+                foreach (var metadataReference in project.MetadataReferences
+                    .OfType<PortableExecutableReference>()
+                    .Where(a => !(a.FilePath.Contains("Microsoft.") || a.FilePath.Contains("System.") || a.FilePath.Contains("mscorlib.dll"))))
+                {
+                    var filePath = metadataReference.FilePath;
+                    files.Add(filePath);
+                }
+            }
+            return files.ToArray();
         }
 
         private static void UpdateProjectReferences(List<Project> references, Dictionary<Project, Project> projectMapping)

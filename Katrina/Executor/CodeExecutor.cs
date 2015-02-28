@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using AV.Cyclone.Katrina.Executor.Interfaces;
@@ -22,6 +23,14 @@ namespace AV.Cyclone.Katrina.Executor
             new Dictionary<CSharpCompilation, CSharpCompilation>();
         private List<CompilationEmitResult> compilationEmitResults;
 
+        public void AddCompilations(IEnumerable<CSharpCompilation> compilations)
+        {
+            foreach (var compilation in compilations)
+            {
+                AddCompilation(null, compilation);
+            }
+        }
+
         public void AddCompilation(CSharpCompilation oldCompilation, CSharpCompilation newCompilation)
         {
             if (oldCompilation == null)
@@ -35,7 +44,7 @@ namespace AV.Cyclone.Katrina.Executor
             Context.ExecuteLogger = executeLogger;
         }
 
-        public void Execute(string compilationName, string className, string methodName)
+        public void Execute(string compilationName, string[] files, string className, string methodName)
         {
             string tempDir = null;
             AppDomain executorDomain = null;
@@ -43,9 +52,6 @@ namespace AV.Cyclone.Katrina.Executor
             {
                 tempDir = Path.Combine(Path.GetTempPath(), "_Cyclon_" + Guid.NewGuid());
                 Directory.CreateDirectory(tempDir);
-                File.Copy(typeof (AssemblyLoader).Assembly.Location,
-                    Path.Combine(tempDir, typeof (AssemblyLoader).Assembly.GetName().Name + ".dll"));
-
                 compilationEmitResults = new List<CompilationEmitResult>(compilations.Count);
 
                 foreach (var compilation in compilations.Values)
@@ -59,6 +65,18 @@ namespace AV.Cyclone.Katrina.Executor
                         EmitResult = emitResult
                     });
                 }
+
+                if (files != null)
+                {
+                    foreach (var file in files)
+                    {
+                        File.Copy(file, Path.Combine(tempDir, Path.GetFileName(file)));
+                    }
+                }
+
+                var assemblyLoaderAssemblyFileName = Path.Combine(tempDir, typeof(AssemblyLoader).Assembly.GetName().Name + ".dll");
+                if (!File.Exists(assemblyLoaderAssemblyFileName))
+                    File.Copy(typeof (AssemblyLoader).Assembly.Location, assemblyLoaderAssemblyFileName);
 
                 executorDomain = AppDomain.CreateDomain("ExecutorDomain", AppDomain.CurrentDomain.Evidence,
                     new AppDomainSetup {ApplicationBase = tempDir});
@@ -88,8 +106,15 @@ namespace AV.Cyclone.Katrina.Executor
                 }
                 if (!string.IsNullOrEmpty(tempDir))
                 {
-                    var tempDirInfo = new DirectoryInfo(tempDir);
-                    tempDirInfo.Delete(true);
+                    try
+                    {
+                        var tempDirInfo = new DirectoryInfo(tempDir);
+                        tempDirInfo.Delete(true);
+                    }
+                    catch (Exception)
+                    {
+                        Debug.WriteLine(string.Format("Delete temp folder {0} failed", tempDir));
+                    }
                 }
             }
         }
