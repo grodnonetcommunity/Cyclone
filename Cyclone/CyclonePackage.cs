@@ -1,7 +1,13 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.ComponentModel.Design;
+using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.InteropServices;
+using EnvDTE;
+using EnvDTE80;
 using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace AV.Cyclone
 {
@@ -25,6 +31,8 @@ namespace AV.Cyclone
     [ProvideMenuResource("Menus.ctmenu", 1)]
     public sealed class ExamplesPackage : Package
     {
+        private static DTE2 _dte;
+
         /// <summary>
         /// Default constructor of the package.
         /// Inside this method you can place any initialization code that does not require 
@@ -52,7 +60,63 @@ namespace AV.Cyclone
             Debug.WriteLine (string.Format(CultureInfo.CurrentCulture, "Entering Initialize() of: {0}", this.ToString()));
             base.Initialize();
 
+            OleMenuCommandService mcs = GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
+            if (null != mcs)
+            {
+                // Create the command for the menu item.
+                CommandID menuCommandID = new CommandID(GuidList.guidCyclonePkgCmdSet, (int)0x100);
+                MenuCommand menuItem = new MenuCommand(MenuItemCallback, menuCommandID);
+                mcs.AddCommand(menuItem);
+            }
+
         }
+
+        private void MenuItemCallback(object sender, EventArgs e)
+        {
+            var txtMgr =
+                (IVsTextManager)GetService(typeof(SVsTextManager));
+            var mustHaveFocus = 1;
+            IVsTextView vTextView;
+            txtMgr.GetActiveView(mustHaveFocus, null, out vTextView);
+
+            int piLine;
+            int oiColumn;
+            vTextView.GetCaretPos(out piLine, out oiColumn);
+            var soultionFileName = DTE.Solution.FileName;
+
+            var fullName = DTE.ActiveDocument.FullName;
+
+
+
+            // Show a Message Box to prove we were here
+            IVsUIShell uiShell = (IVsUIShell)GetService(typeof(SVsUIShell));
+            Guid clsid = Guid.Empty;
+            int result;
+            Microsoft.VisualStudio.ErrorHandler.ThrowOnFailure(uiShell.ShowMessageBox(
+                       0,
+                       ref clsid,
+                       "VSPackage1",
+                       string.Format(CultureInfo.CurrentCulture, "line n: {0}, column n:{1}, current file name: {2}, solution file name: {3}", piLine, oiColumn, fullName, soultionFileName),
+                       string.Empty,
+                       0,
+                       OLEMSGBUTTON.OLEMSGBUTTON_OK,
+                       OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST,
+                       OLEMSGICON.OLEMSGICON_INFO,
+                       0,        // false
+                       out result));
+        }
+
+        internal static DTE2 DTE
+        {
+            get
+            {
+                if (_dte == null)
+                    _dte = ServiceProvider.GlobalProvider.GetService(typeof(DTE)) as DTE2;
+
+                return _dte;
+            }
+        }
+
         #endregion
 
     }

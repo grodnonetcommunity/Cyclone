@@ -11,5 +11,6 @@ namespace AV.Cyclone
         public const string guidCycloneCmdSetString = "446a9d89-6688-41bc-b98d-754008cf9883";
 
         public static readonly Guid guidCycloneCmdSet = new Guid(guidCycloneCmdSetString);
+        public static Guid guidCyclonePkgCmdSet = new Guid("{3BB7351B-93D2-4176-8964-59D37C7F9762}");
     };
 }
