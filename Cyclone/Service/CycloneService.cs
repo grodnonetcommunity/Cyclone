@@ -1,4 +1,5 @@
 using System;
+using EnvDTE;
 using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace AV.Cyclone.Service
@@ -17,14 +18,16 @@ namespace AV.Cyclone.Service
             int initialLineNumber;
             int initialColumnNumber;
             vTextView.GetCaretPos(out initialLineNumber, out initialColumnNumber);
-            var soultionFileName = ExamplesPackage.Dte.Solution.FileName;
+            var solutionPath = ExamplesPackage.Dte.Solution.FileName;
 
-            var fullName = ExamplesPackage.Dte.ActiveDocument.FullName;
-
+            var activeDocument = ExamplesPackage.Dte.ActiveDocument;
+            var activeDocumentPath = activeDocument.FullName;
+            var currentProjectName = activeDocument.ProjectItem.ContainingProject.Name;
             OnCycloneChanged(new StartCycloneEventArgs(new StartInfo
             {
-                ActiveDocumentPath = fullName,
-                SolutionPath = soultionFileName,
+                ActiveDocumentPath = activeDocumentPath,
+                SolutionPath = solutionPath,
+                ProjectName = currentProjectName,
                 InitialColumnNumber = initialColumnNumber,
                 InitialLineNumber = initialLineNumber
             }));

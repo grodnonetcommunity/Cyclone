@@ -120,7 +120,6 @@ namespace AV.Cyclone
             {
                 return null;
             }
-            //var name = Dte.ActiveDocument.ProjectItem.ContainingProject.Name;
 
             ICycloneService cycloneService = CycloneServiceProvider.GetCycloneService(viewHost.TextView);
 
