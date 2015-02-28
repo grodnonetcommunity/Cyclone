@@ -43,6 +43,7 @@
     <Compile Include="Context.cs" />
     <Compile Include="DomainExecuteLogger.cs" />
     <Compile Include="IExecuteLogger.cs" />
+    <Compile Include="MethodReference.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
