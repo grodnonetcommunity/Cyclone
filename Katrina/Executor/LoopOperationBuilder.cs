@@ -22,11 +22,17 @@ namespace AV.Cyclone.Katrina.Executor
 
         public LoopOperation Build(string fileName, int lineNumber)
         {
+            var operations = new Dictionary<int, IList<Operation>>();
+            for (var i = 0; i < Iterations.Count; i++)
+            {
+                var iteration = Iterations[i];
+                operations.Add(i, iteration.Operations);
+            }
             return new LoopOperation
             {
                 FileName = fileName,
                 LineNumber = lineNumber,
-                //Operations = Iterations.ToDictionary()
+                Operations = operations
             };
         }
     }
