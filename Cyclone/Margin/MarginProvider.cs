@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.Composition;
-using Microsoft.VisualStudio.Text;
+using AV.Cyclone.Service;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 
@@ -12,7 +12,7 @@ namespace AV.Cyclone.Margin
     ///     Export a <see cref="IWpfTextViewMarginProvider" />, which returns an instance of the margin for the editor
     ///     to use.
     /// </summary>
-    [Export(typeof(IWpfTextViewMarginProvider))]
+    [Export(typeof (IWpfTextViewMarginProvider))]
     [Name("Margin")]
     [Order(After = PredefinedMarginNames.VerticalScrollBar)]
     [MarginContainer(PredefinedMarginNames.Right)]
@@ -22,9 +22,17 @@ namespace AV.Cyclone.Margin
     {
         public IWpfTextViewMargin CreateMargin(IWpfTextViewHost wpfTextViewHost, IWpfTextViewMargin containerMargin)
         {
+            var cycloneService = GetCycloneManager(wpfTextViewHost);
+
             var wpfTextView = wpfTextViewHost.TextView;
-            
-            return new Margin(wpfTextView);
+
+            return new Margin(wpfTextView, cycloneService);
+        }
+
+        private static CycloneService GetCycloneManager(IWpfTextViewHost wpfTextViewHost)
+        {
+            return wpfTextViewHost.TextView.Properties.GetOrCreateSingletonProperty
+                (() => new CycloneService());
         }
     }
 

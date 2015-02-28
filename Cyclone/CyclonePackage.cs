@@ -3,10 +3,13 @@ using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.InteropServices;
+using AV.Cyclone.Service;
 using EnvDTE;
 using EnvDTE80;
+using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace AV.Cyclone
@@ -68,7 +71,6 @@ namespace AV.Cyclone
                 MenuCommand menuItem = new MenuCommand(MenuItemCallback, menuCommandID);
                 mcs.AddCommand(menuItem);
             }
-
         }
 
         private void MenuItemCallback(object sender, EventArgs e)
@@ -79,42 +81,55 @@ namespace AV.Cyclone
             IVsTextView vTextView;
             txtMgr.GetActiveView(mustHaveFocus, null, out vTextView);
 
-            int piLine;
-            int oiColumn;
-            vTextView.GetCaretPos(out piLine, out oiColumn);
-            var soultionFileName = DTE.Solution.FileName;
-
-            var fullName = DTE.ActiveDocument.FullName;
-
-
-
-            // Show a Message Box to prove we were here
-            IVsUIShell uiShell = (IVsUIShell)GetService(typeof(SVsUIShell));
-            Guid clsid = Guid.Empty;
-            int result;
-            Microsoft.VisualStudio.ErrorHandler.ThrowOnFailure(uiShell.ShowMessageBox(
-                       0,
-                       ref clsid,
-                       "VSPackage1",
-                       string.Format(CultureInfo.CurrentCulture, "line n: {0}, column n:{1}, current file name: {2}, solution file name: {3}", piLine, oiColumn, fullName, soultionFileName),
-                       string.Empty,
-                       0,
-                       OLEMSGBUTTON.OLEMSGBUTTON_OK,
-                       OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST,
-                       OLEMSGICON.OLEMSGICON_INFO,
-                       0,        // false
-                       out result));
+            var cycloneStateManager = GetCycloneService();
+            cycloneStateManager.StartCyclone(vTextView);
         }
 
-        internal static DTE2 DTE
+        private IWpfTextViewHost GetIWpfTextViewHost()
         {
-            get
-            {
-                if (_dte == null)
-                    _dte = ServiceProvider.GlobalProvider.GetService(typeof(DTE)) as DTE2;
+            // get an instance of IVsTextManager
+            IVsTextManager txtMgr = (IVsTextManager)GetService(typeof(SVsTextManager));
+            IVsTextView vTextView = null;
+            int mustHaveFocus = 1;
+            // get the active view from the TextManager
+            txtMgr.GetActiveView(mustHaveFocus, null, out vTextView);
 
-                return _dte;
+            // cast as IVsUSerData
+            IVsUserData userData = vTextView as IVsUserData;
+            if (userData == null)
+            {
+                Trace.WriteLine("No text view is currently open");
+                return null;
             }
+
+            IWpfTextViewHost viewHost;
+            object holder;
+            // get the IWpfTextviewHost using the predefined guid for it
+            Guid guidViewHost = DefGuidList.guidIWpfTextViewHost;
+            userData.GetData(ref guidViewHost, out holder);
+            // convert to IWpfTextviewHost
+            viewHost = (IWpfTextViewHost)holder;
+            return viewHost;
+        }
+
+        private CycloneService GetCycloneService()
+        {
+            // get an instance of the associated IWpfTextViewHost
+            IWpfTextViewHost viewHost = GetIWpfTextViewHost();
+            if (viewHost == null)
+            {
+                return null;
+            }
+
+            CycloneService cycloneService = viewHost.TextView.Properties.GetOrCreateSingletonProperty
+                (() => new CycloneService());
+
+            return cycloneService;
+        }
+
+        internal static DTE2 Dte
+        {
+            get { return _dte ?? (_dte = ServiceProvider.GlobalProvider.GetService(typeof (DTE)) as DTE2); }
         }
 
         #endregion
