@@ -150,6 +150,7 @@
       <DependentUpon>OutputPaneView.xaml</DependentUpon>
     </Compile>
     <Compile Include="OutputPane\OutputPaneViewModel.cs" />
+    <Compile Include="OutputPane\ViewObjectModel.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
