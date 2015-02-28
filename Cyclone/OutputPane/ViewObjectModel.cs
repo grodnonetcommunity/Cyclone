@@ -23,7 +23,14 @@ namespace AV.Cyclone.OutputPane
 
         public FrameworkElement this[int key]
         {
-            get { return Elements[key]; }
+            get
+            {
+                if (key < 0 || key > Elements.Count - 1)
+                {
+                    return null;
+                }
+                return Elements[key];
+            }
             set { Elements[key] = value; }
         }
 
