@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace Test.Executor
 {
-    public class OperationsExecuteLoggerTest
+    public partial class OperationsExecuteLoggerTest
     {
         [Test]
         public void MethodCallTest()
@@ -83,7 +83,7 @@ namespace Test.Executor
                 }
                 opertaionsExecuteLogger.EndMethod("M2", "", 0);
                 opertaionsExecuteLogger.BeginMethod("M3", "", 2);
-                {
+                { 
                     opertaionsExecuteLogger.LogAssign("k", "", 1, 1);
                 }
                 opertaionsExecuteLogger.EndMethod("M3", "", 0);
