@@ -3,7 +3,7 @@ using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace AV.Cyclone.Service
 {
-    public class CycloneService
+    public class CycloneService : ICycloneService
     {
         public event EventHandler<CycloneEventArgs> CycloneChanged;
 
@@ -28,6 +28,18 @@ namespace AV.Cyclone.Service
                 InitialColumnNumber = initialColumnNumber,
                 InitialLineNumber = initialLineNumber
             }));
+        }
+
+        public void ExpandLine(int lineNumber, double preferedSize)
+        {
+            OnCycloneChanged(new ExpandLineEventArgs
+            {
+                ExpandLineInfo = new ExpandLineInfo
+                {
+                    LineNumber = lineNumber,
+                    PreferedSize = preferedSize
+                }
+            });
         }
     }
 }

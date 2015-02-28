@@ -1,29 +1,25 @@
-﻿using System;
-using System.Linq;
-using System.Windows;
+﻿using System.Windows;
 using AV.Cyclone.OutputPane;
 using AV.Cyclone.Service;
-using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace AV.Cyclone.Margin
 {
     public class Margin : MarginBase
     {
-        private CycloneService _cycloneService;
+        private ICycloneService _cycloneService;
 
         public Margin(IWpfTextView sourceView)
         {
             SourceTextView = sourceView;
         }
 
-        public Margin(IWpfTextView sourceView, CycloneService cycloneService) : this(sourceView)
+        public Margin(IWpfTextView sourceView, ICycloneService cycloneService) : this(sourceView)
         {
-            this._cycloneService = cycloneService;
+            _cycloneService = cycloneService;
         }
 
         protected IWpfTextView SourceTextView { get; set; }
-
         public OutputPaneView OutputPaneView { get; set; }
 
         protected override FrameworkElement CreatePreviewControl()

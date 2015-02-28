@@ -29,7 +29,7 @@ namespace AV.Cyclone.Margin
             return new Margin(wpfTextView, cycloneService);
         }
 
-        private static CycloneService GetCycloneManager(IWpfTextViewHost wpfTextViewHost)
+        private static ICycloneService GetCycloneManager(IWpfTextViewHost wpfTextViewHost)
         {
             return wpfTextViewHost.TextView.Properties.GetOrCreateSingletonProperty
                 (() => new CycloneService());

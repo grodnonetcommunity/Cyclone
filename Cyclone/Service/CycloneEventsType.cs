@@ -3,6 +3,7 @@
     public enum CycloneEventsType
     {
         Undefined = 0,
-        Start = 1
+        Start = 1,
+        ExpandLines = 2,
     }
 }

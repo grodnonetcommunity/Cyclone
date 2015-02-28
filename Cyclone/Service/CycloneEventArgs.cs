@@ -6,7 +6,7 @@ namespace AV.Cyclone.Service
     {
         public readonly CycloneEventsType EventType;
 
-        public CycloneEventArgs(CycloneEventsType eventsType)
+        protected CycloneEventArgs(CycloneEventsType eventsType)
         {
             EventType = eventsType;
         }
