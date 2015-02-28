@@ -14,8 +14,8 @@ namespace AV.Cyclone.Sandy.OperationParser
 {
 	public class UIGenerator
 	{
-		private Execution _execution;
-		private OperationTypeParser _operationTypeParser = new OperationTypeParser();
+		private readonly Execution _execution;
+		private readonly OperationTypeParser _operationTypeParser = new OperationTypeParser();
 
 		public UIGenerator(Execution execution)
 		{
@@ -29,7 +29,7 @@ namespace AV.Cyclone.Sandy.OperationParser
 
 		public UIElement GetLine(int lineNumber, string fileName)
 		{
-			UIElement result = new TextBlock();
+			var result = new TextBlock();
 
 			List<Operation> foundOperations = new List<Operation>();
 			SearchOperation(lineNumber, _execution.Operations, foundOperations, fileName);
@@ -41,10 +41,31 @@ namespace AV.Cyclone.Sandy.OperationParser
 			}
 
 			var searchResult = new OperationSearchResult(foundOperations);
-			
 
+			//Process loops first
+			foreach (var loopOperationWithParent in searchResult.LoopOperations)
+			{
+				
+				AppendTextBlockLine(result, _operationTypeParser.ProcessLoopOperation(
+					loopOperationWithParent.Value, loopOperationWithParent.Key)); 
+			}
+
+			foreach (var assignOperation in searchResult.AssignOperations)
+			{
+				AppendTextBlockLine(result, _operationTypeParser.ProcessAssignOperation(
+				assignOperation));
+			}
 
 			return result;
+		}
+
+		private void AppendTextBlockLine(TextBlock textBlock, IList<Run> runs)
+		{
+			if (textBlock.Inlines.Count > 0)
+			{
+				textBlock.Inlines.Add(new LineBreak());
+			}
+			textBlock.Inlines.AddRange(runs);
 		}
 
 		internal void SearchOperation(int lineNumber, 

@@ -21,17 +21,18 @@ namespace AV.Cyclone.Sandy.OperationParser
 				var assignOperation = operation as AssignOperation;
 				if (assignOperation != null)
 				{
-					if (operation.ParentOperation is LoopOperation)
+					var loopParent = operation.ParentOperation as LoopOperation;
+					if (loopParent != null)
 					{
-						if (!LoopOperations.ContainsKey(operation.ParentOperation))
+						if (!LoopOperations.ContainsKey(loopParent))
 						{
-							LoopOperations.Add(operation.ParentOperation,
+							LoopOperations.Add(loopParent,
 								new List<AssignOperation> {assignOperation});
 						}
 						else
 						{
-							LoopOperations[operation.ParentOperation].Add(assignOperation);
-						};
+							LoopOperations[loopParent].Add(assignOperation);
+						}
 					}
 					else
 					{
@@ -42,6 +43,8 @@ namespace AV.Cyclone.Sandy.OperationParser
 		}
 
 		public IList<AssignOperation> AssignOperations { get; set; } = new List<AssignOperation>();
-		public Dictionary<Operation, IList<AssignOperation>> LoopOperations { get; set; } = new Dictionary<Operation, IList<AssignOperation>>();
+
+		public Dictionary<LoopOperation, IList<AssignOperation>> LoopOperations { get; set; } =
+			new Dictionary<LoopOperation, IList<AssignOperation>>();
 	}
 }

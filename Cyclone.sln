@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sandy.Models", "Sandy\Model
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sandy", "Sandy", "{3B592471-1C2B-4105-B570-C8B9B41E08C9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sandy.OperationParser", "Sandy\OperationParser\Sandy.OperationParser\Sandy.OperationParser.csproj", "{CD037061-7951-472F-B404-53A17300B346}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,11 +25,16 @@ Global
 		{1EC05C9F-3034-4313-A94E-98ED1490D688}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1EC05C9F-3034-4313-A94E-98ED1490D688}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1EC05C9F-3034-4313-A94E-98ED1490D688}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD037061-7951-472F-B404-53A17300B346}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD037061-7951-472F-B404-53A17300B346}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD037061-7951-472F-B404-53A17300B346}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD037061-7951-472F-B404-53A17300B346}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{1EC05C9F-3034-4313-A94E-98ED1490D688} = {3B592471-1C2B-4105-B570-C8B9B41E08C9}
+		{CD037061-7951-472F-B404-53A17300B346} = {3B592471-1C2B-4105-B570-C8B9B41E08C9}
 	EndGlobalSection
 EndGlobal
