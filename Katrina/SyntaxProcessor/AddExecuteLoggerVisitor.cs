@@ -11,6 +11,8 @@ namespace AV.Cyclone.Katrina.SyntaxProcessor
 
         public string BeginLoopMember { get; set; } = "AV.Cyclone.Katrina.Executor.Context.ExecuteLogger.BeginLoop";
 
+        public string LoopIterationMember { get; set; } = "AV.Cyclone.Katrina.Executor.Context.ExecuteLogger.LoopIteration";
+
         public string EndLoopMember { get; set; } = "AV.Cyclone.Katrina.Executor.Context.ExecuteLogger.EndLoop";
 
         public override SyntaxNode VisitVariableDeclarator(VariableDeclaratorSyntax node)
@@ -36,9 +38,23 @@ namespace AV.Cyclone.Katrina.SyntaxProcessor
             var beginLoopInvocation = CreateBeginLoopInvocationExpression(node);
             var endLoopInvocation = CreateEndLoopInvocationExpression(node);
 
+            var whileKeyword = VisitToken(node.WhileKeyword);
+            var openParenToken = VisitToken(node.OpenParenToken);
+            var condition = (ExpressionSyntax)Visit(node.Condition);
+            var closeParenToken = VisitToken(node.CloseParenToken);
+            var statement = (StatementSyntax)Visit(node.Statement);
+
+            var loopIterationInvocation = CreateLoopIterationInvocationExpression(statement);
+            var whileBody = SyntaxFactory.Block(
+                SyntaxFactory.ExpressionStatement(loopIterationInvocation),
+                statement
+                );
+
+            node = node.Update(whileKeyword, openParenToken, condition, closeParenToken, whileBody);
+
             var tryBlock = SyntaxFactory.Block(
                 SyntaxFactory.ExpressionStatement(beginLoopInvocation),
-                (StatementSyntax)base.VisitWhileStatement(node));
+                node);
 
             var finallyBlock = SyntaxFactory.FinallyClause(SyntaxFactory.Block(
                 SyntaxFactory.ExpressionStatement(endLoopInvocation)));
@@ -99,6 +115,25 @@ namespace AV.Cyclone.Katrina.SyntaxProcessor
         private InvocationExpressionSyntax CreateEndLoopInvocationExpression(string fileName, int lineNumber)
         {
             var memberAccess = CreateMemberAccess(EndLoopMember);
+            var arguments = SyntaxFactory.ArgumentList(SyntaxFactory.SeparatedList(new[]
+            {
+                SyntaxFactory.Argument(CreaetLiteral(fileName)),
+                SyntaxFactory.Argument(CreateLiteral(lineNumber)),
+            }));
+            return SyntaxFactory.InvocationExpression(memberAccess, arguments);
+        }
+
+        private InvocationExpressionSyntax CreateLoopIterationInvocationExpression(SyntaxNode node)
+        {
+            var fileName = node.SyntaxTree.FilePath;
+            var lineNumber = node.SyntaxTree.GetLineSpan(node.Span).StartLinePosition.Line;
+
+            return CreateLoopIterationInvocationExpression(fileName, lineNumber);
+        }
+
+        private InvocationExpressionSyntax CreateLoopIterationInvocationExpression(string fileName, int lineNumber)
+        {
+            var memberAccess = CreateMemberAccess(LoopIterationMember);
             var arguments = SyntaxFactory.ArgumentList(SyntaxFactory.SeparatedList(new[]
             {
                 SyntaxFactory.Argument(CreaetLiteral(fileName)),

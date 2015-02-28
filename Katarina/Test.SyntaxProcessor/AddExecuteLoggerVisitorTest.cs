@@ -53,7 +53,11 @@ namespace Test.SyntaxProcessor
     try
     {
         BL("""", 0);
-        while (true) {}
+        while (true) 
+        {
+            LI("""", 0);
+            {}
+        }
     }
     finally
     {
@@ -70,6 +74,7 @@ namespace Test.SyntaxProcessor
             {
                 LogAssignMember = "LA",
                 BeginLoopMember = "BL",
+                LoopIterationMember = "LI",
                 EndLoopMember = "EL"
             };
         }

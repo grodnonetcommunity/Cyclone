@@ -6,6 +6,8 @@
 
         void BeginLoop(string fileName, int lineNumber);
 
+        void LoopIteration(string fileName, int lineNumber);
+
         void EndLoop(string fileName, int lineNumber);
     }
 }
