@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Runtime.Remoting.Messaging;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -22,14 +23,43 @@ namespace AV.Cyclone.Sandy.OperationParser
 			_execution = execution;
 		}
 
-		public IList<UIElement> GetOutputComponents(string fileName)
+		public OutComponent GetOutputComponents(string fileName)
 		{
-			throw new NotImplementedException();
+			Dictionary<int, UIElement> uiComponents = new Dictionary<int, UIElement>();
+			OutComponent outComponent = new OutComponent(uiComponents);
+			List<int> lines = new List<int>();
+			RecursiveSearchLineNumbers(_execution.Operations.Where(op => op.FileName == fileName), lines);
+			foreach (var line in lines)
+			{
+				var uiElement = GetLine(line, fileName);
+				uiComponents.Add(line, uiElement);
+			}
+			return outComponent;
+		}
+
+		private void RecursiveSearchLineNumbers(IEnumerable<Operation> operations,[NotNull] List<int> results)
+		{
+			foreach (var operation in operations)
+			{
+				if (!results.Contains(operation.LineNumber))
+				{
+					results.Add(operation.LineNumber);
+				}
+
+				var loopOperation = operation as LoopOperation;
+				if (loopOperation != null)
+				{
+					foreach (var loopOperationItem in loopOperation.Operations)
+					{
+						RecursiveSearchLineNumbers(loopOperationItem.Value, results);
+					}		
+				}
+			}
 		} 
 
 		public UIElement GetLine(int lineNumber, string fileName)
 		{
-			var result = new TextBlock();
+			var result = new StackPanel();
 
 			List<Operation> foundOperations = new List<Operation>();
 			SearchOperation(lineNumber, _execution.Operations, foundOperations, fileName);
@@ -45,7 +75,6 @@ namespace AV.Cyclone.Sandy.OperationParser
 			//Process loops first
 			foreach (var loopOperationWithParent in searchResult.LoopOperations)
 			{
-				
 				AppendTextBlockLine(result, _operationTypeParser.ProcessLoopOperation(
 					loopOperationWithParent.Value, loopOperationWithParent.Key)); 
 			}
@@ -59,13 +88,21 @@ namespace AV.Cyclone.Sandy.OperationParser
 			return result;
 		}
 
-		private void AppendTextBlockLine(TextBlock textBlock, IList<Run> runs)
+		private void AppendTextBlockLine(Panel baseElement, IList<OutputItem> runs)
 		{
-			if (textBlock.Inlines.Count > 0)
+			StackPanel horizontalPanel = new StackPanel();
+			horizontalPanel.Orientation = Orientation.Horizontal;
+			foreach (var run in runs)
 			{
-				textBlock.Inlines.Add(new LineBreak());
+				TextBlock textBlock = new TextBlock
+				{
+					Text = run.Output,
+					Margin = new Thickness(run.MarginLeft, 0, 0, 0)
+				};
+				horizontalPanel.Children.Add(textBlock);
 			}
-			textBlock.Inlines.AddRange(runs);
+			
+			baseElement.Children.Add(horizontalPanel);
 		}
 
 		public void SearchOperation(int lineNumber, 

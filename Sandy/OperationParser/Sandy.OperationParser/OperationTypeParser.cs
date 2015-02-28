@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Documents;
+using System.Windows.Media;
 using AV.Cyclone.Sandy.Models.Operations;
 
 namespace AV.Cyclone.Sandy.OperationParser
@@ -17,41 +21,47 @@ namespace AV.Cyclone.Sandy.OperationParser
 		private const string Separator = ", ";
 		private const string LoopSeparationToken = "|";
 
-		public IList<Run> ProcessLoopOperation<T>(IList<T> operations, LoopOperation parent) where T : Operation
+		public IList<OutputItem> ProcessLoopOperation<T>(IList<T> operations, LoopOperation parent) where T : Operation
 		{
-			var result = new List<Run>();
-			int maxWidth = CalculateMaxWidth(parent.Operations.SelectMany(o => o.Value).ToList());
+			var result = new List<OutputItem>();
+			//TODO max width should also take ariable name into consideration
+			double maxWidth = CalculateMaxWidth(parent.Operations.SelectMany(o => o.Value).ToList());
+			//TODO: do it better
+			var firstAssign = operations.FirstOrDefault() as AssignOperation;
+			if (firstAssign != null)
+			{
+				var variableName = firstAssign.VariableName;
+				var variableNameSize = MeasureString(variableName, new TextBlock());
+				result.Add(new OutputItem(variableName, maxWidth - variableNameSize.Width));
+				result.Add(new OutputItem(EqualSign));
+			}
+			result.Add(new OutputItem(LoopSeparationToken));
 
 			for (int i = 0; i < parent.GetTotalNumberOfIteration; i++)
 			{
 				//TODO for now only assign operations are supported
-				StringBuilder variableValue = new StringBuilder();
-				int variableValueLength = 0;
+				string variableValueAsString = string.Empty;
 				var singleAssignValue = operations.FirstOrDefault(v => v.IterationNumber == i) as AssignOperation;
 				if (singleAssignValue != null)
 				{
-					string variableValueAsString = GetVariableValueAsString(singleAssignValue.VariableValue);
-					variableValue.Append(variableValueAsString);
-					variableValueLength = variableValueAsString.Length;
-				}
-				for (int j = variableValueLength; j <= maxWidth; j++)
-				{
-					variableValue.Append(SpaceSign);
+					variableValueAsString = GetVariableValueAsString(singleAssignValue.VariableValue);
 				}
 
-				result.Add(new Run(variableValue.ToString()));
-				result.Add(new Run(LoopSeparationToken));
+				var variableSize = MeasureString(variableValueAsString, new TextBlock());
+
+				result.Add(new OutputItem(variableValueAsString, maxWidth - variableSize.Width));
+				result.Add(new OutputItem(LoopSeparationToken));
 			}
 			return result;
 		}
 
-		public IList<Run> ProcessAssignOperation(AssignOperation assignOperation)
+		public IList<OutputItem> ProcessAssignOperation(AssignOperation assignOperation)
 		{
-			var result = new List<Run>
+			var result = new List<OutputItem>
 			{
-				new Run(assignOperation.VariableName),
-				new Run(EqualSign),
-				new Run(GetVariableValueAsString(assignOperation.VariableValue))
+				new OutputItem(assignOperation.VariableName),
+				new OutputItem(EqualSign),
+				new OutputItem(GetVariableValueAsString(assignOperation.VariableValue))
 			};
 			return result;
 		}
@@ -72,7 +82,6 @@ namespace AV.Cyclone.Sandy.OperationParser
 		            {
 						builder.Append(Separator);
 					}
-					
 				}
 
 				builder.Append(CloseBracket);
@@ -90,20 +99,34 @@ namespace AV.Cyclone.Sandy.OperationParser
 			return string.Empty;
 		}
 
-		private int CalculateMaxWidth(IList<Operation> loopList)
+		private double CalculateMaxWidth(IList<Operation> loopList)
 		{
-			int maxWidth = 0;
+			double maxWidth = 0;
 			foreach (var operation in loopList)
 			{
 				//TODO once again, only assign values here
 				var assignOperation = operation as AssignOperation;
 				if (assignOperation != null)
 				{
-					maxWidth = Math.Max(maxWidth,
-						GetVariableValueAsString(assignOperation.VariableValue).Length);
+					maxWidth = Math.Max(maxWidth, 
+						MeasureString(GetVariableValueAsString(assignOperation.VariableValue), 
+						new TextBlock()).Width);
 				}
 			}
 			return maxWidth;
+		}
+
+		private Size MeasureString(string candidate, TextBlock textBlock)
+		{
+			var formattedText = new FormattedText(
+				candidate,
+				CultureInfo.CurrentUICulture,
+				FlowDirection.LeftToRight,
+				new Typeface(textBlock.FontFamily, textBlock.FontStyle, textBlock.FontWeight, textBlock.FontStretch),
+				textBlock.FontSize,
+				Brushes.Black);
+
+			return new Size(formattedText.Width, formattedText.Height);
 		}
 	}
 }

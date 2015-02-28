@@ -45,6 +45,8 @@
   <ItemGroup>
     <Compile Include="OperationSearchResult.cs" />
     <Compile Include="OperationTypeParser.cs" />
+    <Compile Include="OutComponent.cs" />
+    <Compile Include="OutputItem.cs" />
     <Compile Include="UIGenerator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

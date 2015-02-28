@@ -58,7 +58,8 @@ namespace AV.Cyclone.Sandy.Tests
 
 			LoopOperation loopOperation = new LoopOperation
 			{
-				FileName = "1"
+				FileName = "1",
+				LineNumber = 13
 			};
 			//Iteration 1
 			AssignOperation assignLow1 = new AssignOperation()
@@ -141,6 +142,14 @@ namespace AV.Cyclone.Sandy.Tests
 			List<Operation> resultSecond = new List<Operation>();
 			generator.SearchOperation(10, Execution.Operations, resultSecond, "1");
 			Assert.AreEqual(resultSecond.Count, 2);
+		}
+
+		[Test, RequiresSTA]
+		public void TotalComponentTest()
+		{
+			UIGenerator generator = new UIGenerator(this.Execution);
+			var components = generator.GetOutputComponents("1");
+			Assert.AreEqual(components.Count, 7);
 		}
 	}
 }
