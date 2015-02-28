@@ -8,6 +8,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using AV.Cyclone.Annotations;
+using AV.Cyclone.Sandy.OperationParser;
+using AV.Cyclone.Sandy.Tests;
 using AV.Cyclone.Service;
 using Microsoft.VisualStudio.Text.Editor;
 
@@ -56,38 +58,69 @@ namespace AV.Cyclone.OutputPane
         private void Init()
         {
             Elements = new ObservableCollection<FrameworkElement>();
-            Random rnd = new Random();
+            //            Random rnd = new Random();
+            //            for (var i = 0; i < _numberOfLines; i++)
+            //            {
+            //                var tb = new TextBlock();
+            //                tb.Text = "line: " + (i + 1);
+            //
+            //                //if (i == 10)
+            //                //{
+            //                //    var newHeigth = 50;
+            //                //    tb.Height = newHeigth;
+            //                //    tb.Background = Brushes.Red;
+            //                //    Elements.Add(tb);
+            //                //    _cycloneService.ExpandLine(i, newHeigth);
+            //                //    continue;
+            //                //}
+            //
+            //                tb.Height = rnd.Next(20, 100);
+//                            if (i%2 == 0)
+//                            {
+//                                tb.Background = Brushes.LightGray;
+//                            }
+//                            else
+//                            {
+//                                tb.Background = Brushes.DimGray;
+//                            }
+            //                Elements.Add(tb);
+            //            }
+
+            ModelTestClass modelTestClass = new ModelTestClass();
+            modelTestClass.Init();
+
+            var execution = modelTestClass.Execution;
+            UIGenerator generator = new UIGenerator(execution);
+            OutComponent c = generator.GetOutputComponents("1");
+
             for (var i = 0; i < _numberOfLines; i++)
             {
-                var tb = new TextBlock();
-                tb.Text = "line: " + (i + 1);
-
-                //if (i == 10)
-                //{
-                //    var newHeigth = 50;
-                //    tb.Height = newHeigth;
-                //    tb.Background = Brushes.Red;
-                //    Elements.Add(tb);
-                //    _cycloneService.ExpandLine(i, newHeigth);
-                //    continue;
-                //}
-
-                tb.Height = rnd.Next(20, 100);
-                if (i%2 == 0)
+                var elemToAdd = new Border();
+                if (i % 2 == 0)
                 {
-                    tb.Background = Brushes.LightGray;
+                    elemToAdd.Background = Brushes.LightGray;
                 }
                 else
                 {
-                    tb.Background = Brushes.DimGray;
+                    elemToAdd.Background = Brushes.DimGray;
                 }
-                Elements.Add(tb);
+                elemToAdd.Child = c[i];
+                if (elemToAdd.Child == null)
+                {
+                    elemToAdd.Height = _lineHeight;
+                }
+                Elements.Add(elemToAdd);
             }
         }
 
         public void SetAdorment(int lineIndex)
         {
-            _cycloneService.ExpandLine(lineIndex, this[lineIndex].Height - _lineHeight);
+            var height = this[lineIndex].ActualHeight - _lineHeight;
+            if (height < _lineHeight)
+            {
+                height = 0;
+            }
+            _cycloneService.ExpandLine(lineIndex, height);
         }
 
         [NotifyPropertyChangedInvocator]

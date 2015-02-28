@@ -19,9 +19,10 @@ namespace AV.Cyclone.Sandy.UITests
 
 			var execution = modelTestClass.Execution;
 			UIGenerator generator = new UIGenerator(execution);
+		    var c = generator.GetOutputComponents("1");
 			for (int i = 0; i < 20; i++)
 			{
-				UIElement element = generator.GetLine(i, "1");
+				UIElement element = c[i];
 				if (element != null)
 				{
 					MainPanel.Children.Add(element);

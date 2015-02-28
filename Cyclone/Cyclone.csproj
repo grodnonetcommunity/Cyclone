@@ -212,6 +212,24 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Katrina\Executor\Executor.csproj">
+      <Project>{5530b901-f932-4c51-9230-8008423fffb7}</Project>
+      <Name>Executor</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Sandy\Models\Sandy.Models.csproj">
+      <Project>{1ec05c9f-3034-4313-a94e-98ed1490d688}</Project>
+      <Name>Sandy.Models</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Sandy\OperationParser\Sandy.OperationParser\Sandy.OperationParser.csproj">
+      <Project>{cd037061-7951-472f-b404-53a17300b346}</Project>
+      <Name>Sandy.OperationParser</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Sandy\Tests\Sandy.Tests\Sandy.Tests.csproj">
+      <Project>{9da5cecd-c152-4bde-b0cd-c296d1c75e82}</Project>
+      <Name>Sandy.Tests</Name>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup>
     <UseCodebase>true</UseCodebase>
   </PropertyGroup>

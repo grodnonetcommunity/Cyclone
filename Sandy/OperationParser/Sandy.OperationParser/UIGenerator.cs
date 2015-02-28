@@ -109,8 +109,7 @@ namespace AV.Cyclone.Sandy.OperationParser
 				TextBlock textBlock = new TextBlock
 				{
 					HorizontalAlignment = HorizontalAlignment.Stretch,
-					Text = run.Output,
-					Padding = new Thickness(1)
+					Text = run.Output
 				};
 
 				if (run.MeasureGroup == MeasureGroup.VariableValuesCycle)

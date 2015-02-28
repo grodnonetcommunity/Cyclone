@@ -121,16 +121,16 @@ namespace AV.Cyclone.OutputPane
             {
                 var lineHeight = viewLines[i].Height;
                 var topAdormentHeight = lineHeight - nominalLineHeight;
-                var index = i + sourceLineNumber - 1;
+                var index = i + sourceLineNumber;
+                Model.ViewObjectModel.SetAdorment(index);
                 if (index < 0 || IsInitMarginSet[index])
                 {
                     continue;
                 }
-                var tb = (TextBlock)Model.ViewObjectModel.Elements[index];
-                Model.ViewObjectModel.SetAdorment(index);
+                var wrapper = (Border)Model.ViewObjectModel.Elements[index];
                 IsInitMarginSet[index] = true;
-                tb.Padding = new Thickness(0, topAdormentHeight, 0, 0);
-                tb.Height += topAdormentHeight;
+                wrapper.Padding = new Thickness(0, topAdormentHeight, 0, 0);
+                wrapper.Height += topAdormentHeight;
             }
         }
     }
