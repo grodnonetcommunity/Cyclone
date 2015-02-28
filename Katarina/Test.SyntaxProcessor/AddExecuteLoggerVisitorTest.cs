@@ -49,11 +49,17 @@ namespace Test.SyntaxProcessor
             var visitor = CreateAddExecuteLoggerVisitor();
             var newTree = visitor.Visit(tree);
 
-            var expected = @"{
-    BL("""", 0);
-    while (true) {}
-    EL("""", 0);
-}";
+            var expected = @"
+    try
+    {
+        BL("""", 0);
+        while (true) {}
+    }
+    finally
+    {
+        EL("""", 0);
+    }
+";
 
             AreEqualCode(expected, newTree);
         }

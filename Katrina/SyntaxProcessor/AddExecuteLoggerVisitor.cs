@@ -36,10 +36,14 @@ namespace AV.Cyclone.Katrina.SyntaxProcessor
             var beginLoopInvocation = CreateBeginLoopInvocationExpression(node);
             var endLoopInvocation = CreateEndLoopInvocationExpression(node);
 
-            return SyntaxFactory.Block(
+            var tryBlock = SyntaxFactory.Block(
                 SyntaxFactory.ExpressionStatement(beginLoopInvocation),
-                (StatementSyntax)base.VisitWhileStatement(node),
-                SyntaxFactory.ExpressionStatement(endLoopInvocation));
+                (StatementSyntax)base.VisitWhileStatement(node));
+
+            var finallyBlock = SyntaxFactory.FinallyClause(SyntaxFactory.Block(
+                SyntaxFactory.ExpressionStatement(endLoopInvocation)));
+
+            return SyntaxFactory.TryStatement(tryBlock, SyntaxFactory.List<CatchClauseSyntax>(), finallyBlock);
         }
 
         private InvocationExpressionSyntax CreateLogAssignInvocationExpression(SyntaxNode node, string variableName,
