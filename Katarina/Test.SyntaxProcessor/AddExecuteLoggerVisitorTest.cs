@@ -9,6 +9,14 @@ namespace Test.SyntaxProcessor
     public class AddExecuteLoggerVisitorTest
     {
         [Test]
+        public void CreateMemberAccessTest()
+        {
+            var memberAccess = "AV.Cyclone.Katrina.Executor.Context.ExecuteLogger.LogAssign";
+            var memberAccessExpression = AddExecuteLoggerVisitor.CreateMemberAccess(memberAccess);
+            Assert.AreEqual(memberAccess, memberAccessExpression.ToString());
+        }
+
+        [Test]
         public void SimpleMemberAccessorTest()
         {
             var source = "var a = 0";
