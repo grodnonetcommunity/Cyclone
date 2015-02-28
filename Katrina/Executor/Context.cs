@@ -4,6 +4,6 @@ namespace AV.Cyclone.Katrina.Executor
 {
     public static class Context
     {
-        public static IExecuteLogger FakeExecuteLogger { get; set; }
+        public static IExecuteLogger ExecuteLogger { get; set; }
     }
 }
