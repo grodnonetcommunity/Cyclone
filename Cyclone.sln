@@ -1,9 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.22512.0
+VisualStudioVersion = 14.0.22609.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cyclone", "Cyclone\Cyclone.csproj", "{838807FC-FABA-4715-B581-703813D94FB9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sandy.Models", "Sandy\Models\Sandy.Models.csproj", "{1EC05C9F-3034-4313-A94E-98ED1490D688}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sandy", "Sandy", "{3B592471-1C2B-4105-B570-C8B9B41E08C9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,8 +19,15 @@ Global
 		{838807FC-FABA-4715-B581-703813D94FB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{838807FC-FABA-4715-B581-703813D94FB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{838807FC-FABA-4715-B581-703813D94FB9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1EC05C9F-3034-4313-A94E-98ED1490D688}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1EC05C9F-3034-4313-A94E-98ED1490D688}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1EC05C9F-3034-4313-A94E-98ED1490D688}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1EC05C9F-3034-4313-A94E-98ED1490D688}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{1EC05C9F-3034-4313-A94E-98ED1490D688} = {3B592471-1C2B-4105-B570-C8B9B41E08C9}
 	EndGlobalSection
 EndGlobal
