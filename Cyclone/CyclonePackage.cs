@@ -112,7 +112,7 @@ namespace AV.Cyclone
             return viewHost;
         }
 
-        private CycloneService GetCycloneService()
+        private ICycloneService GetCycloneService()
         {
             // get an instance of the associated IWpfTextViewHost
             IWpfTextViewHost viewHost = GetIWpfTextViewHost();
@@ -122,7 +122,7 @@ namespace AV.Cyclone
             }
             //var name = Dte.ActiveDocument.ProjectItem.ContainingProject.Name;
 
-            CycloneService cycloneService = viewHost.TextView.Properties.GetOrCreateSingletonProperty
+            ICycloneService cycloneService = viewHost.TextView.Properties.GetOrCreateSingletonProperty
                 (() => new CycloneService());
 
             return cycloneService;
