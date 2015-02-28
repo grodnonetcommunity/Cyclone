@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sandy.OperationParser", "Sa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sandy.Tests", "Sandy\Tests\Sandy.Tests\Sandy.Tests.csproj", "{9DA5CECD-C152-4BDE-B0CD-C296D1C75E82}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sandy.UITests", "Sandy\UITests\Sandy.UITests\Sandy.UITests.csproj", "{9E393C16-47E4-4279-A9CC-A71D32BF8D8C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,6 +37,10 @@ Global
 		{9DA5CECD-C152-4BDE-B0CD-C296D1C75E82}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9DA5CECD-C152-4BDE-B0CD-C296D1C75E82}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9DA5CECD-C152-4BDE-B0CD-C296D1C75E82}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9E393C16-47E4-4279-A9CC-A71D32BF8D8C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9E393C16-47E4-4279-A9CC-A71D32BF8D8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9E393C16-47E4-4279-A9CC-A71D32BF8D8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9E393C16-47E4-4279-A9CC-A71D32BF8D8C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -43,5 +49,6 @@ Global
 		{1EC05C9F-3034-4313-A94E-98ED1490D688} = {3B592471-1C2B-4105-B570-C8B9B41E08C9}
 		{CD037061-7951-472F-B404-53A17300B346} = {3B592471-1C2B-4105-B570-C8B9B41E08C9}
 		{9DA5CECD-C152-4BDE-B0CD-C296D1C75E82} = {3B592471-1C2B-4105-B570-C8B9B41E08C9}
+		{9E393C16-47E4-4279-A9CC-A71D32BF8D8C} = {3B592471-1C2B-4105-B570-C8B9B41E08C9}
 	EndGlobalSection
 EndGlobal
