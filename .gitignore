@@ -26,4 +26,7 @@ Thumbs.db
 obj/
 [Rr]elease*/
 _ReSharper*/
+
+# Visual Studo 2015 cache/options directory
+.vs/
 [Tt]est[Rr]esult*
