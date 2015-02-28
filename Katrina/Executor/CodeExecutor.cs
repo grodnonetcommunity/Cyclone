@@ -21,18 +21,21 @@ namespace AV.Cyclone.Katrina.Executor
         private readonly Dictionary<CSharpCompilation, CSharpCompilation> compilations = 
             new Dictionary<CSharpCompilation, CSharpCompilation>();
         private List<CompilationEmitResult> compilationEmitResults;
+        private string tempDir;
 
         public void AddCompilation(CSharpCompilation oldCompilation, CSharpCompilation newCompilation)
         {
             if (oldCompilation == null)
                 oldCompilation = newCompilation;
+            //newCompilation.AddReferences(MetadataReference.CreateFromAssembly(typeof (AssemblyLoader).Assembly));
             compilations[oldCompilation] = newCompilation;
         }
 
         public void Emit()
         {
-            var tempDir = Path.Combine(Path.GetTempPath(), "_Cyclon_" + Guid.NewGuid());
+            tempDir = Path.Combine(Path.GetTempPath(), "_Cyclon_" + Guid.NewGuid());
             Directory.CreateDirectory(tempDir);
+            File.Copy(typeof(AssemblyLoader).Assembly.Location, Path.Combine(tempDir, typeof(AssemblyLoader).Assembly.GetName().Name + ".dll"));
 
             compilationEmitResults = new List<CompilationEmitResult>(compilations.Count);
 
@@ -56,24 +59,22 @@ namespace AV.Cyclone.Katrina.Executor
 
         public void Execute(string compilationName, string className, string methodName)
         {
-            // TODO: Execute code in separate AppDomain
-            Assembly classAssembly = null;
-            foreach (var compilationEmitResult in compilationEmitResults)
+            var executorDomain = AppDomain.CreateDomain("ExecutorDomain", AppDomain.CurrentDomain.Evidence, new AppDomainSetup {ApplicationBase = tempDir});
+            var loader = (AssemblyLoader)executorDomain.CreateInstanceAndUnwrap(typeof(AssemblyLoader).Assembly.FullName, typeof(AssemblyLoader).FullName);
+
+            int classAssemblyIndex = -1;
+            for (int i = 0; i < compilationEmitResults.Count; i++)
             {
+                var compilationEmitResult = compilationEmitResults[i];
                 var assemblyName = AssemblyName.GetAssemblyName(compilationEmitResult.AssemblyPath);
-                var assembly = Assembly.Load(assemblyName);
+                loader.LoadAssembly(assemblyName);
                 if (assemblyName.Name == compilationName)
-                    classAssembly = assembly;
+                    classAssemblyIndex = i;
             }
 
-            var type = classAssembly.GetType(className, true);
-            var method = type.GetMethod(methodName);
-
-            object target = null;
-            if (!method.IsStatic)
-                target = Activator.CreateInstance(type);
-
-            method.Invoke(target, null);
+            loader.SetExecuteLogger(new DomainExecuteLogger(Context.ExecuteLogger));
+            loader.Execute(classAssemblyIndex, className, methodName);
+            AppDomain.Unload(executorDomain);
         }
     }
 }
