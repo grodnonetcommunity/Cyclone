@@ -58,15 +58,21 @@ namespace AV.Cyclone.Sandy.OperationParser
 
 		private string GetVariableValueAsString(object variableValue)
 		{
-			var valueList = variableValue as IEnumerable;
+			var valueList = variableValue as IList;
 			if(valueList != null)
             {
 				StringBuilder builder = new StringBuilder();
 				builder.Append(OpenBracket);
-				foreach (var valueObject in valueList)
-				{
+
+	            for (int i = 0; i < valueList.Count; i++)
+	            {
+		            var valueObject = valueList[i];
 					builder.Append(GetVariableValueAsString(valueObject));
-					builder.Append(Separator);
+		            if (i < valueList.Count - 1)
+		            {
+						builder.Append(Separator);
+					}
+					
 				}
 
 				builder.Append(CloseBracket);
