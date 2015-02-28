@@ -17,6 +17,7 @@ namespace AV.Cyclone.Katrina.Executor
 
         private Dictionary<Project, Project> projectMapping;
         private Project startupProject;
+        private List<Project> projectReferences;
 
         public ForecastExecutor(Solution solution)
         {
@@ -28,14 +29,23 @@ namespace AV.Cyclone.Katrina.Executor
             startupProject = solution.Projects.First(p => p.Name == projectName);
             projectMapping = new Dictionary<Project, Project>();
 
-            var projectReferences = GetReferencedProjects(startupProject);
+            AddLogger();
+        }
+
+        public void AddLogger()
+        {
+            projectReferences = GetReferencedProjects(startupProject);
             foreach (var reference in projectReferences)
             {
                 var updatedProject = RewriteProject(reference.AddMetadataReference(assemblyLoader));
+                if (HasSyntaxErrors) return;
                 projectMapping.Add(reference, updatedProject);
             }
+
             UpdateProjectReferences(projectReferences, projectMapping);
         }
+
+        public bool HasSyntaxErrors { get; private set; }
 
         public CSharpCompilation[] GetCompilations()
         {
@@ -78,13 +88,18 @@ namespace AV.Cyclone.Katrina.Executor
             }
         }
 
-        private static Project RewriteProject(Project project)
+        private Project RewriteProject(Project project)
         {
             var logAssignmentRewriter = new AddExecuteLoggerVisitor();
             var documents = project.Documents;
             foreach (var document in documents)
             {
                 var syntaxTree = document.GetSyntaxTreeAsync().Result;
+                if (syntaxTree.GetDiagnostics().Any(d => d.Severity == DiagnosticSeverity.Error))
+                {
+                    HasSyntaxErrors = true;
+                    return null;
+                }
                 var newRoot = logAssignmentRewriter.Visit(syntaxTree.GetRoot());
                 project = project.RemoveDocument(document.Id);
                 project = project.AddDocument(document.Name, newRoot, document.Folders, document.FilePath).Project;
