@@ -17,7 +17,7 @@ namespace Test.SyntaxProcessor
         }
 
         [Test]
-        public void SimpleMemberAccessorTest()
+        public void VariableDeclaratorTest()
         {
             var source = "var a = 0";
             var fullSource = "class C { void M() { " + source + "; } }";
@@ -31,7 +31,7 @@ namespace Test.SyntaxProcessor
             var visitor = new AddExecuteLoggerVisitor();
             var newFirstStatement = visitor.Visit(firstStatement);
 
-            Assert.AreEqual(@"var a = AV.Cyclone.Katrina.Executor.Context.ExecuteLogger.LogAssign(""a"","""",0,0)", newFirstStatement.ToString());
+            Assert.AreEqual(@"var a = AV.Cyclone.Katrina.Executor.Context.ExecuteLogger.LogAssign(""a"","""",0,0);", newFirstStatement.ToString());
         }
     }
 }
