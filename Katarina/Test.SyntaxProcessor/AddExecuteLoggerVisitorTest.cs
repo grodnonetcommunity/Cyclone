@@ -68,11 +68,39 @@ namespace Test.SyntaxProcessor
             AreEqualCode(expected, newTree);
         }
 
+        [Test]
+        public void MethodEnterTest()
+        {
+            var source = "";
+            var tree = ParseMethod(source);
+
+            var visitor = CreateAddExecuteLoggerVisitor();
+            var newTree = visitor.Visit(tree);
+
+            var expected = @"
+void M(){
+    try 
+    {
+        BM(""M"", """", 0);
+        {;}
+    }
+    finally
+    {
+        EM(""M"", """", 0);
+    }
+}
+";
+
+            AreEqualCode(expected, newTree);
+        }
+
         private static AddExecuteLoggerVisitor CreateAddExecuteLoggerVisitor()
         {
             return new AddExecuteLoggerVisitor
             {
                 LogAssignMember = "LA",
+                BeginMethodMember = "BM",
+                EndMethodMember = "EM",
                 BeginLoopMember = "BL",
                 LoopIterationMember = "LI",
                 EndLoopMember = "EL"
@@ -89,13 +117,19 @@ namespace Test.SyntaxProcessor
             return value.Replace("\r\n", "").Replace(" ", "").Replace("\t", "");
         }
 
-        private static StatementSyntax ParseMethodBody(string source)
+        private static MethodDeclarationSyntax ParseMethod(string source)
         {
             var fullSource = "class C { void M() { " + source + "; } }";
             var syntaxTree = CSharpSyntaxTree.ParseText(fullSource);
             var compilationUnit = (CompilationUnitSyntax)syntaxTree.GetRoot();
             var typeDeclaration = (TypeDeclarationSyntax)compilationUnit.Members[0];
             var methodDeclaration = (MethodDeclarationSyntax)typeDeclaration.Members[0];
+            return methodDeclaration;
+        }
+
+        private static StatementSyntax ParseMethodBody(string source)
+        {
+            var methodDeclaration = ParseMethod(source);
             var methodBody = methodDeclaration.Body;
             var firstStatement = methodBody.Statements[0];
             return firstStatement;

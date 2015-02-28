@@ -15,6 +15,10 @@ namespace AV.Cyclone.Katrina.SyntaxProcessor
 
         public string EndLoopMember { get; set; } = "AV.Cyclone.Katrina.Executor.Interfaces.Context.ExecuteLogger.EndLoop";
 
+        public string BeginMethodMember { get; set; } = "AV.Cyclone.Katrina.Executor.Interfaces.Context.ExecuteLogger.BeginMethod";
+
+        public string EndMethodMember { get; set; } = "AV.Cyclone.Katrina.Executor.Interfaces.Context.ExecuteLogger.EndMethod";
+
         public override SyntaxNode VisitVariableDeclarator(VariableDeclaratorSyntax node)
         {
             var variableName = node.Identifier.Text;
@@ -62,6 +66,41 @@ namespace AV.Cyclone.Katrina.SyntaxProcessor
             return SyntaxFactory.TryStatement(tryBlock, SyntaxFactory.List<CatchClauseSyntax>(), finallyBlock);
         }
 
+        public override SyntaxNode VisitMethodDeclaration(MethodDeclarationSyntax node)
+        {
+            var methodName = node.Identifier.Text;
+
+            var attributeLists = VisitList(node.AttributeLists);
+            var modifiers = VisitList(node.Modifiers);
+            var returnType = (TypeSyntax)Visit(node.ReturnType);
+            var explicitInterfaceSpecifier = (ExplicitInterfaceSpecifierSyntax)Visit(node.ExplicitInterfaceSpecifier);
+            var identifier = VisitToken(node.Identifier);
+            var typeParameterList = (TypeParameterListSyntax)Visit(node.TypeParameterList);
+            var parameterList = (ParameterListSyntax)Visit(node.ParameterList);
+            var constraintClauses = VisitList(node.ConstraintClauses);
+            var body = (BlockSyntax)Visit(node.Body);
+
+            var beginLoopInvocation = CreateBeginMethodInvocationExpression(methodName, node);
+            var endLoopInvocation = CreateEndMethodInvocationExpression(methodName, node);
+
+            var expressionBody = (ArrowExpressionClauseSyntax)Visit(node.ExpressionBody);
+
+            var tryBlock = SyntaxFactory.Block(
+                SyntaxFactory.ExpressionStatement(beginLoopInvocation),
+                body);
+
+            var finallyBlock = SyntaxFactory.FinallyClause(SyntaxFactory.Block(
+                SyntaxFactory.ExpressionStatement(endLoopInvocation)));
+
+            var tryFinallyBlock = SyntaxFactory.Block(
+                SyntaxFactory.TryStatement(tryBlock, SyntaxFactory.List<CatchClauseSyntax>(),
+                    finallyBlock));
+
+            var semicolonToken = VisitToken(node.SemicolonToken);
+            return node.Update(attributeLists, modifiers, returnType, explicitInterfaceSpecifier, identifier,
+                typeParameterList, parameterList, constraintClauses, tryFinallyBlock, expressionBody, semicolonToken);
+        }
+
         private InvocationExpressionSyntax CreateLogAssignInvocationExpression(SyntaxNode node, string variableName,
             ExpressionSyntax valueExpression)
         {
@@ -81,6 +120,46 @@ namespace AV.Cyclone.Katrina.SyntaxProcessor
                 SyntaxFactory.Argument(CreaetLiteral(fileName)),
                 SyntaxFactory.Argument(CreateLiteral(lineNumber)),
                 SyntaxFactory.Argument(valueExpression)
+            }));
+            return SyntaxFactory.InvocationExpression(memberAccess, arguments);
+        }
+
+        private InvocationExpressionSyntax CreateBeginMethodInvocationExpression(string methodName, SyntaxNode node)
+        {
+            var fileName = node.SyntaxTree.FilePath;
+            var lineNumber = node.SyntaxTree.GetLineSpan(node.Span).StartLinePosition.Line;
+
+            return CreateBeginMethodInvocationExpression(methodName, fileName, lineNumber);
+        }
+
+        private InvocationExpressionSyntax CreateBeginMethodInvocationExpression(string methodName, string fileName, int lineNumber)
+        {
+            var memberAccess = CreateMemberAccess(BeginMethodMember);
+            var arguments = SyntaxFactory.ArgumentList(SyntaxFactory.SeparatedList(new[]
+            {
+                SyntaxFactory.Argument(CreaetLiteral(methodName)),
+                SyntaxFactory.Argument(CreaetLiteral(fileName)),
+                SyntaxFactory.Argument(CreateLiteral(lineNumber)),
+            }));
+            return SyntaxFactory.InvocationExpression(memberAccess, arguments);
+        }
+
+        private InvocationExpressionSyntax CreateEndMethodInvocationExpression(string methodName, SyntaxNode node)
+        {
+            var fileName = node.SyntaxTree.FilePath;
+            var lineNumber = node.SyntaxTree.GetLineSpan(node.Span).StartLinePosition.Line;
+
+            return CreateEndMethodInvocationExpression(methodName, fileName, lineNumber);
+        }
+
+        private InvocationExpressionSyntax CreateEndMethodInvocationExpression(string methodName, string fileName, int lineNumber)
+        {
+            var memberAccess = CreateMemberAccess(EndMethodMember);
+            var arguments = SyntaxFactory.ArgumentList(SyntaxFactory.SeparatedList(new[]
+            {
+                SyntaxFactory.Argument(CreaetLiteral(methodName)),
+                SyntaxFactory.Argument(CreaetLiteral(fileName)),
+                SyntaxFactory.Argument(CreateLiteral(lineNumber)),
             }));
             return SyntaxFactory.InvocationExpression(memberAccess, arguments);
         }
@@ -141,6 +220,7 @@ namespace AV.Cyclone.Katrina.SyntaxProcessor
             }));
             return SyntaxFactory.InvocationExpression(memberAccess, arguments);
         }
+
 
         private static LiteralExpressionSyntax CreaetLiteral(string value)
         {
