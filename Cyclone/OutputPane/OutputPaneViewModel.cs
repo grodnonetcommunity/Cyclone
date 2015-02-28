@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Windows;
 using System.Windows.Media;
 using AV.Cyclone.Annotations;
 using Microsoft.VisualStudio.Text.Editor;
@@ -95,9 +96,9 @@ namespace AV.Cyclone.OutputPane
             {
                 shift = shift*-1;
             }
-            var lineHeight = Model.LineHeight;
-            ScrollTo(lineHeight*sourceLineNumber + shift);
-            UpdateVisibleLinesHeight(sourceLineNumber);
+            var elemToScroll = Model.ViewObjectModel[sourceLineNumber];
+            var translatePoint = elemToScroll.TranslatePoint(new Point(), _view.OutputPaneScrollViewer);
+            ScrollTo(_view.OutputPaneScrollViewer.VerticalOffset + translatePoint.Y + shift);
         }
 
         public void ScrollTo(double offset)
