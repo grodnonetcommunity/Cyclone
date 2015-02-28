@@ -68,17 +68,17 @@ class Class
             var syntaxTree1 = CSharpSyntaxTree.ParseText(source1);
 
             var compilationOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary);
-            var compilaton1 = CSharpCompilation.Create("Temp.dll", new[] {syntaxTree1,}, new[] {Mscorelib, ExecutorInterfaces, },
+            var compilation1 = CSharpCompilation.Create("Temp.dll", new[] {syntaxTree1,}, new[] {Mscorelib, ExecutorInterfaces, },
                 compilationOptions);
 
             var executor = new CodeExecutor();
             var executeLogger = new MockExecuteLogger();
 
             var stopwatch = Stopwatch.StartNew();
-            executor.AddCompilation(null, compilaton1);
+            executor.AddCompilation(null, compilation1);
             executor.SetExecuteLogger(executeLogger);
             executor.Emit();
-            executor.Execute(compilaton1.AssemblyName, "Class", "Method");
+            executor.Execute(compilation1.AssemblyName, "Class", "Method");
             stopwatch.Stop();
             Debug.WriteLine("First execute in: {0} ms", stopwatch.ElapsedMilliseconds);
 
@@ -88,10 +88,10 @@ class Class
 
             var syntaxTree2 = CSharpSyntaxTree.ParseText(source2);
 
-            var compilation2 = compilaton1.ReplaceSyntaxTree(syntaxTree1, syntaxTree2);
+            var compilation2 = compilation1.ReplaceSyntaxTree(syntaxTree1, syntaxTree2);
 
             stopwatch.Restart();
-            executor.AddCompilation(compilaton1, compilation2);
+            executor.AddCompilation(compilation1, compilation2);
             executor.Emit();
             executor.Execute(compilation2.AssemblyName, "Class", "Method");
             Debug.WriteLine("Second execute in: {0} ms", stopwatch.ElapsedMilliseconds);
