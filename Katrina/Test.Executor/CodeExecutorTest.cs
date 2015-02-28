@@ -1,4 +1,5 @@
-﻿using AV.Cyclone.Katrina.Executor;
+﻿using System.Diagnostics;
+using AV.Cyclone.Katrina.Executor;
 using AV.Cyclone.Katrina.Executor.Interfaces;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -73,10 +74,13 @@ class Class
             var executor = new CodeExecutor();
             var executeLogger = new MockExecuteLogger();
 
+            var stopwatch = Stopwatch.StartNew();
             executor.AddCompilation(null, compilaton1);
             executor.SetExecuteLogger(executeLogger);
             executor.Emit();
             executor.Execute(compilaton1.AssemblyName, "Class", "Method");
+            stopwatch.Stop();
+            Debug.WriteLine("First execute in: {0} ms", stopwatch.ElapsedMilliseconds);
 
             CollectionAssert.AreEqual(new [] {"a = 1"}, executeLogger.assigns);
 
@@ -86,9 +90,11 @@ class Class
 
             var compilation2 = compilaton1.ReplaceSyntaxTree(syntaxTree1, syntaxTree2);
 
+            stopwatch.Restart();
             executor.AddCompilation(compilaton1, compilation2);
             executor.Emit();
             executor.Execute(compilation2.AssemblyName, "Class", "Method");
+            Debug.WriteLine("Second execute in: {0} ms", stopwatch.ElapsedMilliseconds);
 
             CollectionAssert.AreEqual(new [] {"a = 1", "b = 1"}, executeLogger.assigns);
         }
