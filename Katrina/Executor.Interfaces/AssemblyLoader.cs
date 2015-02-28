@@ -17,7 +17,6 @@ namespace AV.Cyclone.Katrina.Executor.Interfaces
 
         public void SetExecuteLogger(IExecuteLogger executeLogger)
         {
-            //var domainLogger = new DomainExecuteLogger(executeLogger);
             Context.ExecuteLogger = executeLogger;
         }
 

@@ -75,6 +75,8 @@ namespace AV.Cyclone.Katrina.Executor
             loader.SetExecuteLogger(new DomainExecuteLogger(Context.ExecuteLogger));
             loader.Execute(classAssemblyIndex, className, methodName);
             AppDomain.Unload(executorDomain);
+            var tempDirInfo = new DirectoryInfo(tempDir);
+            tempDirInfo.Delete(true);
         }
     }
 }
