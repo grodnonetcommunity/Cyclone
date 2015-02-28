@@ -16,8 +16,8 @@ namespace AV.Cyclone.Katrina.Executor
     {
         private readonly ForecastExecutor forecastExecutor;
         private readonly string projectName;
-        private readonly string startMethodDeclaration;
-        private readonly string startTypeDeclaration;
+        private string startMethodDeclaration;
+        private string startTypeDeclaration;
 
         public event EventHandler Executed;
 
@@ -27,6 +27,18 @@ namespace AV.Cyclone.Katrina.Executor
             var workspace = MSBuildWorkspace.Create();
             var solution = workspace.OpenSolutionAsync(solutionFile).Result.GetIsolatedSolution();
 
+            InitClassNameAndMethodName(fileName, lineNumber);
+
+            if (startMethodDeclaration == null || startTypeDeclaration == null)
+            {
+                throw new Exception(string.Format("Can't find method in line: {0}", lineNumber));
+            }
+
+            forecastExecutor = new ForecastExecutor(solution);
+        }
+
+        private void InitClassNameAndMethodName(string fileName, int lineNumber)
+        {
             SourceText sourceText;
             using (var fileStream = new FileStream(fileName, FileMode.Open))
             {
@@ -43,7 +55,7 @@ namespace AV.Cyclone.Katrina.Executor
                         var methodDeclaration in typeDeclaration.DescendantNodes().OfType<MethodDeclarationSyntax>())
                     {
                         var line = fileSyntaxTree.GetLineSpan(methodDeclaration.FullSpan);
-                        if (line.StartLinePosition.Line >= lineNumber || line.EndLinePosition.Line <= lineNumber)
+                        if (lineNumber >= line.StartLinePosition.Line && lineNumber <= line.EndLinePosition.Line)
                         {
                             startMethodDeclaration = methodDeclaration.Identifier.Text;
                             startTypeDeclaration = namespaceDeclaration.Name + "." + typeDeclaration.Identifier.Text;
@@ -52,13 +64,6 @@ namespace AV.Cyclone.Katrina.Executor
                     }
                 }
             }
-
-            if (startMethodDeclaration == null || startTypeDeclaration == null)
-            {
-                throw new Exception(string.Format("Can't find method in line: {0}", lineNumber));
-            }
-
-            forecastExecutor = new ForecastExecutor(solution);
         }
 
         public void Start()
@@ -66,7 +71,7 @@ namespace AV.Cyclone.Katrina.Executor
             StartThread();
         }
 
-        public void FileUpdated(string fileName)
+        public void FileUpdated(string fileName, string content)
         {
         }
 
