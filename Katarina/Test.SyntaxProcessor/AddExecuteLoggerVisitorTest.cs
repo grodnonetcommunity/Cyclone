@@ -22,10 +22,10 @@ namespace Test.SyntaxProcessor
             var source = "var a = 0";
             var tree = ParseMethodBody(source);
 
-            var visitor = new AddExecuteLoggerVisitor();
+            var visitor = CreateAddExecuteLoggerVisitor();
             var newTree = visitor.Visit(tree);
 
-            Assert.AreEqual(@"var a = AV.Cyclone.Katrina.Executor.Context.ExecuteLogger.LogAssign(""a"","""",0,0);", newTree.ToString());
+            AreEqualCode(@"var a = LA(""a"","""",0,0);", newTree);
         }
 
         [Test]
@@ -34,10 +34,29 @@ namespace Test.SyntaxProcessor
             var source = "a = 0";
             var tree = ParseMethodBody(source);
 
-            var visitor = new AddExecuteLoggerVisitor();
+            var visitor = CreateAddExecuteLoggerVisitor();
             var newTree = visitor.Visit(tree);
 
-            Assert.AreEqual(@"a = AV.Cyclone.Katrina.Executor.Context.ExecuteLogger.LogAssign(""a"","""",0,0);", newTree.ToString());
+            AreEqualCode(@"a = LA(""a"","""",0,0);", newTree);
+        }
+            var newTree = visitor.Visit(tree);
+
+        private static AddExecuteLoggerVisitor CreateAddExecuteLoggerVisitor()
+        {
+            return new AddExecuteLoggerVisitor
+            {
+                LogAssignMember = "LA"
+            };
+        }
+
+        private static void AreEqualCode(string expected, SyntaxNode tree)
+        {
+            Assert.AreEqual(RemoveEmptyChars(expected), RemoveEmptyChars(tree.ToString()));
+        }
+
+        private static string RemoveEmptyChars(string value)
+        {
+            return value.Replace("\r\n", "").Replace(" ", "").Replace("\t", "");
         }
 
         private static StatementSyntax ParseMethodBody(string source)

@@ -7,6 +7,8 @@ namespace AV.Cyclone.Katrina.SyntaxProcessor
 {
     public class AddExecuteLoggerVisitor : CSharpSyntaxRewriter
     {
+        public string LogAssignMember { get; set; } = "AV.Cyclone.Katrina.Executor.Context.ExecuteLogger.LogAssign";
+
         public override SyntaxNode VisitVariableDeclarator(VariableDeclaratorSyntax node)
         {
             var variableName = node.Identifier.Text;
@@ -29,10 +31,10 @@ namespace AV.Cyclone.Katrina.SyntaxProcessor
             return node.Update(node.Left, node.OperatorToken, invocation);
         }
 
-        private static InvocationExpressionSyntax CreateLogAssignInvocationExpression(string variableName, string fileName,
+        private InvocationExpressionSyntax CreateLogAssignInvocationExpression(string variableName, string fileName,
             int lineNumber, ExpressionSyntax valueExpression)
         {
-            var memberAccess = CreateMemberAccess("AV.Cyclone.Katrina.Executor.Context.ExecuteLogger.LogAssign");
+            var memberAccess = CreateMemberAccess(LogAssignMember);
             var arguments = SyntaxFactory.ArgumentList(SyntaxFactory.SeparatedList(new[]
             {
                 SyntaxFactory.Argument(CreaetLiteral(variableName)),
