@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -39,18 +40,30 @@ namespace AV.Cyclone.Sandy.UITests
 			codeExecutor.Execute(projectName, files, "Test.Algorithms.BinarySerchTest", "LessOrEqualRequired");
 
 			InitializeComponent();
-			Execution execution = new Execution();
+			List<Execution> executions = new List<Execution>();
 
 			var t = executeLogger.MethodCalls.First().Value;
 
-			execution.Operations = t.First();
+			foreach (var operationList in t)
+			{
+				//Simulate double
+				executions.Add(new Execution
+				{
+					Operations = operationList
+				});
+				/*executions.Add(new Execution
+				{
+					Operations = operationList
+				});*/
+			}
 
-			UIGenerator generator = new UIGenerator(execution);
+			UIGenerator generator = new UIGenerator(executions);
 			TextBlocks.Text = File.ReadAllText("D:\\Projects\\GrandHackathon2015\\.TestSolution\\Algorithms\\BinarySearch.cs");
 			int numLines = TextBlocks.Text.Length - TextBlocks.Text.Replace(Environment.NewLine, string.Empty).Length;
+			var components = generator.GetOutputComponents("D:\\Projects\\GrandHackathon2015\\.TestSolution\\Algorithms\\BinarySearch.cs");
             for (int i = 0; i < numLines; i++)
 			{
-				UIElement element = generator.GetLine(i, "D:\\Projects\\GrandHackathon2015\\.TestSolution\\Algorithms\\BinarySearch.cs");
+				UIElement element = components[i];
 
 				
 				if (element != null)
