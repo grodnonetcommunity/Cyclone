@@ -19,6 +19,8 @@ namespace AV.Cyclone.Katrina.Executor
         private readonly string startMethodDeclaration;
         private readonly string startTypeDeclaration;
 
+        public event EventHandler Executed;
+
         public WeatherStation(string solutionFile, string projectName, string fileName, int lineNumber)
         {
             this.projectName = projectName;
@@ -64,6 +66,10 @@ namespace AV.Cyclone.Katrina.Executor
             StartThread();
         }
 
+        public void FileUpdated(string fileName)
+        {
+        }
+
         public Operation[][] GetOperations(string fileName)
         {
             return null;
@@ -95,10 +101,17 @@ namespace AV.Cyclone.Katrina.Executor
             codeExecutor.Execute(projectName, files, startTypeDeclaration, startMethodDeclaration);
 
             UpdateOperations(executeLogger.MethodCalls);
+
+            OnExecuted();
         }
 
         private void UpdateOperations(Dictionary<MethodReference, List<List<Operation>>> methodCalls)
         {
+        }
+
+        protected virtual void OnExecuted()
+        {
+            Executed?.Invoke(this, EventArgs.Empty);
         }
     }
 }
