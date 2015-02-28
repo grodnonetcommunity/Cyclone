@@ -39,7 +39,24 @@ namespace Test.SyntaxProcessor
 
             AreEqualCode(@"a = LA(""a"","""",0,0);", newTree);
         }
+
+        [Test]
+        public void WhileLoopTest()
+        {
+            var source = "while (true) {}";
+            var tree = ParseMethodBody(source);
+
+            var visitor = CreateAddExecuteLoggerVisitor();
             var newTree = visitor.Visit(tree);
+
+            var expected = @"{
+    BL("""", 0);
+    while (true) {}
+    EL("""");
+}";
+
+            AreEqualCode(expected, newTree);
+        }
 
         private static AddExecuteLoggerVisitor CreateAddExecuteLoggerVisitor()
         {
