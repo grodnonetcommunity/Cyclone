@@ -95,7 +95,7 @@ namespace AV.Cyclone.Sandy.Tests
 				FileName = "1",
 				LineNumber = 16,
 				VariableName = "high",
-				VariableValue = 5
+				VariableValue = 16
 			};
 
 			loopOperation.Operations.Add(1, new List<Operation>

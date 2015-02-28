@@ -25,14 +25,15 @@ namespace AV.Cyclone.Sandy.OperationParser
 		{
 			var result = new List<OutputItem>();
 			//TODO max width should also take ariable name into consideration
-			double maxWidth = CalculateMaxWidth(parent.Operations.SelectMany(o => o.Value).ToList());
+			double maxWidthValue = CalculateMaxWidth(parent.Operations.SelectMany(o => o.Value).ToList());
+			double maxWidthName = CalculateMaxWidth(parent.Operations.SelectMany(o => o.Value).ToList(), false);
 			//TODO: do it better
 			var firstAssign = operations.FirstOrDefault() as AssignOperation;
 			if (firstAssign != null)
 			{
 				var variableName = firstAssign.VariableName;
 				var variableNameSize = MeasureString(variableName, new TextBlock());
-				result.Add(new OutputItem(variableName, maxWidth - variableNameSize.Width));
+				result.Add(new OutputItem(variableName, maxWidthName - variableNameSize.Width));
 				result.Add(new OutputItem(EqualSign));
 			}
 			result.Add(new OutputItem(LoopSeparationToken));
@@ -49,7 +50,7 @@ namespace AV.Cyclone.Sandy.OperationParser
 
 				var variableSize = MeasureString(variableValueAsString, new TextBlock());
 
-				result.Add(new OutputItem(variableValueAsString, maxWidth - variableSize.Width));
+				result.Add(new OutputItem(variableValueAsString, maxWidthValue - variableSize.Width));
 				result.Add(new OutputItem(LoopSeparationToken));
 			}
 			return result;
@@ -87,10 +88,10 @@ namespace AV.Cyclone.Sandy.OperationParser
 				builder.Append(CloseBracket);
 				return builder.ToString();
 			}
-			var value = variableValue as IFormattable;
-			if (value != null)
+
+			if (variableValue != null)
 			{
-				return value.ToString();
+				return variableValue.ToString();
 			}
 
 			//TODO looks like this covers all potential stuff
@@ -99,7 +100,7 @@ namespace AV.Cyclone.Sandy.OperationParser
 			return string.Empty;
 		}
 
-		private double CalculateMaxWidth(IList<Operation> loopList)
+		private double CalculateMaxWidth(IList<Operation> loopList, bool useVariableValue = true)
 		{
 			double maxWidth = 0;
 			foreach (var operation in loopList)
@@ -108,9 +109,18 @@ namespace AV.Cyclone.Sandy.OperationParser
 				var assignOperation = operation as AssignOperation;
 				if (assignOperation != null)
 				{
-					maxWidth = Math.Max(maxWidth, 
-						MeasureString(GetVariableValueAsString(assignOperation.VariableValue), 
-						new TextBlock()).Width);
+					if (useVariableValue)
+					{
+						maxWidth = Math.Max(maxWidth,
+							MeasureString(GetVariableValueAsString(assignOperation.VariableValue),
+								new TextBlock()).Width);
+					}
+					else
+					{
+						maxWidth = Math.Max(maxWidth,
+							MeasureString(GetVariableValueAsString(assignOperation.VariableName),
+								new TextBlock()).Width);
+					}
 				}
 			}
 			return maxWidth;
