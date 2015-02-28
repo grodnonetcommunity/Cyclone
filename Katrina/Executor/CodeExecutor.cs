@@ -18,12 +18,15 @@ namespace AV.Cyclone.Katrina.Executor
             public EmitResult EmitResult { get; set; }
         }
 
-        private readonly List<CSharpCompilation> compilations = new List<CSharpCompilation>();
+        private readonly Dictionary<CSharpCompilation, CSharpCompilation> compilations = 
+            new Dictionary<CSharpCompilation, CSharpCompilation>();
         private List<CompilationEmitResult> compilationEmitResults;
 
-        public void AddCompilation(CSharpCompilation compilation)
+        public void AddCompilation(CSharpCompilation oldCompilation, CSharpCompilation newCompilation)
         {
-            compilations.Add(compilation);
+            if (oldCompilation == null)
+                oldCompilation = newCompilation;
+            compilations[oldCompilation] = newCompilation;
         }
 
         public void Emit()
@@ -33,7 +36,7 @@ namespace AV.Cyclone.Katrina.Executor
 
             compilationEmitResults = new List<CompilationEmitResult>(compilations.Count);
 
-            foreach (var compilation in compilations)
+            foreach (var compilation in compilations.Values)
             {
                 var assemblyPath = Path.Combine(tempDir, compilation.AssemblyName + ".dll");
                 // TODO: Store emit results
