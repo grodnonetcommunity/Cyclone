@@ -3,6 +3,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
+using AV.Cyclone.OutputPane;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
@@ -20,7 +21,8 @@ namespace AV.Cyclone.Margin
 
         protected override FrameworkElement CreatePreviewControl()
         {
-            OutputPaneView = OutputPaneView ?? new TextBox();
+            var model = new OutputPaneModel();
+            OutputPaneView = OutputPaneView ?? new OutputPaneView(model);
             return OutputPaneView;
         }
     }
