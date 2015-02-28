@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.Composition;
 using System.Diagnostics;
+using AV.Cyclone.Service;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Tagging;
@@ -28,7 +29,9 @@ namespace AV.Cyclone.EmtyLines
 
             var imageAdornmentManager =
                 textView.Properties.GetOrCreateSingletonProperty(
-                    () => new EmptyLineAdornmentManager((IWpfTextView) textView));
+                    () =>
+                        new EmptyLineAdornmentManager((IWpfTextView) textView,
+                            CycloneServiceProvider.GetCycloneService((IWpfTextView) textView)));
             return imageAdornmentManager as ITagger<T>;
         }
     }

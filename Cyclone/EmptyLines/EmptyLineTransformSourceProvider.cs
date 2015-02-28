@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.Composition;
+using AV.Cyclone.Service;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Formatting;
 using Microsoft.VisualStudio.Utilities;
@@ -12,7 +13,9 @@ namespace AV.Cyclone.EmtyLines
     {
         public ILineTransformSource Create(IWpfTextView textView)
         {
-            var manager = textView.Properties.GetOrCreateSingletonProperty(() => new EmptyLineAdornmentManager(textView));
+            var manager =
+                textView.Properties.GetOrCreateSingletonProperty(
+                    () => new EmptyLineAdornmentManager(textView, CycloneServiceProvider.GetCycloneService(textView)));
             return new EmptyLineTransformSource(manager);
         }
     }

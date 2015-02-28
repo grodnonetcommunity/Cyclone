@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using AV.Cyclone.Service;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace AV.Cyclone.OutputPane
@@ -12,7 +13,7 @@ namespace AV.Cyclone.OutputPane
         public OutputPaneModel(IWpfTextView sourceTextView)
         {
             SourceTextView = sourceTextView;
-            ViewObjectModel = new ViewObjectModel(NuberOfLines, LineHeight);
+            ViewObjectModel = new ViewObjectModel(NuberOfLines, LineHeight, CycloneServiceProvider.GetCycloneService(SourceTextView));
 
             ZoomLevel = SourceTextView.ZoomLevel;
         }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using AV.Cyclone.Service;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Formatting;
@@ -13,12 +14,40 @@ namespace AV.Cyclone.EmtyLines
         private bool _initialised1;
         private bool _initialised2;
         private readonly IWpfTextView _view;
+        private readonly ICycloneService _cycloneService;
 
-        public EmptyLineAdornmentManager(IWpfTextView view)
+        public EmptyLineAdornmentManager(IWpfTextView view, ICycloneService cycloneService)
         {
             _view = view;
+            _cycloneService = cycloneService;
             EmptyLines = new Dictionary<int, EmptyLine>();
             _view.LayoutChanged += ViewOnLayoutChanged;
+            _cycloneService.CycloneChanged += CycloneServiceOnCycloneChanged;
+        }
+
+        private void CycloneServiceOnCycloneChanged(object sender, CycloneEventArgs cycloneEventArgs)
+        {
+            if (cycloneEventArgs.EventType == CycloneEventsType.ExpandLines)
+            {
+                var data = cycloneEventArgs as ExpandLineEventArgs;
+                EmptyLine emptyLine;
+                if (data != null)
+                {
+                    var expandLineInfo = data.ExpandLineInfo;
+                    if (EmptyLines.TryGetValue(expandLineInfo.LineNumber, out emptyLine))
+                    {
+                        emptyLine.Height = expandLineInfo.PreferedSize;
+                    }
+                    else
+                    {
+                        EmptyLines.Add(expandLineInfo.LineNumber, new EmptyLine()
+                        {
+                            Height = expandLineInfo.PreferedSize
+                        });
+                    }
+                    Render();
+                }
+            }
         }
 
         public Dictionary<int, EmptyLine> EmptyLines { get; set; }
@@ -35,6 +64,11 @@ namespace AV.Cyclone.EmtyLines
         public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
 
         private void ViewOnLayoutChanged(object sender, TextViewLayoutChangedEventArgs textViewLayoutChangedEventArgs)
+        {
+            Render();
+        }
+
+        private void Render()
         {
             TagsChanged?.Invoke(this,
                 new SnapshotSpanEventArgs(new SnapshotSpan(_view.TextSnapshot,
@@ -69,16 +103,7 @@ namespace AV.Cyclone.EmtyLines
 
         private void CreateVisuals(ITextViewLine line, int lineNumber)
         {
-            if (lineNumber == 9)
-            {
-                if (!EmptyLines.ContainsKey(lineNumber))
-                {
-                    EmptyLines.Add(lineNumber, new EmptyLine
-                    {
-                        Height = 16*3
-                    });
-                }
-            }
+            
         }
     }
 }

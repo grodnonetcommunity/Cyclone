@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using AV.Cyclone.Annotations;
+using AV.Cyclone.Service;
 
 namespace AV.Cyclone.OutputPane
 {
@@ -13,11 +14,17 @@ namespace AV.Cyclone.OutputPane
     {
         private readonly double _lineHeight;
         private readonly int _numberOfLines;
+        private readonly ICycloneService _cycloneService;
 
         public ViewObjectModel(int numberOfLines, double lineHeight)
         {
             _numberOfLines = numberOfLines;
             _lineHeight = lineHeight;
+        }
+
+        public ViewObjectModel(int numberOfLines, double lineHeight, ICycloneService cycloneService) : this(numberOfLines, lineHeight)
+        {
+            this._cycloneService = cycloneService;
             Init();
         }
 
@@ -51,13 +58,15 @@ namespace AV.Cyclone.OutputPane
                 var tb = new TextBlock();
                 tb.Text = "line: " + (i + 1);
 
-//                if (i == 10)
-//                {
-//                    tb.Height = 50;
-//                    tb.Background = Brushes.Red;
-//                    Elements.Add(tb);
-//                    continue;
-//                }
+                //if (i == 10)
+                //{
+                //    var newHeigth = 50;
+                //    tb.Height = newHeigth;
+                //    tb.Background = Brushes.Red;
+                //    Elements.Add(tb);
+                //    _cycloneService.ExpandLine(i, newHeigth);
+                //    continue;
+                //}
 
                 tb.Height = _lineHeight;
                 if (i%2 == 0)

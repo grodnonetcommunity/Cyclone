@@ -122,8 +122,7 @@ namespace AV.Cyclone
             }
             //var name = Dte.ActiveDocument.ProjectItem.ContainingProject.Name;
 
-            ICycloneService cycloneService = viewHost.TextView.Properties.GetOrCreateSingletonProperty
-                (() => new CycloneService());
+            ICycloneService cycloneService = CycloneServiceProvider.GetCycloneService(viewHost.TextView);
 
             return cycloneService;
         }

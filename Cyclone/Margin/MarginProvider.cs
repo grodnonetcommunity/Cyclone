@@ -22,17 +22,11 @@ namespace AV.Cyclone.Margin
     {
         public IWpfTextViewMargin CreateMargin(IWpfTextViewHost wpfTextViewHost, IWpfTextViewMargin containerMargin)
         {
-            var cycloneService = GetCycloneManager(wpfTextViewHost);
+            var cycloneService = CycloneServiceProvider.GetCycloneService(wpfTextViewHost.TextView);
 
             var wpfTextView = wpfTextViewHost.TextView;
 
             return new Margin(wpfTextView, cycloneService);
-        }
-
-        private static ICycloneService GetCycloneManager(IWpfTextViewHost wpfTextViewHost)
-        {
-            return wpfTextViewHost.TextView.Properties.GetOrCreateSingletonProperty
-                (() => new CycloneService());
         }
     }
 
