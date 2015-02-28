@@ -68,12 +68,12 @@ namespace AV.Cyclone.Sandy.OperationParser
 			textBlock.Inlines.AddRange(runs);
 		}
 
-		internal void SearchOperation(int lineNumber, 
+		public void SearchOperation(int lineNumber, 
 			[NotNull]IList<Operation> operations, 
 			[NotNull]IList<Operation> results,[NotNull] string fileName)
 		{
 			foreach (var operation in operations
-				.Where(o => o.FileName.Equals(fileName)))
+				.Where(o => o.FileName == fileName))
 			{
 				if (operation.LineNumber == lineNumber)
 				{
