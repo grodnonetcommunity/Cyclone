@@ -52,7 +52,7 @@ namespace Test.SyntaxProcessor
             var expected = @"{
     BL("""", 0);
     while (true) {}
-    EL("""");
+    EL("""", 0);
 }";
 
             AreEqualCode(expected, newTree);
@@ -62,7 +62,9 @@ namespace Test.SyntaxProcessor
         {
             return new AddExecuteLoggerVisitor
             {
-                LogAssignMember = "LA"
+                LogAssignMember = "LA",
+                BeginLoopMember = "BL",
+                EndLoopMember = "EL"
             };
         }
 

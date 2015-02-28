@@ -9,13 +9,15 @@ namespace AV.Cyclone.Katrina.SyntaxProcessor
     {
         public string LogAssignMember { get; set; } = "AV.Cyclone.Katrina.Executor.Context.ExecuteLogger.LogAssign";
 
+        public string BeginLoopMember { get; set; } = "AV.Cyclone.Katrina.Executor.Context.ExecuteLogger.BeginLoop";
+
+        public string EndLoopMember { get; set; } = "AV.Cyclone.Katrina.Executor.Context.ExecuteLogger.EndLoop";
+
         public override SyntaxNode VisitVariableDeclarator(VariableDeclaratorSyntax node)
         {
             var variableName = node.Identifier.Text;
-            var fileName = node.SyntaxTree.FilePath;
-            var lineNumber = node.SyntaxTree.GetLineSpan(node.Span).StartLinePosition.Line;
 
-            var invocation = CreateLogAssignInvocationExpression(variableName, fileName, lineNumber, node.Initializer.Value);
+            var invocation = CreateLogAssignInvocationExpression(node, variableName, node.Initializer.Value);
 
             return node.Update(node.Identifier, node.ArgumentList, node.Initializer.Update(node.Initializer.EqualsToken, invocation));
         }
@@ -23,12 +25,30 @@ namespace AV.Cyclone.Katrina.SyntaxProcessor
         public override SyntaxNode VisitAssignmentExpression(AssignmentExpressionSyntax node)
         {
             var variableName = node.Left.ToString();
+
+            var invocation = CreateLogAssignInvocationExpression(node, variableName, node.Right);
+
+            return node.Update(node.Left, node.OperatorToken, invocation);
+        }
+
+        public override SyntaxNode VisitWhileStatement(WhileStatementSyntax node)
+        {
+            var beginLoopInvocation = CreateBeginLoopInvocationExpression(node);
+            var endLoopInvocation = CreateEndLoopInvocationExpression(node);
+
+            return SyntaxFactory.Block(
+                SyntaxFactory.ExpressionStatement(beginLoopInvocation),
+                (StatementSyntax)base.VisitWhileStatement(node),
+                SyntaxFactory.ExpressionStatement(endLoopInvocation));
+        }
+
+        private InvocationExpressionSyntax CreateLogAssignInvocationExpression(SyntaxNode node, string variableName,
+            ExpressionSyntax valueExpression)
+        {
             var fileName = node.SyntaxTree.FilePath;
             var lineNumber = node.SyntaxTree.GetLineSpan(node.Span).StartLinePosition.Line;
 
-            var invocation = CreateLogAssignInvocationExpression(variableName, fileName, lineNumber, node.Right);
-
-            return node.Update(node.Left, node.OperatorToken, invocation);
+            return CreateLogAssignInvocationExpression(variableName, fileName, lineNumber, valueExpression);
         }
 
         private InvocationExpressionSyntax CreateLogAssignInvocationExpression(string variableName, string fileName,
@@ -41,6 +61,44 @@ namespace AV.Cyclone.Katrina.SyntaxProcessor
                 SyntaxFactory.Argument(CreaetLiteral(fileName)),
                 SyntaxFactory.Argument(CreateLiteral(lineNumber)),
                 SyntaxFactory.Argument(valueExpression)
+            }));
+            return SyntaxFactory.InvocationExpression(memberAccess, arguments);
+        }
+
+        private InvocationExpressionSyntax CreateBeginLoopInvocationExpression(SyntaxNode node)
+        {
+            var fileName = node.SyntaxTree.FilePath;
+            var lineNumber = node.SyntaxTree.GetLineSpan(node.Span).StartLinePosition.Line;
+
+            return CreateBeginLoopInvocationExpression(fileName, lineNumber);
+        }
+
+        private InvocationExpressionSyntax CreateBeginLoopInvocationExpression(string fileName, int lineNumber)
+        {
+            var memberAccess = CreateMemberAccess(BeginLoopMember);
+            var arguments = SyntaxFactory.ArgumentList(SyntaxFactory.SeparatedList(new[]
+            {
+                SyntaxFactory.Argument(CreaetLiteral(fileName)),
+                SyntaxFactory.Argument(CreateLiteral(lineNumber)),
+            }));
+            return SyntaxFactory.InvocationExpression(memberAccess, arguments);
+        }
+
+        private InvocationExpressionSyntax CreateEndLoopInvocationExpression(SyntaxNode node)
+        {
+            var fileName = node.SyntaxTree.FilePath;
+            var lineNumber = node.SyntaxTree.GetLineSpan(node.Span).StartLinePosition.Line;
+
+            return CreateEndLoopInvocationExpression(fileName, lineNumber);
+        }
+
+        private InvocationExpressionSyntax CreateEndLoopInvocationExpression(string fileName, int lineNumber)
+        {
+            var memberAccess = CreateMemberAccess(EndLoopMember);
+            var arguments = SyntaxFactory.ArgumentList(SyntaxFactory.SeparatedList(new[]
+            {
+                SyntaxFactory.Argument(CreaetLiteral(fileName)),
+                SyntaxFactory.Argument(CreateLiteral(lineNumber)),
             }));
             return SyntaxFactory.InvocationExpression(memberAccess, arguments);
         }
