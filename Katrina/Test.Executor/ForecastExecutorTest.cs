@@ -53,10 +53,9 @@ class Class
             }
             var executeLogger = new MockExecuteLogger();
             codeExecutor.SetExecuteLogger(executeLogger);
-            codeExecutor.Emit();
             codeExecutor.Execute("Project2", "Class", "Method");
 
-            CollectionAssert.AreEqual(new[] { "a = 1", "b = 1" }, executeLogger.assigns);
+            CollectionAssert.AreEqual(new[] { "a = 1", "b = 2" }, executeLogger.assigns);
         }
     }
 }
