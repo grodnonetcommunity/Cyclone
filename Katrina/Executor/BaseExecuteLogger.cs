@@ -9,15 +9,15 @@ namespace AV.Cyclone.Katrina.Executor
             return value;
         }
 
-        public void BeginLoop(string fileName, int lineNumber)
+        public virtual void BeginLoop(string fileName, int lineNumber)
         {
         }
 
-        public void LoopIteration(string fileName, int lineNumber)
+        public virtual void LoopIteration(string fileName, int lineNumber)
         {
         }
 
-        public void EndLoop(string fileName, int lineNumber)
+        public virtual void EndLoop(string fileName, int lineNumber)
         {
         }
     }

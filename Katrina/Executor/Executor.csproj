@@ -91,6 +91,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Sandy\Models\Sandy.Models.csproj">
+      <Project>{1EC05C9F-3034-4313-A94E-98ED1490D688}</Project>
+      <Name>Sandy.Models</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Executor.Interfaces\Executor.Interfaces.csproj">
       <Project>{FA9622F9-ABCB-4BCB-A337-CA11AF9546BA}</Project>
       <Name>Executor.Interfaces</Name>
