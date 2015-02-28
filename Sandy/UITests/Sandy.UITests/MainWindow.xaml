@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Sandy.UITests"
         mc:Ignorable="d">
-	<StackPanel x:Name="MainPanel">
+	<StackPanel x:Name="MainPanel" Grid.IsSharedSizeScope="True">
 		
 	</StackPanel>
 </Window>

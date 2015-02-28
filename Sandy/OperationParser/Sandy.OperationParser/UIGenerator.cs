@@ -7,6 +7,7 @@ using System.Runtime.Remoting.Messaging;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
+using System.Windows.Media;
 using AV.Cyclone.Sandy.Models;
 using AV.Cyclone.Sandy.Models.Operations;
 using JetBrains.Annotations;
@@ -90,19 +91,49 @@ namespace AV.Cyclone.Sandy.OperationParser
 
 		private void AppendTextBlockLine(Panel baseElement, IList<OutputItem> runs)
 		{
-			StackPanel horizontalPanel = new StackPanel();
-			horizontalPanel.Orientation = Orientation.Horizontal;
-			foreach (var run in runs)
+			Grid grid = new Grid();
+
+			grid.RowDefinitions.Add(new RowDefinition());
+			foreach (var outputItem in runs)
 			{
+				grid.ColumnDefinitions.Add(new ColumnDefinition
+				{
+					SharedSizeGroup = outputItem.MeasureGroup.ToString(),
+					Width = GridLength.Auto
+				});
+			}
+
+			for (int i = 0; i < runs.Count; i++)
+			{
+				var run = runs[i];
 				TextBlock textBlock = new TextBlock
 				{
+					HorizontalAlignment = HorizontalAlignment.Stretch,
 					Text = run.Output,
-					Margin = new Thickness(run.MarginLeft, 0, 0, 0)
+					Padding = new Thickness(1)
 				};
-				horizontalPanel.Children.Add(textBlock);
+
+				if (run.MeasureGroup == MeasureGroup.VariableValuesCycle)
+				{
+					textBlock.TextAlignment = TextAlignment.Center;
+					Border border = new Border
+					{
+						HorizontalAlignment = HorizontalAlignment.Stretch,
+						BorderThickness = new Thickness(1),
+						BorderBrush = new SolidColorBrush(Colors.Black)
+					};
+					border.Child = textBlock;
+					grid.Children.Add(border);
+					Grid.SetColumn(border, i);
+				}
+				else
+				{
+					grid.Children.Add(textBlock);
+					Grid.SetColumn(textBlock, i);
+				}
 			}
 			
-			baseElement.Children.Add(horizontalPanel);
+			baseElement.Children.Add(grid);
 		}
 
 		public void SearchOperation(int lineNumber, 
