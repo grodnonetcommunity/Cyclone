@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CommandTable xmlns="http://schemas.microsoft.com/VisualStudio/2005-10-18/CommandTable" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+ 
+  <Commands package="guidCyclonePkg">
+  </Commands>
+  
+  <Symbols>
+    <!-- This is the package guid. -->
+    <GuidSymbol name="guidCyclonePkg" value="{90692408-765a-405e-927a-a8eaebe81bbd}" />
+
+    <GuidSymbol name="guidCycloneCmdSetString" value="{446a9d89-6688-41bc-b98d-754008cf9883}">
+    </GuidSymbol>
+  </Symbols>
+
+</CommandTable>
