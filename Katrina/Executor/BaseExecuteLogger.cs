@@ -20,5 +20,13 @@ namespace AV.Cyclone.Katrina.Executor
         public virtual void EndLoop(string fileName, int lineNumber)
         {
         }
+
+        public virtual void BeginMethod(string methodName, string fileName, int lineNumber)
+        {
+        }
+
+        public virtual void EndMethod(string methodName, string fileName, int lineNumber)
+        {
+        }
     }
 }

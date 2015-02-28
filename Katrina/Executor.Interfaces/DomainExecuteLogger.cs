@@ -16,6 +16,16 @@ namespace AV.Cyclone.Katrina.Executor.Interfaces
             return executeLogger.LogAssign(expression, fileNme, lineNumber, value);
         }
 
+        public void BeginMethod(string methodName, string fileName, int lineNumber)
+        {
+            executeLogger.BeginMethod(methodName, fileName, lineNumber);
+        }
+
+        public void EndMethod(string methodName, string fileName, int lineNumber)
+        {
+            executeLogger.EndMethod(methodName, fileName, lineNumber);
+        }
+
         public void BeginLoop(string fileName, int lineNumber)
         {
             executeLogger.BeginLoop(fileName, lineNumber);

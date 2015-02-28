@@ -13,19 +13,24 @@ namespace Test.Executor
             return value;
         }
 
+        public void BeginMethod(string methodName, string fileName, int lineNumber)
+        {
+        }
+
+        public void EndMethod(string methodName, string fileName, int lineNumber)
+        {
+        }
+
         public void BeginLoop(string fileName, int lineNumber)
         {
-            //throw new System.NotImplementedException();
         }
 
         public void LoopIteration(string fileName, int lineNumber)
         {
-            //throw new System.NotImplementedException();
         }
 
         public void EndLoop(string fileName, int lineNumber)
         {
-            //throw new System.NotImplementedException();
         }
     }
 }
