@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{293805D7-C134-41F2-9A91-D75C3A9A4351}</ProjectGuid>
+    <ProjectGuid>{6F280E7F-1D20-4780-839F-8F799C6DE089}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>AV.Cyclone.Katrina.SyntaxProcessor</RootNamespace>
-    <AssemblyName>Katrina.SyntaxProcessor</AssemblyName>
+    <RootNamespace>Test.SyntaxProcessor</RootNamespace>
+    <AssemblyName>Test.SyntaxProcessor</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -54,6 +54,9 @@
     <Reference Include="Microsoft.CodeAnalysis.Workspaces.Desktop">
       <HintPath>..\..\packages\Microsoft.CodeAnalysis.Workspaces.Common.1.0.0-rc1\lib\net45\Microsoft.CodeAnalysis.Workspaces.Desktop.dll</HintPath>
     </Reference>
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Collections.Immutable, Version=1.1.33.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -85,11 +88,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AddExecuteLoggerVisitor.cs" />
+    <Compile Include="AddExecuteLoggerVisitorTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Katrina\SyntaxProcessor\SyntaxProcessor.csproj">
+      <Project>{293805D7-C134-41F2-9A91-D75C3A9A4351}</Project>
+      <Name>SyntaxProcessor</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
