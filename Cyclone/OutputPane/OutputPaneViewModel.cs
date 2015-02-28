@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 using AV.Cyclone.Annotations;
 using Microsoft.VisualStudio.Text.Editor;
@@ -15,12 +16,16 @@ namespace AV.Cyclone.OutputPane
         public OutputPaneModel Model { get; set; }
         private readonly OutputPaneView _view;
 
+        private bool[] IsInitMarginSet;
+
         public OutputPaneViewModel(OutputPaneView view, OutputPaneModel model)
         {
             _view = view;
             Model = model;
 
             _view.ItemsControl.ItemsSource = Model.ViewObjectModel;
+
+            IsInitMarginSet = new bool[Model.ViewObjectModel.Elements.Count];
 
             Subscribe();
         }
@@ -91,6 +96,7 @@ namespace AV.Cyclone.OutputPane
 
         public void ScrollTo(int sourceLineNumber, IWpfTextViewLine sourceFirstLine)
         {
+            UpdateVisibleLinesHeight(sourceLineNumber, sourceFirstLine);
             var shift = sourceFirstLine.Top - sourceFirstLine.VisibleArea.Y;
             if (shift < 0)
             {
@@ -106,22 +112,25 @@ namespace AV.Cyclone.OutputPane
             _view.OutputPaneScrollViewer.ScrollToVerticalOffset(offset);
         }
 
-        private void UpdateVisibleLinesHeight(int lineNumber)
+        private void UpdateVisibleLinesHeight(int sourceLineNumber, IWpfTextViewLine sourceFirstLine)
         {
-            var viewObjects = Model.ViewObjectModel;
-            for (var i = 0; i < lineNumber; i++)
+            var nominalLineHeight = Model.SourceTextView.LineHeight;
+            var viewLines = Model.SourceTextView.TextViewLines;
+
+            for (int i = 0; i < viewLines.Count; i++)
             {
-                viewObjects[i].Height = Model.LineHeight;
-            }
-            var sourceLines = Model.SourceTextView.TextViewLines;
-            for (var i = lineNumber; i < lineNumber + sourceLines.Count - 1; i++)
-            {
-                // don't know why indexes are broken
-                if (i == 0)
+                var lineHeight = viewLines[i].Height;
+                var topAdormentHeight = lineHeight - nominalLineHeight;
+                var index = i + sourceLineNumber - 1;
+                if (index < 0 || IsInitMarginSet[index])
                 {
                     continue;
                 }
-                viewObjects[i - 1].Height = sourceLines[i - lineNumber].Height;
+                var tb = (TextBlock)Model.ViewObjectModel.Elements[index];
+                Model.ViewObjectModel.SetAdorment(index);
+                IsInitMarginSet[index] = true;
+                tb.Padding = new Thickness(0, topAdormentHeight, 0, 0);
+                tb.Height += topAdormentHeight;
             }
         }
     }

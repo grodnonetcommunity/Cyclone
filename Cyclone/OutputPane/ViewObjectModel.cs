@@ -1,12 +1,15 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using AV.Cyclone.Annotations;
 using AV.Cyclone.Service;
+using Microsoft.VisualStudio.Text.Editor;
 
 namespace AV.Cyclone.OutputPane
 {
@@ -53,6 +56,7 @@ namespace AV.Cyclone.OutputPane
         private void Init()
         {
             Elements = new ObservableCollection<FrameworkElement>();
+            Random rnd = new Random();
             for (var i = 0; i < _numberOfLines; i++)
             {
                 var tb = new TextBlock();
@@ -68,7 +72,7 @@ namespace AV.Cyclone.OutputPane
                 //    continue;
                 //}
 
-                tb.Height = _lineHeight;
+                tb.Height = rnd.Next(20, 100);
                 if (i%2 == 0)
                 {
                     tb.Background = Brushes.LightGray;
@@ -79,6 +83,11 @@ namespace AV.Cyclone.OutputPane
                 }
                 Elements.Add(tb);
             }
+        }
+
+        public void SetAdorment(int lineIndex)
+        {
+            _cycloneService.ExpandLine(lineIndex, this[lineIndex].Height - _lineHeight);
         }
 
         [NotifyPropertyChangedInvocator]
