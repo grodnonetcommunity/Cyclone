@@ -65,14 +65,9 @@ class Class
         public void RealSolutionTest()
         {
             var solutionPath = @"..\..\.TestSolution\TestSolution.sln";
-            RealSolutionTest(solutionPath);
-        }
-
-        public void RealSolutionTest(string solutionPath, [CallerFilePath]string fileName = null)
-        {
             var projectName = "Test.Algorithms";
+            var realSolutionPath = GetSolutionPath(solutionPath);
 
-            var realSolutionPath = Path.Combine(Path.GetDirectoryName(fileName), solutionPath);
             var workspace = MSBuildWorkspace.Create();
             var solution = workspace.OpenSolutionAsync(realSolutionPath).Result.GetIsolatedSolution();
 
@@ -88,6 +83,11 @@ class Class
             codeExecutor.Execute(projectName, files, "Test.Algorithms.BinarySerchTest", "LessOrEqualRequired");
 
             // TODO: Add some asserts
+        }
+
+        public string GetSolutionPath(string solutionPath, [CallerFilePath] string fileName = null)
+        {
+            return Path.Combine(Path.GetDirectoryName(fileName), solutionPath);
         }
     }
 }
