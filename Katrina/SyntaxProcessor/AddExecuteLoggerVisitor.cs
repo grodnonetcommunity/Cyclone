@@ -10,12 +10,23 @@ namespace AV.Cyclone.Katrina.SyntaxProcessor
         public override SyntaxNode VisitVariableDeclarator(VariableDeclaratorSyntax node)
         {
             var variableName = node.Identifier.Text;
-            var fileName = node.Identifier.SyntaxTree.FilePath;
-            var lineNumber = node.Identifier.SyntaxTree.GetLineSpan(node.Identifier.Span).StartLinePosition.Line;
+            var fileName = node.SyntaxTree.FilePath;
+            var lineNumber = node.SyntaxTree.GetLineSpan(node.Span).StartLinePosition.Line;
 
             var invocation = CreateLogAssignInvocationExpression(variableName, fileName, lineNumber, node.Initializer.Value);
 
             return node.Update(node.Identifier, node.ArgumentList, node.Initializer.Update(node.Initializer.EqualsToken, invocation));
+        }
+
+        public override SyntaxNode VisitAssignmentExpression(AssignmentExpressionSyntax node)
+        {
+            var variableName = node.Left.ToString();
+            var fileName = node.SyntaxTree.FilePath;
+            var lineNumber = node.SyntaxTree.GetLineSpan(node.Span).StartLinePosition.Line;
+
+            var invocation = CreateLogAssignInvocationExpression(variableName, fileName, lineNumber, node.Right);
+
+            return node.Update(node.Left, node.OperatorToken, invocation);
         }
 
         private static InvocationExpressionSyntax CreateLogAssignInvocationExpression(string variableName, string fileName,
