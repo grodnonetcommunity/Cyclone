@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Katrina.SyntaxProcessor", "
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Katrina", "Katrina", "{ED2644FD-9E00-4264-B59D-D244ECC7004B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Katrina.Executor", "Katrina\Katrina.Executor\Katrina.Executor.csproj", "{5530B901-F932-4C51-9230-8008423FFFB7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,11 +25,16 @@ Global
 		{293805D7-C134-41F2-9A91-D75C3A9A4351}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{293805D7-C134-41F2-9A91-D75C3A9A4351}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{293805D7-C134-41F2-9A91-D75C3A9A4351}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5530B901-F932-4C51-9230-8008423FFFB7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5530B901-F932-4C51-9230-8008423FFFB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5530B901-F932-4C51-9230-8008423FFFB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5530B901-F932-4C51-9230-8008423FFFB7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{293805D7-C134-41F2-9A91-D75C3A9A4351} = {ED2644FD-9E00-4264-B59D-D244ECC7004B}
+		{5530B901-F932-4C51-9230-8008423FFFB7} = {ED2644FD-9E00-4264-B59D-D244ECC7004B}
 	EndGlobalSection
 EndGlobal
