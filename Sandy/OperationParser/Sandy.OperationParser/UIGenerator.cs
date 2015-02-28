@@ -59,10 +59,10 @@ namespace AV.Cyclone.Sandy.OperationParser
 								replaced.Add(element);
 							}
 						}
-						panel.Children.Clear();
 						foreach (var element in replaced)
 						{
-							Border border = new Border
+							panel.Children.Remove(element);
+                            Border border = new Border
 							{
 								BorderThickness = new Thickness(0, 0, 1, 0),
 								BorderBrush = new SolidColorBrush(Colors.Black)
