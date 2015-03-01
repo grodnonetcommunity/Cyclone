@@ -47,13 +47,10 @@ class Class
 
             var forecastExecutor = new ForecastExecutor(workspace.CurrentSolution);
             forecastExecutor.SetStartupProject("Project2");
-            var compilations = forecastExecutor.GetCompilations();
+            var forecastItems = forecastExecutor.GetForecast();
 
             var codeExecutor = new CodeExecutor();
-            foreach (var compilation in compilations)
-            {
-                codeExecutor.AddCompilation(null, compilation);
-            }
+            codeExecutor.Init(forecastItems);
             var executeLogger = new MockExecuteLogger();
             codeExecutor.SetExecuteLogger(executeLogger);
             codeExecutor.Execute("Project2", null, "Class", "Method");
@@ -73,11 +70,11 @@ class Class
 
             var forecastExecutor = new ForecastExecutor(solution);
             forecastExecutor.SetStartupProject(projectName);
-            var compilations = forecastExecutor.GetCompilations();
+            var forecastItems = forecastExecutor.GetForecast();
             var files = forecastExecutor.GetReferences();
 
             var codeExecutor = new CodeExecutor();
-            codeExecutor.AddCompilations(compilations);
+            codeExecutor.Init(forecastItems);
             var executeLogger = new MockExecuteLogger();
             codeExecutor.SetExecuteLogger(executeLogger);
             codeExecutor.Execute(projectName, files, "Test.Algorithms.BinarySerchTest", "LessOrEqualRequired");

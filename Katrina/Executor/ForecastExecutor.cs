@@ -47,12 +47,23 @@ namespace AV.Cyclone.Katrina.Executor
 
         public bool HasSyntaxErrors { get; private set; }
 
-        public CSharpCompilation[] GetCompilations()
+        public List<ForecastItem> GetForecast()
         {
-            if (HasSyntaxErrors) return null;
-            return projectMapping.Values
-                .Select(p => (CSharpCompilation)p.GetCompilationAsync().Result)
-                .ToArray();
+            var result = new List<ForecastItem>();
+            foreach (var project in projectMapping.Values)
+            {
+                var compilation = project.GetCompilationAsync().Result;
+                foreach (var document in project.Documents)
+                {
+                    var forecastItem = new ForecastItem
+                    {
+                        SyntaxTree = document.GetSyntaxTreeAsync().Result,
+                        Compilation = (CSharpCompilation)compilation
+                    };
+                    result.Add(forecastItem);
+                }
+            }
+            return result;
         }
 
         public string[] GetReferences()

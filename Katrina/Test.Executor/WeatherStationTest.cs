@@ -29,6 +29,36 @@ namespace Test.Executor
             Assert.NotNull(operations);
         }
 
+        [Test]
+        public void SolutionTestWithChanged()
+        {
+            var solutionPath = @"..\..\.TestSolution\TestSolution.sln";
+            var testPath = @"..\..\.TestSolution\Test.Algorithms\BinarySerchTest.cs";
+
+            var filePath = @"..\..\.TestSolution\Algorithms\BinarySearch.cs";
+            var fileChangedPath = @"..\..\.TestSolution\Algorithms\BinarySearchChanged.cs";
+            var projectName = "Test.Algorithms";
+
+            var solutionFullPath = GetFullFileName(solutionPath);
+            var testFullPath = GetFullFileName(testPath);
+
+            var fileFullPath = GetFullFileName(filePath);
+            var fileChangedFullPath = GetFullFileName(fileChangedPath);
+
+            var weatherStation = new WeatherStation(solutionFullPath, "Test.Algorithms", testFullPath, 14);
+            var resetEvent = new ManualResetEvent(false);
+            weatherStation.Executed += (sender, args) => resetEvent.Set();
+            weatherStation.Start();
+            resetEvent.WaitOne();
+            resetEvent.Reset();
+
+            weatherStation.FileUpdated(fileFullPath, File.ReadAllText(fileChangedFullPath));
+            resetEvent.WaitOne();
+
+            var operations = weatherStation.GetOperations(testFullPath);
+            Assert.NotNull(operations);
+        }
+
         public string GetFullFileName(string solutionPath, [CallerFilePath] string fileName = null)
         {
             var result = new StringBuilder();
