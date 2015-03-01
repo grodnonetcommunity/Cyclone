@@ -23,6 +23,7 @@ namespace AV.Cyclone.Katrina.Executor
         private bool disposed;
         private Thread backgroundThread;
         private readonly AutoResetEvent waitChanges = new AutoResetEvent(false);
+        private CodeExecutor codeExecutor;
 
         public event EventHandler Executed;
 
@@ -78,6 +79,7 @@ namespace AV.Cyclone.Katrina.Executor
 
         public void FileUpdated(string fileName, string content)
         {
+            codeExecutor.UpdateFile(fileName, content);
             waitChanges.Set();
         }
 
@@ -99,6 +101,11 @@ namespace AV.Cyclone.Katrina.Executor
 
         private void BackgroundExecutor()
         {
+            forecastExecutor.SetStartupProject(projectName);
+
+            codeExecutor = new CodeExecutor();
+            codeExecutor.Init(forecastExecutor.GetForecast());
+
             do
             {
                 Execute();
@@ -108,13 +115,8 @@ namespace AV.Cyclone.Katrina.Executor
 
         private void Execute()
         {
-            forecastExecutor.SetStartupProject(projectName);
-            var forecastItems = forecastExecutor.GetForecast();
-            if (forecastItems == null) return;
             var files = forecastExecutor.GetReferences();
 
-            var codeExecutor = new CodeExecutor();
-            codeExecutor.Init(forecastItems);
             var executeLogger = new OperationsExecuteLogger();
             codeExecutor.SetExecuteLogger(executeLogger);
             codeExecutor.Execute(projectName, files, startTypeDeclaration, startMethodDeclaration);

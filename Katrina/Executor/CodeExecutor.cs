@@ -28,9 +28,10 @@ namespace AV.Cyclone.Katrina.Executor
         public void Init(IEnumerable<ForecastItem> items)
         {
             compilations.Clear();
+            forecastItems.Clear();
             foreach (var forecastItem in items)
             {
-                forecastItems.Add(forecastItem.SyntaxTree.FilePath, forecastItem);
+                forecastItems[forecastItem.SyntaxTree.FilePath] = forecastItem;
                 compilations.Add(forecastItem.Compilation);
             }
         }
@@ -39,7 +40,7 @@ namespace AV.Cyclone.Katrina.Executor
         {
             ForecastItem forecastItem;
             if (!forecastItems.TryGetValue(fileName, out forecastItem)) return;
-            var newSyntaxTree = CSharpSyntaxTree.ParseText(content);
+            var newSyntaxTree = CSharpSyntaxTree.ParseText(content).WithFilePath(fileName);
             if (newSyntaxTree.GetDiagnostics().Any(d => d.Severity == DiagnosticSeverity.Error)) return;
 
             var oldCompilation = forecastItem.Compilation;
