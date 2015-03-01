@@ -11,7 +11,7 @@
 			<ColumnDefinition Width="*"/>
 		</Grid.ColumnDefinitions>
 		<TextBlock x:Name="TextBlocks"/>
-		<StackPanel Grid.Column="1" x:Name="MainPanel" Grid.IsSharedSizeScope="True"/>
+		<StackPanel Grid.Column="1" x:Name="MainPanel" Grid.IsSharedSizeScope="True" Margin="1"/>
 	</Grid>
 	
 </Window>

@@ -38,12 +38,8 @@ namespace AV.Cyclone.Sandy.OperationParser
 			for (int i = 0; i < parent.GetTotalNumberOfIteration; i++)
 			{
 				//TODO for now only assign operations are supported
-				string variableValueAsString = string.Empty;
 				var singleAssignValue = operations.FirstOrDefault(v => v.IterationNumber == i) as AssignOperation;
-				if (singleAssignValue != null)
-				{
-					variableValueAsString = GetVariableValueAsString(singleAssignValue.VariableValue);
-				}
+				var variableValueAsString = GetVariableValueAsString(singleAssignValue?.VariableValue);
 
 				result.Add(new OutputItem(
 					variableValueAsString, 
@@ -71,7 +67,7 @@ namespace AV.Cyclone.Sandy.OperationParser
 			var valueList = variableValue as IList;
 			if(valueList != null)
             {
-				StringBuilder builder = new StringBuilder();
+				var builder = new StringBuilder();
 				builder.Append(OpenBracket);
 
 	            for (int i = 0; i < valueList.Count; i++)

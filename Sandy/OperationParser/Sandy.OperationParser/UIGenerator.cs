@@ -30,11 +30,11 @@ namespace AV.Cyclone.Sandy.OperationParser
 			Dictionary<int, StackPanel> uiComponents = new Dictionary<int, StackPanel>();
 			var outComponent = new OutComponent(uiComponents);
 			List<int> lines = new List<int>();
+			lines.Sort();
 			for (int i = 0; i < _executions.Count; i++)
 			{
 				var execution = _executions[i];
 				RecursiveSearchLineNumbers(execution.Operations.Where(op => op.FileName == fileName), lines);
-				lines.Sort();
 				foreach (var line in lines)
 				{
 					var uiElement = GetLine(line, fileName, execution);
@@ -62,12 +62,12 @@ namespace AV.Cyclone.Sandy.OperationParser
 						foreach (var element in replaced)
 						{
 							panel.Children.Remove(element);
-                            Border border = new Border
+							var border = new Border
 							{
 								BorderThickness = new Thickness(0, 0, 1, 0),
-								BorderBrush = new SolidColorBrush(Colors.Black)
+								BorderBrush = new SolidColorBrush(Colors.Black),
+								Child = element
 							};
-							border.Child = element;
 							panel.Children.Add(border);
 						}
                         panel.Children.Add(uiElement);
@@ -148,8 +148,7 @@ namespace AV.Cyclone.Sandy.OperationParser
 				TextBlock textBlock = new TextBlock
 				{
 					HorizontalAlignment = HorizontalAlignment.Stretch,
-					Text = run.Output,
-					Padding = new Thickness(1)
+					Text = run.Output
 				};
 
 				if (run.MeasureGroup == MeasureGroup.VariableValuesCycle)
