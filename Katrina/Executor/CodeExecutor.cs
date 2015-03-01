@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Security.Policy;
 using AV.Cyclone.Katrina.Executor.Interfaces;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -103,10 +104,14 @@ namespace AV.Cyclone.Katrina.Executor
                 var assemblyLoaderAssemblyFileName = Path.Combine(tempDir, typeof(AssemblyLoader).Assembly.GetName().Name + ".dll");
                 if (!File.Exists(assemblyLoaderAssemblyFileName))
                     File.Copy(typeof (AssemblyLoader).Assembly.Location, assemblyLoaderAssemblyFileName);
-
-                executorDomain = AppDomain.CreateDomain("ExecutorDomain", AppDomain.CurrentDomain.Evidence,
-                    new AppDomainSetup {ApplicationBase = tempDir});
-                var loader =
+				AppDomain.CurrentDomain.AssemblyResolve += CurrentDomainOnAssemblyResolve;
+				AppDomainSetup domaininfo = new AppDomainSetup();
+				domaininfo.ApplicationBase = tempDir;
+				Evidence adevidence = AppDomain.CurrentDomain.Evidence;
+				executorDomain = AppDomain.CreateDomain("ExecutorDomain", adevidence, domaininfo
+                    /*new AppDomainSetup {ApplicationBase = tempDir, ApplicationTrust = AppDomain.CurrentDomain.ApplicationTrust}*/);
+	            
+				var loader =
                     (AssemblyLoader)
                         executorDomain.CreateInstanceAndUnwrap(typeof (AssemblyLoader).Assembly.FullName,
                             typeof (AssemblyLoader).FullName);
@@ -144,5 +149,11 @@ namespace AV.Cyclone.Katrina.Executor
                 }
             }
         }
+
+	    private Assembly CurrentDomainOnAssemblyResolve(object sender, ResolveEventArgs args)
+	    {
+		    AppDomain.CurrentDomain.AssemblyResolve -= CurrentDomainOnAssemblyResolve;
+            return Assembly.Load(args.Name);
+		}
     }
 }
