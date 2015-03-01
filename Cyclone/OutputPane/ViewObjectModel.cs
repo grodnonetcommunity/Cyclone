@@ -66,14 +66,14 @@ namespace AV.Cyclone.OutputPane
             {
                 var elemToAdd = new UniformGrid();
                 elemToAdd.MinHeight = _lineHeight;
-                if (i % 2 == 0)
-                {
-                    elemToAdd.Background = Brushes.LightGray;
-                }
-                else
-                {
-                    elemToAdd.Background = Brushes.DimGray;
-                }
+//                if (i % 2 == 0)
+//                {
+//                    elemToAdd.Background = Brushes.LightGray;
+//                }
+//                else
+//                {
+//                    elemToAdd.Background = Brushes.DimGray;
+//                }
                 var component = components[i];
                 if (component != null)
                 {
