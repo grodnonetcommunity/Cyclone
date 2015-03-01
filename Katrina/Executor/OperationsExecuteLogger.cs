@@ -91,5 +91,25 @@ namespace AV.Cyclone.Katrina.Executor
             MethodCalls.Add(methodReference, list);
             return list;
         }
+
+        public void CollapseExecutor()
+        {
+            while (executeStack.Count != 0)
+            {
+                if (currentBuilder is LoopIterationOperationBuilder)
+                {
+                    EndLoopIteration(null, 0);
+                }
+                else if (currentBuilder is LoopOperationBuilder)
+                {
+                    EndLoop(null, 0);
+                }
+                else if (currentBuilder is MethodOperationsBuilder)
+                {
+                    EndMethod(null, null, 0);
+                }
+                currentBuilder = executeStack.Pop();
+            }
+        }
     }
 }

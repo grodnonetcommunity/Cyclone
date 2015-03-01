@@ -119,7 +119,17 @@ namespace AV.Cyclone.Katrina.Executor
                 var executeThread = new Thread(Execute);
                 executeThread.Start();
                 if (!executeThread.Join(TimeSpan.FromSeconds(5)))
+                {
                     executeThread.Abort();
+                    if (Context.ExecuteLogger != null && Context.ExecuteLogger is OperationsExecuteLogger)
+                    {
+                        var operationsExecuteLogger = ((OperationsExecuteLogger)Context.ExecuteLogger);
+                        operationsExecuteLogger.CollapseExecutor();
+                        UpdateOperations(operationsExecuteLogger.MethodCalls);
+
+                        OnExecuted();
+                    }
+                }
                 waitChanges.WaitOne();
             } while (!disposed);
         }
