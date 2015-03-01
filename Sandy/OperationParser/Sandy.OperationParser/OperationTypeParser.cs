@@ -15,10 +15,11 @@ namespace AV.Cyclone.Sandy.OperationParser
 		private const char OpenBracket = '[';
 		private const char CloseBracket = ']';
 		private const string Separator = ", ";
+		private const string Brackets = "\"";
 
 		private readonly Color VariableName = Colors.Black;
 		private readonly Color VariableValueNumber = Colors.Blue;
-		private readonly Color VariableValueString = Colors.DarkOrange;
+		private readonly Color VariableValueString = Color.FromRgb(163, 21, 67);
 		private readonly Color VariableValueBoolean = Colors.DodgerBlue;
 
 
@@ -40,6 +41,7 @@ namespace AV.Cyclone.Sandy.OperationParser
 				variableNamePart.Append(EqualSign);
 			}
 			//variableNamePart.Append(LoopSeparationToken);
+			result.Add(new OutputItem("var ", MeasureGroup.Var, VariableValueNumber));
 			result.Add(new OutputItem(variableNamePart.ToString(), MeasureGroup.VariableNames, VariableName));
 
 			for (int i = 0; i < parent.GetTotalNumberOfIteration; i++)
@@ -58,12 +60,13 @@ namespace AV.Cyclone.Sandy.OperationParser
 		public IList<OutputItem> ProcessAssignOperation(AssignOperation assignOperation)
 		{
 			var output = GetVariableValueAsString(assignOperation.VariableValue);
-            var result = new List<OutputItem>
+			var result = new List<OutputItem>
 			{
+				new OutputItem("var ", MeasureGroup.Var, VariableValueNumber),
 				new OutputItem(
-					assignOperation.VariableName + EqualSign, 
+					assignOperation.VariableName + EqualSign,
 					MeasureGroup.VariableNames, VariableName),
-				new OutputItem(output.Key, 
+				new OutputItem(output.Key,
 					MeasureGroup.VariableValues, output.Value)
 			};
 			return result;
@@ -96,11 +99,11 @@ namespace AV.Cyclone.Sandy.OperationParser
 	            }
 				else if (lastValue is bool)
 				{
-					return new KeyValuePair<string, Color>(builder.ToString(), VariableValueBoolean);
+					return new KeyValuePair<string, Color>(builder.ToString().ToLower(), VariableValueBoolean);
 				}
 	            else
 	            {
-					return new KeyValuePair<string, Color>(builder.ToString(), VariableValueString);
+					return new KeyValuePair<string, Color>(Brackets + builder + Brackets, VariableValueString);
 				}
             }
 
@@ -112,11 +115,11 @@ namespace AV.Cyclone.Sandy.OperationParser
 				}
 				else if (variableValue is bool)
 				{
-					return new KeyValuePair<string, Color>(variableValue.ToString(), VariableValueBoolean);
+					return new KeyValuePair<string, Color>(variableValue.ToString().ToLower(), VariableValueBoolean);
 				}
 				else
 				{
-					return new KeyValuePair<string, Color>(variableValue.ToString(), VariableValueString);
+					return new KeyValuePair<string, Color>(Brackets + variableValue + Brackets, VariableValueString);
 				}
 			}
 

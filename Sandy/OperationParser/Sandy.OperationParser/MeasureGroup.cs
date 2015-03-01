@@ -6,6 +6,7 @@
 		VariableValues,
 		//TODO this should be unique for each cycle
 		//Use line number + variable name
-		VariableValuesCycle
+		VariableValuesCycle,
+		Var
 	}
 }
