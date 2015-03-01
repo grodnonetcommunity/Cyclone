@@ -82,6 +82,8 @@ namespace AV.Cyclone.OutputPane
         {
             var operations = ExamplesPackage.WeatherStation.GetOperations(ExamplesPackage.Dte.ActiveDocument.FullName);
             Model.Reinit(operations);
+            _view.ItemsControl.ItemsSource = Model.ViewObjectModel;
+            
             return;
         }
 
