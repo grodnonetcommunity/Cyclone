@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using AV.Cyclone.Katrina.Executor.Interfaces;
 using AV.Cyclone.Katrina.SyntaxProcessor;
 using AV.Cyclone.Sandy.Models;
@@ -115,7 +116,10 @@ namespace AV.Cyclone.Katrina.Executor
 
             do
             {
-                Execute();
+                var executeThread = new Thread(Execute);
+                executeThread.Start();
+                if (!executeThread.Join(TimeSpan.FromSeconds(5)))
+                    executeThread.Abort();
                 waitChanges.WaitOne();
             } while (!disposed);
         }

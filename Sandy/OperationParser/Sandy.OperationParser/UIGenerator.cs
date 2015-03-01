@@ -43,6 +43,7 @@ namespace AV.Cyclone.Sandy.OperationParser
 				foreach (var line in lines)
 				{
 					var uiElement = GetLine(line, fileName, execution);
+                    if (uiElement == null) continue;
 					if (!uiComponents.ContainsKey(line))
 					{
 						var panel = new StackPanel
@@ -153,7 +154,7 @@ namespace AV.Cyclone.Sandy.OperationParser
 				TextBlock textBlock = new TextBlock
 				{
 					HorizontalAlignment = HorizontalAlignment.Stretch,
-					Text = run.Output,
+					Text = run.MeasureGroup == MeasureGroup.VariableValuesCycle ? " " + run.Output + " " : run.Output,
 					Foreground = new SolidColorBrush(run.OutputColor),
 					FontFamily = new FontFamily("Consolas"),
 					FontSize = 12
@@ -165,7 +166,7 @@ namespace AV.Cyclone.Sandy.OperationParser
 					Border border = new Border
 					{
 						HorizontalAlignment = HorizontalAlignment.Stretch,
-						BorderThickness = new Thickness(1),
+						BorderThickness = new Thickness(1, 0, 1, 0),
 						BorderBrush = new SolidColorBrush(Colors.Black)
 					};
 					border.Child = textBlock;

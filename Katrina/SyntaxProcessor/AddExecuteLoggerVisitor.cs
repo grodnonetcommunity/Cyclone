@@ -103,6 +103,13 @@ namespace AV.Cyclone.Katrina.SyntaxProcessor
                 typeParameterList, parameterList, constraintClauses, tryFinallyBlock, expressionBody, semicolonToken);
         }
 
+        public override SyntaxNode VisitReturnStatement(ReturnStatementSyntax node)
+        {
+            var invocation = CreateLogAssignInvocationExpression(node, "return",
+                (ExpressionSyntax)base.Visit(node.Expression));
+            return node.Update(node.ReturnKeyword, invocation, node.SemicolonToken);
+        }
+
         private InvocationExpressionSyntax CreateLogAssignInvocationExpression(SyntaxNode node, string variableName,
             ExpressionSyntax valueExpression)
         {
