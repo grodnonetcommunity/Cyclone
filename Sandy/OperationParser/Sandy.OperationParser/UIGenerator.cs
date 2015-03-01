@@ -156,7 +156,7 @@ namespace AV.Cyclone.Sandy.OperationParser
 					Text = run.Output,
 					Foreground = new SolidColorBrush(run.OutputColor),
 					FontFamily = new FontFamily("Consolas"),
-					FontSize = 10
+					FontSize = 13
 				};
 
 				if (run.MeasureGroup == MeasureGroup.VariableValuesCycle)

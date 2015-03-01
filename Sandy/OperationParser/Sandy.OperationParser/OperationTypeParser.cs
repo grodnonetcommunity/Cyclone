@@ -112,7 +112,7 @@ namespace AV.Cyclone.Sandy.OperationParser
 				}
 				else if (variableValue is bool)
 				{
-					return new KeyValuePair<string, Color>(variableValue.ToString(), VariableValueNumber);
+					return new KeyValuePair<string, Color>(variableValue.ToString(), VariableValueBoolean);
 				}
 				else
 				{
