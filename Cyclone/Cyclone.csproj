@@ -229,10 +229,6 @@
       <Project>{cd037061-7951-472f-b404-53a17300b346}</Project>
       <Name>Sandy.OperationParser</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Sandy\Tests\Sandy.Tests\Sandy.Tests.csproj">
-      <Project>{9da5cecd-c152-4bde-b0cd-c296d1c75e82}</Project>
-      <Name>Sandy.Tests</Name>
-    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <UseCodebase>true</UseCodebase>
