@@ -4,8 +4,10 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using AV.Cyclone.Katrina.Executor.Interfaces;
+using AV.Cyclone.Katrina.SyntaxProcessor;
 using AV.Cyclone.Sandy.Models;
 using AV.Cyclone.Sandy.Models.Operations;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.MSBuild;
@@ -79,7 +81,11 @@ namespace AV.Cyclone.Katrina.Executor
 
         public void FileUpdated(string fileName, string content)
         {
-            codeExecutor.UpdateFile(fileName, content);
+            var newSyntaxTree = CSharpSyntaxTree.ParseText(content).WithFilePath(fileName);
+            var newSyntaxTreeRoot = newSyntaxTree.GetRoot();
+            var visitor = new AddExecuteLoggerVisitor();
+            newSyntaxTreeRoot = visitor.Visit(newSyntaxTreeRoot);
+            codeExecutor.UpdateFile(fileName, CSharpSyntaxTree.Create((CSharpSyntaxNode)newSyntaxTreeRoot).WithFilePath(fileName));
             waitChanges.Set();
         }
 

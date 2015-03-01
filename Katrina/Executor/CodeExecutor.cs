@@ -37,6 +37,21 @@ namespace AV.Cyclone.Katrina.Executor
             }
         }
 
+        public void UpdateFile(string fileName, SyntaxTree newSyntaxTree)
+        {
+            ForecastItem forecastItem;
+            if (!forecastItems.TryGetValue(fileName, out forecastItem)) return;
+            if (newSyntaxTree.GetDiagnostics().Any(d => d.Severity == DiagnosticSeverity.Error)) return;
+
+            var oldCompilation = forecastItem.Compilation;
+            var oldSyntaxTree = forecastItem.SyntaxTree;
+
+            var newCompilation = oldCompilation.ReplaceSyntaxTree(oldSyntaxTree, newSyntaxTree);
+            if (newCompilation.GetDiagnostics().Any(d => d.Severity == DiagnosticSeverity.Error)) return;
+            forecastItem.SyntaxTree = newSyntaxTree;
+            UpdateCompilation(oldCompilation, newCompilation);
+        }
+
         public void UpdateFile(string fileName, string content)
         {
             ForecastItem forecastItem;
