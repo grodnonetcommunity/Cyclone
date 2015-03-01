@@ -17,7 +17,7 @@ namespace AV.Cyclone.Sandy.OperationParser
 		private const string Separator = ", ";
 
 		private readonly Color VariableName = Colors.Black;
-		private readonly Color VariableValueNumber = Colors.Black;
+		private readonly Color VariableValueNumber = Colors.Blue;
 		private readonly Color VariableValueString = Colors.DarkOrange;
 		private readonly Color VariableValueBoolean = Colors.DodgerBlue;
 
