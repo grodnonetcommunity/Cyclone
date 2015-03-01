@@ -59,6 +59,8 @@ namespace AV.Cyclone.Katrina.Executor
                     forecastItem.Compilation = newCompilation;
                 }
             }
+            compilations.Remove(oldCompilation);
+            compilations.Add(newCompilation);
         }
 
         public void SetExecuteLogger(IExecuteLogger executeLogger)

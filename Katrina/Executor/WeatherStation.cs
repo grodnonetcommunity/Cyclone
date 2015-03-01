@@ -109,12 +109,12 @@ namespace AV.Cyclone.Katrina.Executor
         private void Execute()
         {
             forecastExecutor.SetStartupProject(projectName);
-            var compilations = forecastExecutor.GetCompilations();
-            if (compilations == null) return;
+            var forecastItems = forecastExecutor.GetForecast();
+            if (forecastItems == null) return;
             var files = forecastExecutor.GetReferences();
 
             var codeExecutor = new CodeExecutor();
-            codeExecutor.Init(forecastExecutor.GetForecast());
+            codeExecutor.Init(forecastItems);
             var executeLogger = new OperationsExecuteLogger();
             codeExecutor.SetExecuteLogger(executeLogger);
             codeExecutor.Execute(projectName, files, startTypeDeclaration, startMethodDeclaration);
