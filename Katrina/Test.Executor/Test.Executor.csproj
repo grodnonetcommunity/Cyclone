@@ -96,6 +96,7 @@
     <Compile Include="OperationsExecuteLoggerTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MockExecuteLogger.cs" />
+    <Compile Include="WeatherStationTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Sandy\Models\Sandy.Models.csproj">

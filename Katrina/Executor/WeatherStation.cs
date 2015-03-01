@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using AV.Cyclone.Katrina.Executor.Interfaces;
+using AV.Cyclone.Sandy.Models;
 using AV.Cyclone.Sandy.Models.Operations;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -18,6 +19,7 @@ namespace AV.Cyclone.Katrina.Executor
         private readonly string projectName;
         private string startMethodDeclaration;
         private string startTypeDeclaration;
+        private Dictionary<string, List<Execution>> operations;
 
         public event EventHandler Executed;
 
@@ -75,9 +77,11 @@ namespace AV.Cyclone.Katrina.Executor
         {
         }
 
-        public Operation[][] GetOperations(string fileName)
+        public List<Execution> GetOperations(string fileName)
         {
-            return null;
+            List<Execution> list;
+            if (!operations.TryGetValue(fileName, out list)) return null;
+            return list;
         }
 
         private void StartThread()
@@ -85,7 +89,7 @@ namespace AV.Cyclone.Katrina.Executor
             new Thread(BackgroundExecutor)
             {
                 IsBackground = true
-            };
+            }.Start();
         }
 
         private void BackgroundExecutor()
@@ -95,6 +99,7 @@ namespace AV.Cyclone.Katrina.Executor
 
         private void Execute()
         {
+            forecastExecutor.SetStartupProject(projectName);
             var compilations = forecastExecutor.GetCompilations();
             if (compilations == null) return;
             var files = forecastExecutor.GetReferences();
@@ -112,6 +117,16 @@ namespace AV.Cyclone.Katrina.Executor
 
         private void UpdateOperations(Dictionary<MethodReference, List<List<Operation>>> methodCalls)
         {
+            var tempOperations = new Dictionary<string, List<Execution>>();
+            foreach (var methodCall in methodCalls.GroupBy(mc => mc.Key.FileName).Select(g => new
+            {
+                FileName = g.Key,
+                Calls = g.SelectMany(e => e.Value).ToList()
+            }))
+            {
+                tempOperations.Add(methodCall.FileName, methodCall.Calls.Select(mc => new Execution() {Operations = mc}).ToList());
+            }
+            operations = tempOperations;
         }
 
         protected virtual void OnExecuted()
