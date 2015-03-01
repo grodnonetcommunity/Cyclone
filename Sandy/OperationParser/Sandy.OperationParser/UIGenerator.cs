@@ -153,7 +153,10 @@ namespace AV.Cyclone.Sandy.OperationParser
 				TextBlock textBlock = new TextBlock
 				{
 					HorizontalAlignment = HorizontalAlignment.Stretch,
-					Text = run.Output
+					Text = run.Output,
+					Foreground = new SolidColorBrush(run.OutputColor),
+					FontFamily = new FontFamily("Consolas"),
+					FontSize = 10
 				};
 
 				if (run.MeasureGroup == MeasureGroup.VariableValuesCycle)

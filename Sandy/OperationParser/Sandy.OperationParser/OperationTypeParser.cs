@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using AV.Cyclone.Sandy.Models.Operations;
 
 namespace AV.Cyclone.Sandy.OperationParser
@@ -14,6 +15,12 @@ namespace AV.Cyclone.Sandy.OperationParser
 		private const char OpenBracket = '[';
 		private const char CloseBracket = ']';
 		private const string Separator = ", ";
+
+		private readonly Color VariableName = Colors.Black;
+		private readonly Color VariableValueNumber = Colors.Black;
+		private readonly Color VariableValueString = Colors.DarkOrange;
+		private readonly Color VariableValueBoolean = Colors.DodgerBlue;
+
 
 		public OperationTypeParser()
 		{
@@ -33,7 +40,7 @@ namespace AV.Cyclone.Sandy.OperationParser
 				variableNamePart.Append(EqualSign);
 			}
 			//variableNamePart.Append(LoopSeparationToken);
-			result.Add(new OutputItem(variableNamePart.ToString(), MeasureGroup.VariableNames));
+			result.Add(new OutputItem(variableNamePart.ToString(), MeasureGroup.VariableNames, VariableName));
 
 			for (int i = 0; i < parent.GetTotalNumberOfIteration; i++)
 			{
@@ -42,27 +49,27 @@ namespace AV.Cyclone.Sandy.OperationParser
 				var variableValueAsString = GetVariableValueAsString(singleAssignValue?.VariableValue);
 
 				result.Add(new OutputItem(
-					variableValueAsString, 
-					MeasureGroup.VariableValuesCycle));
+					variableValueAsString.Key, 
+					MeasureGroup.VariableValuesCycle, variableValueAsString.Value));
 			}
 			return result;
 		}
 
 		public IList<OutputItem> ProcessAssignOperation(AssignOperation assignOperation)
 		{
-			var result = new List<OutputItem>
+			var output = GetVariableValueAsString(assignOperation.VariableValue);
+            var result = new List<OutputItem>
 			{
 				new OutputItem(
 					assignOperation.VariableName + EqualSign, 
-					MeasureGroup.VariableNames),
-				new OutputItem(
-					GetVariableValueAsString(assignOperation.VariableValue), 
-					MeasureGroup.VariableValues)
+					MeasureGroup.VariableNames, VariableName),
+				new OutputItem(output.Key, 
+					MeasureGroup.VariableValues, output.Value)
 			};
 			return result;
 		}
 
-		private string GetVariableValueAsString(object variableValue)
+		private KeyValuePair<string, Color> GetVariableValueAsString(object variableValue)
 		{
 			var valueList = variableValue as IList;
 			if(valueList != null)
@@ -70,10 +77,12 @@ namespace AV.Cyclone.Sandy.OperationParser
 				var builder = new StringBuilder();
 				builder.Append(OpenBracket);
 
+	            object lastValue = null;
 	            for (int i = 0; i < valueList.Count; i++)
 	            {
-		            var valueObject = valueList[i];
-					builder.Append(GetVariableValueAsString(valueObject));
+					var valueObject = valueList[i];
+		            lastValue = valueObject;
+					builder.Append(GetVariableValueAsString(valueObject).Key);
 		            if (i < valueList.Count - 1)
 		            {
 						builder.Append(Separator);
@@ -81,18 +90,55 @@ namespace AV.Cyclone.Sandy.OperationParser
 				}
 
 				builder.Append(CloseBracket);
-				return builder.ToString();
-			}
+	            if (IsNumber(lastValue))
+	            {
+		            return new KeyValuePair<string, Color>(builder.ToString(), VariableValueNumber);
+	            }
+				else if (lastValue is bool)
+				{
+					return new KeyValuePair<string, Color>(builder.ToString(), VariableValueBoolean);
+				}
+	            else
+	            {
+					return new KeyValuePair<string, Color>(builder.ToString(), VariableValueString);
+				}
+            }
 
 			if (variableValue != null)
 			{
-				return variableValue.ToString();
+				if (IsNumber(variableValue))
+				{
+					return new KeyValuePair<string, Color>(variableValue.ToString(), VariableValueNumber);
+				}
+				else if (variableValue is bool)
+				{
+					return new KeyValuePair<string, Color>(variableValue.ToString(), VariableValueNumber);
+				}
+				else
+				{
+					return new KeyValuePair<string, Color>(variableValue.ToString(), VariableValueString);
+				}
 			}
 
 			//TODO looks like this covers all potential stuff
 			//TODO maybe exception should also go here
 
-			return string.Empty;
+			return new KeyValuePair<string, Color>();
+		}
+
+		private static bool IsNumber(object value)
+		{
+			return value is sbyte
+					|| value is byte
+					|| value is short
+					|| value is ushort
+					|| value is int
+					|| value is uint
+					|| value is long
+					|| value is ulong
+					|| value is float
+					|| value is double
+					|| value is decimal;
 		}
 	}
 }
