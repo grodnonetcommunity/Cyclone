@@ -111,9 +111,9 @@ namespace AV.Cyclone.OutputPane
 
         private void UpdateScroll(object sender, TextViewLayoutChangedEventArgs e)
         {
-//            var args = e;
-//            if (!args.VerticalTranslation)
-//                return;
+            var args = e;
+            if (!args.VerticalTranslation)
+                return;
 
             UpdateScrollInternal();
         }

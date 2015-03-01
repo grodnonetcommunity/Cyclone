@@ -62,7 +62,7 @@ namespace AV.Cyclone.OutputPane
             UIGenerator generator = new UIGenerator(operations);
             OutComponent components = generator.GetOutputComponents(ExamplesPackage.Dte.ActiveDocument.FullName);
 
-            for (var i = 0; i < _numberOfLines + 100; i++)
+            for (var i = 0; i < _numberOfLines; i++)
             {
                 var elemToAdd = new UniformGrid();
                 elemToAdd.MinHeight = _lineHeight;
