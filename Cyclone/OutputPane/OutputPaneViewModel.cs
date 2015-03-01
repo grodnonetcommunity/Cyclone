@@ -22,7 +22,7 @@ namespace AV.Cyclone.OutputPane
         public OutputPaneModel Model { get; set; }
         private readonly OutputPaneView _view;
 
-        private bool[] IsInitMarginSet;
+//        private bool[] IsInitMarginSet;
 
         public OutputPaneViewModel(OutputPaneView view, OutputPaneModel model)
         {
@@ -31,7 +31,7 @@ namespace AV.Cyclone.OutputPane
 
             _view.ItemsControl.ItemsSource = Model.ViewObjectModel;
 
-            IsInitMarginSet = new bool[Model.ViewObjectModel.Elements.Count];
+//            IsInitMarginSet = new bool[Model.ViewObjectModel.Elements.Count];
 
             //UpdateScrollInternal();
 
@@ -164,21 +164,21 @@ namespace AV.Cyclone.OutputPane
             // viewLines is one element more than first visible line
             for (int i = 0; i < viewLines.Count - 1; i++)
             {
-                var lineHeight = viewLines[i + 1].Height;
-                var topAdormentHeight = lineHeight - nominalLineHeight;
+//                var lineHeight = viewLines[i + 1].Height;
+//                var topAdormentHeight = lineHeight - nominalLineHeight;
                 var index = i + sourceLineNumber;
-                if (IsInitMarginSet[index])
-                {
-                    continue;
-                }
-                var wrapper = (UniformGrid)Model.ViewObjectModel[index];
-                var a = wrapper.Children.OfType<UniformGrid>().FirstOrDefault();
+//                if (IsInitMarginSet[index])
+//                {
+//                    continue;
+//                }
+//                var wrapper = (UniformGrid)Model.ViewObjectModel[index];
+//                var a = wrapper.Children.OfType<UniformGrid>().FirstOrDefault();
                 Model.ViewObjectModel.SetAdorment(index);
-                if (a != null)
-                {
-                    a.Margin = new Thickness(0, topAdormentHeight, 0, 0);
-                    IsInitMarginSet[index] = true;
-                }
+//                if (a != null)
+//                {
+//                    a.Margin = new Thickness(0, topAdormentHeight, 0, 0);
+//                    IsInitMarginSet[index] = true;
+//                }
             }
         }
     }
