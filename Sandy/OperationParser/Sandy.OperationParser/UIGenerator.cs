@@ -29,6 +29,11 @@ namespace AV.Cyclone.Sandy.OperationParser
 		{
 			Dictionary<int, StackPanel> uiComponents = new Dictionary<int, StackPanel>();
 			var outComponent = new OutComponent(uiComponents);
+			if (_executions == null)
+			{
+				return outComponent;
+			}
+
 			List<int> lines = new List<int>();
 			lines.Sort();
 			for (int i = 0; i < _executions.Count; i++)
