@@ -13,14 +13,14 @@ namespace AV.Cyclone.Service
 
         public void ExpandLine(int lineNumber, double preferedSize)
         {
-            OnCycloneChanged(new ExpandLineEventArgs
+            /*OnCycloneChanged(new ExpandLineEventArgs
             {
                 ExpandLineInfo = new ExpandLineInfo
                 {
                     LineNumber = lineNumber,
                     PreferedSize = preferedSize
                 }
-            });
+            });*/
         }
 
         protected virtual void OnCycloneChanged(CycloneEventArgs e)
