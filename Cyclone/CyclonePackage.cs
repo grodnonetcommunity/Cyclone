@@ -3,6 +3,7 @@ using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.InteropServices;
+using AV.Cyclone.Katrina.Executor;
 using AV.Cyclone.Service;
 using EnvDTE;
 using EnvDTE80;
@@ -36,6 +37,7 @@ namespace AV.Cyclone
     {
         private static DTE2 _dte;
 
+        public static WeatherStation WeatherStation;
         /// <summary>
         /// Default constructor of the package.
         /// Inside this method you can place any initialization code that does not require 
@@ -81,8 +83,26 @@ namespace AV.Cyclone
             IVsTextView vTextView;
             txtMgr.GetActiveView(mustHaveFocus, null, out vTextView);
 
-            var cycloneStateManager = GetCycloneService();
-            cycloneStateManager.StartCyclone(vTextView);
+            if (vTextView != null)
+            {
+                WeatherStationInit(vTextView);
+                GetCycloneService().StartCyclone();
+            }
+        }
+
+        private void WeatherStationInit(IVsTextView vTextView)
+        {
+            int initialLineNumber;
+            int initialColumnNumber;
+            vTextView.GetCaretPos(out initialLineNumber, out initialColumnNumber);
+            var solutionPath = ExamplesPackage.Dte.Solution.FileName;
+
+            var activeDocument = ExamplesPackage.Dte.ActiveDocument;
+            var activeDocumentPath = activeDocument.FullName;
+            var currentProjectName = activeDocument.ProjectItem.ContainingProject.Name;
+
+            WeatherStation = new WeatherStation(solutionPath, currentProjectName, activeDocumentPath, initialLineNumber);
+            WeatherStation.Start();
         }
 
         private IWpfTextViewHost GetIWpfTextViewHost()

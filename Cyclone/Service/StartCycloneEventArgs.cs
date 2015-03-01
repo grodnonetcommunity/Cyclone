@@ -2,11 +2,8 @@
 {
     public class StartCycloneEventArgs : CycloneEventArgs
     {
-        public StartCycloneEventArgs(StartInfo startInfoData) : base(CycloneEventsType.Start)
+        public StartCycloneEventArgs() : base(CycloneEventsType.Start)
         {
-            StartInfo = startInfoData;
         }
-
-        public StartInfo StartInfo { get; }
     }
 }

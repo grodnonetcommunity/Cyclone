@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -7,6 +8,9 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using AV.Cyclone.Annotations;
+using AV.Cyclone.Sandy.Models;
+using AV.Cyclone.Service;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Formatting;
@@ -60,6 +64,24 @@ namespace AV.Cyclone.OutputPane
             SourceTextView.LayoutChanged += UpdateScroll;
             SourceTextView.ZoomLevelChanged += UpdateZoom;
             SourceTextView.TextBuffer.Changed += Reinitialize;
+            CycloneServiceProvider.GetCycloneService(SourceTextView).CycloneChanged += OnCycloneChanged;
+        }
+
+        private void OnCycloneChanged(object sender, CycloneEventArgs cycloneEventArgs)
+        {
+            if (ExamplesPackage.WeatherStation != null)
+                ExamplesPackage.WeatherStation.Executed += WeatherStationOnExecuted;
+        }
+
+        private void WeatherStationOnExecuted(object sender, EventArgs eventArgs)
+        {
+            ThreadHelper.Generic.BeginInvoke(InitOuputModule);
+        }
+
+        public void InitOuputModule()
+        {
+            var operations = ExamplesPackage.WeatherStation.GetOperations(ExamplesPackage.Dte.ActiveDocument.FullName);
+            return;
         }
 
         private void Unsubscribe()
