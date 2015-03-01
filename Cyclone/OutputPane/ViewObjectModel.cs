@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
@@ -9,6 +10,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using AV.Cyclone.Annotations;
+using AV.Cyclone.Sandy.Models;
 using AV.Cyclone.Sandy.OperationParser;
 using AV.Cyclone.Sandy.Tests;
 using AV.Cyclone.Service;
@@ -21,6 +23,7 @@ namespace AV.Cyclone.OutputPane
         private readonly double _lineHeight;
         private readonly int _numberOfLines;
         private readonly ICycloneService _cycloneService;
+        private List<Execution> operations;
 
         public ViewObjectModel(int numberOfLines, double lineHeight)
         {
@@ -28,9 +31,10 @@ namespace AV.Cyclone.OutputPane
             _lineHeight = lineHeight;
         }
 
-        public ViewObjectModel(int numberOfLines, double lineHeight, ICycloneService cycloneService) : this(numberOfLines, lineHeight)
+        public ViewObjectModel(int numberOfLines, double lineHeight, ICycloneService cycloneService, List<Execution> operations) : this(numberOfLines, lineHeight)
         {
             this._cycloneService = cycloneService;
+            this.operations = operations;
             Init();
         }
 
@@ -59,40 +63,9 @@ namespace AV.Cyclone.OutputPane
         private void Init()
         {
             Elements = new ObservableCollection<FrameworkElement>();
-            //            Random rnd = new Random();
-            //            for (var i = 0; i < _numberOfLines; i++)
-            //            {
-            //                var tb = new TextBlock();
-            //                tb.Text = "line: " + (i + 1);
-            //
-            //                //if (i == 10)
-            //                //{
-            //                //    var newHeigth = 50;
-            //                //    tb.Height = newHeigth;
-            //                //    tb.Background = Brushes.Red;
-            //                //    Elements.Add(tb);
-            //                //    _cycloneService.ExpandLine(i, newHeigth);
-            //                //    continue;
-            //                //}
-            //
-            //                tb.Height = rnd.Next(20, 100);
-//                            if (i%2 == 0)
-//                            {
-//                                tb.Background = Brushes.LightGray;
-//                            }
-//                            else
-//                            {
-//                                tb.Background = Brushes.DimGray;
-//                            }
-            //                Elements.Add(tb);
-            //            }
-
-            ModelTestClass modelTestClass = new ModelTestClass();
-            modelTestClass.Init();
-
-            var execution = modelTestClass.Execution;
-            UIGenerator generator = new UIGenerator(execution);
-            OutComponent components = generator.GetOutputComponents("1");
+            
+            UIGenerator generator = new UIGenerator(operations);
+            OutComponent components = generator.GetOutputComponents(ExamplesPackage.Dte.FullName);
 
             for (var i = 0; i < _numberOfLines; i++)
             {

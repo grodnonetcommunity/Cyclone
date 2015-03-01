@@ -1,6 +1,8 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using AV.Cyclone.Sandy.Models;
 using AV.Cyclone.Service;
 using Microsoft.VisualStudio.Text.Editor;
 
@@ -13,14 +15,14 @@ namespace AV.Cyclone.OutputPane
         public OutputPaneModel(IWpfTextView sourceTextView)
         {
             SourceTextView = sourceTextView;
-            ViewObjectModel = new ViewObjectModel(NuberOfLines, LineHeight, CycloneServiceProvider.GetCycloneService(SourceTextView));
+            ViewObjectModel = new ViewObjectModel(NuberOfLines, LineHeight, CycloneServiceProvider.GetCycloneService(SourceTextView), new List<Execution>());
 
             ZoomLevel = SourceTextView.ZoomLevel;
         }
 
-        public void Reinit()
+        public void Reinit(List<Execution> operations)
         {
-            ViewObjectModel = new ViewObjectModel(NuberOfLines, LineHeight, CycloneServiceProvider.GetCycloneService(SourceTextView));
+            ViewObjectModel = new ViewObjectModel(NuberOfLines, LineHeight, CycloneServiceProvider.GetCycloneService(SourceTextView), operations);
         }
 
         public IWpfTextView SourceTextView { get; set; }

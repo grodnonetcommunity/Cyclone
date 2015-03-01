@@ -81,6 +81,7 @@ namespace AV.Cyclone.OutputPane
         public void InitOuputModule()
         {
             var operations = ExamplesPackage.WeatherStation.GetOperations(ExamplesPackage.Dte.ActiveDocument.FullName);
+            Model.Reinit(operations);
             return;
         }
 
@@ -97,8 +98,8 @@ namespace AV.Cyclone.OutputPane
             if (ExamplesPackage.WeatherStation != null)
                 ExamplesPackage.WeatherStation.FileUpdated(ExamplesPackage.Dte.ActiveDocument.FullName, e.Before.GetText());
 
-            IsInitMarginSet = new bool[Model.ViewObjectModel.Elements.Count];
-            Model.Reinit();
+            //IsInitMarginSet = new bool[Model.ViewObjectModel.Elements.Count];
+            
         }
 
         private void UpdateZoom(object sender, ZoomLevelChangedEventArgs e)
