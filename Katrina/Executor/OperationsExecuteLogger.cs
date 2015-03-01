@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using AV.Cyclone.Katrina.Executor.Interfaces;
 using AV.Cyclone.Sandy.Models.Operations;
 
@@ -8,6 +9,7 @@ namespace AV.Cyclone.Katrina.Executor
     {
         private readonly Stack<OperationBuilder> executeStack = new Stack<OperationBuilder>();
         private OperationBuilder currentBuilder;
+        private int iterationsCount = 0;
 
         public Dictionary<MethodReference, List<List<Operation>>> MethodCalls { get; } = new Dictionary<MethodReference, List<List<Operation>>>();
 
@@ -39,6 +41,7 @@ namespace AV.Cyclone.Katrina.Executor
 
         public void BeginLoop(string fileName, int lineNumber)
         {
+            iterationsCount = 0;
             executeStack.Push(currentBuilder);
             currentBuilder = new LoopOperationBuilder();
         }
@@ -52,6 +55,10 @@ namespace AV.Cyclone.Katrina.Executor
             else
             {
                 EndLoopIteration(fileName, lineNumber);
+                if (iterationsCount++ > 100)
+                {
+                    throw new Exception("Exit");
+                }
                 BeginLoopIteration(fileName, lineNumber);
             }
         }
@@ -60,6 +67,7 @@ namespace AV.Cyclone.Katrina.Executor
         {
             executeStack.Push(currentBuilder);
             currentBuilder = new LoopIterationOperationBuilder();
+
         }
 
         private void EndLoopIteration(string fileName, int lineNumber)
@@ -94,6 +102,7 @@ namespace AV.Cyclone.Katrina.Executor
 
         public void CollapseExecutor()
         {
+            return;
             while (executeStack.Count != 0)
             {
                 if (currentBuilder is LoopIterationOperationBuilder)
