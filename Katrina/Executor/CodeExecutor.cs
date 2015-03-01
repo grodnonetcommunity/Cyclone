@@ -47,6 +47,7 @@ namespace AV.Cyclone.Katrina.Executor
 
             var newCompilation = oldCompilation.ReplaceSyntaxTree(oldSyntaxTree, newSyntaxTree);
             if (newCompilation.GetDiagnostics().Any(d => d.Severity == DiagnosticSeverity.Error)) return;
+            forecastItem.SyntaxTree = newSyntaxTree;
             UpdateCompilation(oldCompilation, newCompilation);
         }
 
