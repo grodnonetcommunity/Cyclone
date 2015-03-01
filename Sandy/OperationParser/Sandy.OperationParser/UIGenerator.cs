@@ -1,12 +1,8 @@
 ﻿
-using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Runtime.Remoting.Messaging;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
 using System.Windows.Media;
 using AV.Cyclone.Sandy.Models;
 using AV.Cyclone.Sandy.Models.Operations;
@@ -16,24 +12,67 @@ namespace AV.Cyclone.Sandy.OperationParser
 {
 	public class UIGenerator
 	{
-		private readonly Execution _execution;
+		private readonly IList<Execution> _executions;
 		private readonly OperationTypeParser _operationTypeParser = new OperationTypeParser();
 
-		public UIGenerator(Execution execution)
+		public UIGenerator(Execution execution) : this(new List<Execution> {execution})
 		{
-			_execution = execution;
+			
+		}
+
+		public UIGenerator(IList<Execution> executions)
+		{
+			_executions = executions;
 		}
 
 		public OutComponent GetOutputComponents(string fileName)
 		{
-			Dictionary<int, UIElement> uiComponents = new Dictionary<int, UIElement>();
-			OutComponent outComponent = new OutComponent(uiComponents);
+			Dictionary<int, StackPanel> uiComponents = new Dictionary<int, StackPanel>();
+			var outComponent = new OutComponent(uiComponents);
 			List<int> lines = new List<int>();
-			RecursiveSearchLineNumbers(_execution.Operations.Where(op => op.FileName == fileName), lines);
-			foreach (var line in lines)
+			lines.Sort();
+			for (int i = 0; i < _executions.Count; i++)
 			{
-				var uiElement = GetLine(line, fileName);
-				uiComponents.Add(line, uiElement);
+				var execution = _executions[i];
+				RecursiveSearchLineNumbers(execution.Operations.Where(op => op.FileName == fileName), lines);
+				foreach (var line in lines)
+				{
+					var uiElement = GetLine(line, fileName, execution);
+					if (!uiComponents.ContainsKey(line))
+					{
+						var panel = new StackPanel
+						{
+							Orientation = Orientation.Horizontal
+						};
+						panel.Children.Add(uiElement);
+						uiComponents.Add(line, panel);
+					}
+					else
+					{
+						var panel = uiComponents[line];
+						IList<UIElement> replaced = new List<UIElement>();
+						foreach (var child in panel.Children)
+						{
+							var element = child as StackPanel;
+							if (element != null)
+							{
+								replaced.Add(element);
+							}
+						}
+						foreach (var element in replaced)
+						{
+							panel.Children.Remove(element);
+							var border = new Border
+							{
+								BorderThickness = new Thickness(0, 0, 1, 0),
+								BorderBrush = new SolidColorBrush(Colors.Black),
+								Child = element
+							};
+							panel.Children.Add(border);
+						}
+                        panel.Children.Add(uiElement);
+					}
+				}
 			}
 			return outComponent;
 		}
@@ -58,12 +97,12 @@ namespace AV.Cyclone.Sandy.OperationParser
 			}
 		} 
 
-		public UIElement GetLine(int lineNumber, string fileName)
+		public UIElement GetLine(int lineNumber, string fileName, Execution execution)
 		{
 			var result = new StackPanel();
 
 			List<Operation> foundOperations = new List<Operation>();
-			SearchOperation(lineNumber, _execution.Operations, foundOperations, fileName);
+			SearchOperation(lineNumber, execution.Operations, foundOperations, fileName);
 
 			//No component for this line
 			if (foundOperations.Count < 1)

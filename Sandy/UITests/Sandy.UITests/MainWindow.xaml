@@ -5,7 +5,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Sandy.UITests"
         mc:Ignorable="d">
-	<StackPanel x:Name="MainPanel" Grid.IsSharedSizeScope="True">
-		
-	</StackPanel>
+	<Grid>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="*"/>
+			<ColumnDefinition Width="*"/>
+		</Grid.ColumnDefinitions>
+		<TextBlock x:Name="TextBlocks"/>
+		<StackPanel Grid.Column="1" x:Name="MainPanel" Grid.IsSharedSizeScope="True" Margin="1"/>
+	</Grid>
+	
 </Window>

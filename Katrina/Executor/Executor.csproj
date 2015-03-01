@@ -94,8 +94,13 @@
     <Compile Include="BaseExecuteLogger.cs" />
     <Compile Include="CodeExecutor.cs" />
     <Compile Include="ForecastExecutor.cs" />
+    <Compile Include="LoopIterationOperationBuilder.cs" />
+    <Compile Include="LoopOperationBuilder.cs" />
+    <Compile Include="MethodOperationsBuilder.cs" />
+    <Compile Include="OperationBuilder.cs" />
     <Compile Include="OperationsExecuteLogger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WeatherStation.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Sandy\Models\Sandy.Models.csproj">
