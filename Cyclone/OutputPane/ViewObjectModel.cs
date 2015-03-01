@@ -1,20 +1,15 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using AV.Cyclone.Annotations;
 using AV.Cyclone.Sandy.Models;
 using AV.Cyclone.Sandy.OperationParser;
-using AV.Cyclone.Sandy.Tests;
 using AV.Cyclone.Service;
-using Microsoft.VisualStudio.Text.Editor;
 
 namespace AV.Cyclone.OutputPane
 {
@@ -65,7 +60,7 @@ namespace AV.Cyclone.OutputPane
             Elements = new ObservableCollection<FrameworkElement>();
             
             UIGenerator generator = new UIGenerator(operations);
-            OutComponent components = generator.GetOutputComponents(ExamplesPackage.Dte.FullName);
+            OutComponent components = generator.GetOutputComponents(ExamplesPackage.Dte.ActiveDocument.FullName);
 
             for (var i = 0; i < _numberOfLines; i++)
             {
