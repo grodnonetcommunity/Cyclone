@@ -4,8 +4,10 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using AV.Cyclone.Annotations;
+using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Formatting;
 
@@ -26,6 +28,8 @@ namespace AV.Cyclone.OutputPane
             _view.ItemsControl.ItemsSource = Model.ViewObjectModel;
 
             IsInitMarginSet = new bool[Model.ViewObjectModel.Elements.Count];
+
+            //UpdateScrollInternal();
 
             Subscribe();
         }
@@ -55,13 +59,20 @@ namespace AV.Cyclone.OutputPane
         {
             SourceTextView.LayoutChanged += UpdateScroll;
             SourceTextView.ZoomLevelChanged += UpdateZoom;
+            SourceTextView.TextBuffer.Changed += Reinitialize;
         }
 
         private void Unsubscribe()
         {
             SourceTextView.LayoutChanged -= UpdateScroll;
             SourceTextView.ZoomLevelChanged -= UpdateZoom;
+            SourceTextView.TextBuffer.Changed -= Reinitialize;
+        }
 
+        private void Reinitialize(object sender, TextContentChangedEventArgs e)
+        {
+            IsInitMarginSet = new bool[Model.ViewObjectModel.Elements.Count];
+            Model.Reinit();
         }
 
         private void UpdateZoom(object sender, ZoomLevelChangedEventArgs e)
@@ -75,6 +86,11 @@ namespace AV.Cyclone.OutputPane
             if (!args.VerticalTranslation)
                 return;
 
+            UpdateScrollInternal();
+        }
+
+        private void UpdateScrollInternal()
+        {
             var sourceFirstLine = SourceTextView.TextViewLines.FirstVisibleLine;
             var sourceSnapshotLine = SourceTextView.TextSnapshot.Lines
                 .FirstOrDefault(x => x.Start.Position == sourceFirstLine.Start);
@@ -84,8 +100,7 @@ namespace AV.Cyclone.OutputPane
 
             var sourceLineNumber = sourceSnapshotLine.LineNumber;
 
-            _view.ViewModel
-                .ScrollTo(sourceLineNumber, sourceFirstLine);
+            ScrollTo(sourceLineNumber, sourceFirstLine);
         }
 
         [NotifyPropertyChangedInvocator]
@@ -96,7 +111,7 @@ namespace AV.Cyclone.OutputPane
 
         public void ScrollTo(int sourceLineNumber, IWpfTextViewLine sourceFirstLine)
         {
-            UpdateVisibleLinesHeight(sourceLineNumber, sourceFirstLine);
+            SetCodeLensAdorments(sourceLineNumber);
             var shift = sourceFirstLine.Top - sourceFirstLine.VisibleArea.Y;
             if (shift < 0)
             {
@@ -112,25 +127,29 @@ namespace AV.Cyclone.OutputPane
             _view.OutputPaneScrollViewer.ScrollToVerticalOffset(offset);
         }
 
-        private void UpdateVisibleLinesHeight(int sourceLineNumber, IWpfTextViewLine sourceFirstLine)
+        private void SetCodeLensAdorments(int sourceLineNumber)
         {
             var nominalLineHeight = Model.SourceTextView.LineHeight;
             var viewLines = Model.SourceTextView.TextViewLines;
 
-            for (int i = 0; i < viewLines.Count; i++)
+            // viewLines is one element more than first visible line
+            for (int i = 0; i < viewLines.Count - 1; i++)
             {
-                var lineHeight = viewLines[i].Height;
+                var lineHeight = viewLines[i + 1].Height;
                 var topAdormentHeight = lineHeight - nominalLineHeight;
                 var index = i + sourceLineNumber;
-                Model.ViewObjectModel.SetAdorment(index);
-                if (index < 0 || IsInitMarginSet[index])
+                if (IsInitMarginSet[index])
                 {
                     continue;
                 }
-                var wrapper = (Border)Model.ViewObjectModel.Elements[index];
-                IsInitMarginSet[index] = true;
-                wrapper.Padding = new Thickness(0, topAdormentHeight, 0, 0);
-                wrapper.Height += topAdormentHeight;
+                var wrapper = (UniformGrid)Model.ViewObjectModel[index];
+                var a = wrapper.Children.OfType<UniformGrid>().FirstOrDefault();
+                Model.ViewObjectModel.SetAdorment(index);
+                if (a != null)
+                {
+                    a.Margin = new Thickness(0, topAdormentHeight, 0, 0);
+                    IsInitMarginSet[index] = true;
+                }
             }
         }
     }

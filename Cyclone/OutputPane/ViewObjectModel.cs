@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using AV.Cyclone.Annotations;
 using AV.Cyclone.Sandy.OperationParser;
@@ -91,11 +92,12 @@ namespace AV.Cyclone.OutputPane
 
             var execution = modelTestClass.Execution;
             UIGenerator generator = new UIGenerator(execution);
-            OutComponent c = generator.GetOutputComponents("1");
+            OutComponent components = generator.GetOutputComponents("1");
 
             for (var i = 0; i < _numberOfLines; i++)
             {
-                var elemToAdd = new Border();
+                var elemToAdd = new UniformGrid();
+                elemToAdd.MinHeight = _lineHeight;
                 if (i % 2 == 0)
                 {
                     elemToAdd.Background = Brushes.LightGray;
@@ -104,19 +106,26 @@ namespace AV.Cyclone.OutputPane
                 {
                     elemToAdd.Background = Brushes.DimGray;
                 }
-                elemToAdd.Child = c[i];
-                if (elemToAdd.Child == null)
+                var component = components[i];
+                if (component != null)
+                {
+                    elemToAdd.Children.Add(component);
+                }
+                if (components[i] == null)
                 {
                     elemToAdd.Height = _lineHeight;
                 }
-                Elements.Add(elemToAdd);
+
+                var wrap = new UniformGrid();
+                wrap.Children.Add(elemToAdd);
+                Elements.Add(wrap);
             }
         }
 
         public void SetAdorment(int lineIndex)
         {
             var height = this[lineIndex].ActualHeight - _lineHeight;
-            if (height < _lineHeight)
+            if (height < 0)
             {
                 height = 0;
             }

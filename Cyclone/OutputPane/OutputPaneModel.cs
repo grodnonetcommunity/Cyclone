@@ -18,6 +18,11 @@ namespace AV.Cyclone.OutputPane
             ZoomLevel = SourceTextView.ZoomLevel;
         }
 
+        public void Reinit()
+        {
+            ViewObjectModel = new ViewObjectModel(NuberOfLines, LineHeight, CycloneServiceProvider.GetCycloneService(SourceTextView));
+        }
+
         public IWpfTextView SourceTextView { get; set; }
         public ViewObjectModel ViewObjectModel { get; set; }
 
