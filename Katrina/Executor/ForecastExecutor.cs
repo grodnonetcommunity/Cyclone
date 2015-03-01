@@ -55,6 +55,25 @@ namespace AV.Cyclone.Katrina.Executor
                 .ToArray();
         }
 
+        public List<ForecastItem> GetForecast()
+        {
+            var result = new List<ForecastItem>();
+            foreach (var project in projectMapping.Values)
+            {
+                var compilation = project.GetCompilationAsync().Result;
+                foreach (var document in project.Documents)
+                {
+                    var forecastItem = new ForecastItem
+                    {
+                        SyntaxTree = document.GetSyntaxTreeAsync().Result,
+                        Compilation = (CSharpCompilation)compilation
+                    };
+                    result.Add(forecastItem);
+                }
+            }
+            return result;
+        }
+
         public string[] GetReferences()
         {
             var files = new HashSet<string>();

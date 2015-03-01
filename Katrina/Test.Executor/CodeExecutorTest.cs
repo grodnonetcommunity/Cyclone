@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Text;
 using AV.Cyclone.Katrina.Executor;
 using AV.Cyclone.Katrina.Executor.Interfaces;
 using Microsoft.CodeAnalysis;
@@ -35,7 +36,14 @@ class Class
             var executor = new CodeExecutor();
             var executeLogger = new MockExecuteLogger();
 
-            executor.AddCompilation(null, compilaton);
+            executor.Init(new[]
+            {
+                new ForecastItem
+                {
+                    Compilation = compilaton,
+                    SyntaxTree = syntaxTree
+                }
+            });
             executor.SetExecuteLogger(executeLogger);
             executor.Execute(compilaton.AssemblyName, null, "Class", "Method");
 
@@ -65,6 +73,8 @@ class Class
 }
 ";
             var syntaxTree1 = CSharpSyntaxTree.ParseText(source1);
+            syntaxTree1 = CSharpSyntaxTree.Create((CSharpSyntaxNode)syntaxTree1.GetRoot(), path: "File1.cs",
+                encoding: Encoding.UTF8);
 
             var compilationOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary);
             var compilation1 = CSharpCompilation.Create("Temp.dll", new[] {syntaxTree1,}, new[] {Mscorelib, ExecutorInterfaces, },
@@ -74,7 +84,14 @@ class Class
             var executeLogger = new MockExecuteLogger();
 
             var stopwatch = Stopwatch.StartNew();
-            executor.AddCompilation(null, compilation1);
+            executor.Init(new[]
+            {
+                new ForecastItem
+                {
+                    Compilation = compilation1,
+                    SyntaxTree = syntaxTree1
+                }
+            });
             executor.SetExecuteLogger(executeLogger);
             executor.Execute(compilation1.AssemblyName, null, "Class", "Method");
             stopwatch.Stop();
@@ -84,13 +101,9 @@ class Class
 
             executeLogger.assigns.Clear();
 
-            var syntaxTree2 = CSharpSyntaxTree.ParseText(source2);
-
-            var compilation2 = compilation1.ReplaceSyntaxTree(syntaxTree1, syntaxTree2);
-
             stopwatch.Restart();
-            executor.AddCompilation(compilation1, compilation2);
-            executor.Execute(compilation2.AssemblyName, null, "Class", "Method");
+            executor.UpdateFile("File1.cs", source2);
+            executor.Execute(compilation1.AssemblyName, null, "Class", "Method");
             Debug.WriteLine("Second execute in: {0} ms", stopwatch.ElapsedMilliseconds);
 
             CollectionAssert.AreEqual(new [] {"a = 1", "b = 1"}, executeLogger.assigns);

@@ -13,13 +13,16 @@ using Microsoft.CodeAnalysis.Text;
 
 namespace AV.Cyclone.Katrina.Executor
 {
-    public class WeatherStation
+    public class WeatherStation : IDisposable
     {
         private readonly ForecastExecutor forecastExecutor;
         private readonly string projectName;
         private string startMethodDeclaration;
         private string startTypeDeclaration;
         private Dictionary<string, List<Execution>> operations;
+        private bool disposed;
+        private Thread backgroundThread;
+        private readonly AutoResetEvent waitChanges = new AutoResetEvent(false);
 
         public event EventHandler Executed;
 
@@ -75,6 +78,7 @@ namespace AV.Cyclone.Katrina.Executor
 
         public void FileUpdated(string fileName, string content)
         {
+            waitChanges.Set();
         }
 
         public List<Execution> GetOperations(string fileName)
@@ -86,15 +90,20 @@ namespace AV.Cyclone.Katrina.Executor
 
         private void StartThread()
         {
-            new Thread(BackgroundExecutor)
+            backgroundThread = new Thread(BackgroundExecutor)
             {
                 IsBackground = true
-            }.Start();
+            };
+            backgroundThread.Start();
         }
 
         private void BackgroundExecutor()
         {
-            Execute();
+            do
+            {
+                Execute();
+                waitChanges.WaitOne();
+            } while (!disposed);
         }
 
         private void Execute()
@@ -105,7 +114,7 @@ namespace AV.Cyclone.Katrina.Executor
             var files = forecastExecutor.GetReferences();
 
             var codeExecutor = new CodeExecutor();
-            codeExecutor.AddCompilations(compilations);
+            codeExecutor.Init(forecastExecutor.GetForecast());
             var executeLogger = new OperationsExecuteLogger();
             codeExecutor.SetExecuteLogger(executeLogger);
             codeExecutor.Execute(projectName, files, startTypeDeclaration, startMethodDeclaration);
@@ -132,6 +141,12 @@ namespace AV.Cyclone.Katrina.Executor
         protected virtual void OnExecuted()
         {
             Executed?.Invoke(this, EventArgs.Empty);
+        }
+
+        public void Dispose()
+        {
+            backgroundThread.Interrupt();
+            disposed = true;
         }
     }
 }

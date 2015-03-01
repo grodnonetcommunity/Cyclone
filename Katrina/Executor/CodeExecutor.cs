@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using AV.Cyclone.Katrina.Executor.Interfaces;
 using Microsoft.CodeAnalysis;
@@ -19,24 +20,45 @@ namespace AV.Cyclone.Katrina.Executor
             public EmitResult EmitResult { get; set; }
         }
 
-        private readonly Dictionary<CSharpCompilation, CSharpCompilation> compilations = 
-            new Dictionary<CSharpCompilation, CSharpCompilation>();
+        private readonly HashSet<CSharpCompilation> compilations =
+            new HashSet<CSharpCompilation>();
         private List<CompilationEmitResult> compilationEmitResults;
+        private readonly Dictionary<string, ForecastItem> forecastItems = new Dictionary<string, ForecastItem>();
 
-        public void AddCompilations(IEnumerable<CSharpCompilation> compilations)
+        public void Init(IEnumerable<ForecastItem> items)
         {
-            foreach (var compilation in compilations)
+            compilations.Clear();
+            foreach (var forecastItem in items)
             {
-                AddCompilation(null, compilation);
+                forecastItems.Add(forecastItem.SyntaxTree.FilePath, forecastItem);
+                compilations.Add(forecastItem.Compilation);
             }
         }
 
-        public void AddCompilation(CSharpCompilation oldCompilation, CSharpCompilation newCompilation)
+        public void UpdateFile(string fileName, string content)
         {
-            if (oldCompilation == null)
-                oldCompilation = newCompilation;
-            //newCompilation.AddReferences(MetadataReference.CreateFromAssembly(typeof (AssemblyLoader).Assembly));
-            compilations[oldCompilation] = newCompilation;
+            ForecastItem forecastItem;
+            if (!forecastItems.TryGetValue(fileName, out forecastItem)) return;
+            var newSyntaxTree = CSharpSyntaxTree.ParseText(content);
+            if (newSyntaxTree.GetDiagnostics().Any(d => d.Severity == DiagnosticSeverity.Error)) return;
+
+            var oldCompilation = forecastItem.Compilation;
+            var oldSyntaxTree = forecastItem.SyntaxTree;
+
+            var newCompilation = oldCompilation.ReplaceSyntaxTree(oldSyntaxTree, newSyntaxTree);
+            if (newCompilation.GetDiagnostics().Any(d => d.Severity == DiagnosticSeverity.Error)) return;
+            UpdateCompilation(oldCompilation, newCompilation);
+        }
+
+        private void UpdateCompilation(CSharpCompilation oldCompilation, CSharpCompilation newCompilation)
+        {
+            foreach (var forecastItem in forecastItems.Values)
+            {
+                if (forecastItem.Compilation == oldCompilation)
+                {
+                    forecastItem.Compilation = newCompilation;
+                }
+            }
         }
 
         public void SetExecuteLogger(IExecuteLogger executeLogger)
@@ -54,7 +76,7 @@ namespace AV.Cyclone.Katrina.Executor
                 Directory.CreateDirectory(tempDir);
                 compilationEmitResults = new List<CompilationEmitResult>(compilations.Count);
 
-                foreach (var compilation in compilations.Values)
+                foreach (var compilation in compilations)
                 {
                     var assemblyPath = Path.Combine(tempDir, compilation.AssemblyName + ".dll");
                     // TODO: Store emit results

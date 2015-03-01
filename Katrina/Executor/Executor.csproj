@@ -88,6 +88,7 @@
     <Compile Include="BaseExecuteLogger.cs" />
     <Compile Include="CodeExecutor.cs" />
     <Compile Include="ForecastExecutor.cs" />
+    <Compile Include="ForecastItem.cs" />
     <Compile Include="LoopIterationOperationBuilder.cs" />
     <Compile Include="LoopOperationBuilder.cs" />
     <Compile Include="MethodOperationsBuilder.cs" />

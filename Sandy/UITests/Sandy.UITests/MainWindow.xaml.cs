@@ -30,11 +30,11 @@ namespace AV.Cyclone.Sandy.UITests
 
 			var forecastExecutor = new ForecastExecutor(solution);
 			forecastExecutor.SetStartupProject(projectName);
-			var compilations = forecastExecutor.GetCompilations();
+			var forecastItems = forecastExecutor.GetForecast();
 			var files = forecastExecutor.GetReferences();
 
 			var codeExecutor = new CodeExecutor();
-			codeExecutor.AddCompilations(compilations);
+			codeExecutor.Init(forecastItems);
 			var executeLogger = new OperationsExecuteLogger();
 			codeExecutor.SetExecuteLogger(executeLogger);
 			codeExecutor.Execute(projectName, files, "Test.Algorithms.BinarySerchTest", "LessOrEqualRequired");
