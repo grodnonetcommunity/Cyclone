@@ -94,8 +94,8 @@ namespace AV.Cyclone.OutputPane
         private void Reinitialize(object sender, TextContentChangedEventArgs e)
         {
             //TODO: added triggering of file update when document was changed
-            //if (ExamplesPackage.WeatherStation != null)
-            //    ExamplesPackage.WeatherStation.FileUpdated(ExamplesPackage.Dte.ActiveDocument.FullName, e.Before.GetText());
+            if (ExamplesPackage.WeatherStation != null)
+                ExamplesPackage.WeatherStation.FileUpdated(ExamplesPackage.Dte.ActiveDocument.FullName, e.Before.GetText());
 
             IsInitMarginSet = new bool[Model.ViewObjectModel.Elements.Count];
             Model.Reinit();
