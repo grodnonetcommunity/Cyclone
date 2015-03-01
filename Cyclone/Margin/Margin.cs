@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using AV.Cyclone.OutputPane;
 using AV.Cyclone.Service;
 using Microsoft.VisualStudio.Text.Editor;
@@ -12,11 +13,22 @@ namespace AV.Cyclone.Margin
         public Margin(IWpfTextView sourceView)
         {
             SourceTextView = sourceView;
+            this.Width = 0;
         }
 
         public Margin(IWpfTextView sourceView, ICycloneService cycloneService) : this(sourceView)
         {
             _cycloneService = cycloneService;
+            cycloneService.CycloneChanged += CycloneServiceOnCycloneChanged;
+        }
+
+        private void CycloneServiceOnCycloneChanged(object sender, CycloneEventArgs cycloneEventArgs)
+        {
+            if (cycloneEventArgs.EventType == CycloneEventsType.Start)
+            {
+                this.Width = 400;
+            }
+          
         }
 
         protected IWpfTextView SourceTextView { get; set; }
