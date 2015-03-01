@@ -21,6 +21,8 @@ namespace AV.Cyclone.Katrina.SyntaxProcessor
 
         public override SyntaxNode VisitVariableDeclarator(VariableDeclaratorSyntax node)
         {
+            if (node.Initializer == null)
+                return node;
             var variableName = node.Identifier.Text;
 
             var invocation = CreateLogAssignInvocationExpression(node, variableName, node.Initializer.Value);

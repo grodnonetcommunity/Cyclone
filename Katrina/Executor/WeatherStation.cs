@@ -82,6 +82,7 @@ namespace AV.Cyclone.Katrina.Executor
         public void FileUpdated(string fileName, string content)
         {
             var newSyntaxTree = CSharpSyntaxTree.ParseText(content).WithFilePath(fileName);
+            if (newSyntaxTree.GetDiagnostics().Any(d => d.Severity == DiagnosticSeverity.Error)) return;
             var newSyntaxTreeRoot = newSyntaxTree.GetRoot();
             var visitor = new AddExecuteLoggerVisitor();
             newSyntaxTreeRoot = visitor.Visit(newSyntaxTreeRoot);
