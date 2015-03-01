@@ -98,7 +98,7 @@ namespace AV.Cyclone.OutputPane
         {
             //TODO: added triggering of file update when document was changed
             if (ExamplesPackage.WeatherStation != null)
-                ExamplesPackage.WeatherStation.FileUpdated(ExamplesPackage.Dte.ActiveDocument.FullName, e.After.GetText());
+                ExamplesPackage.WeatherStation.FileUpdated(ExamplesPackage.Dte.ActiveDocument.FullName, e.Before.GetText());
 
             //IsInitMarginSet = new bool[Model.ViewObjectModel.Elements.Count];
             
@@ -111,9 +111,9 @@ namespace AV.Cyclone.OutputPane
 
         private void UpdateScroll(object sender, TextViewLayoutChangedEventArgs e)
         {
-            var args = e;
-            if (!args.VerticalTranslation)
-                return;
+//            var args = e;
+//            if (!args.VerticalTranslation)
+//                return;
 
             UpdateScrollInternal();
         }
