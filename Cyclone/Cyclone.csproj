@@ -209,9 +209,17 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Katrina\Executor.Interfaces\Executor.Interfaces.csproj">
+      <Project>{fa9622f9-abcb-4bcb-a337-ca11af9546ba}</Project>
+      <Name>Executor.Interfaces</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Katrina\Executor\Executor.csproj">
       <Project>{5530b901-f932-4c51-9230-8008423fffb7}</Project>
       <Name>Executor</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Katrina\SyntaxProcessor\SyntaxProcessor.csproj">
+      <Project>{293805d7-c134-41f2-9a91-d75c3a9a4351}</Project>
+      <Name>SyntaxProcessor</Name>
     </ProjectReference>
     <ProjectReference Include="..\Sandy\Models\Sandy.Models.csproj">
       <Project>{1ec05c9f-3034-4313-a94e-98ed1490d688}</Project>

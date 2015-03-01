@@ -114,7 +114,8 @@ namespace AV.Cyclone.Katrina.Executor
                 }
                 var newRoot = logAssignmentRewriter.Visit(syntaxTree.GetRoot());
                 project = project.RemoveDocument(document.Id);
-                project = project.AddDocument(document.Name, newRoot, document.Folders, document.FilePath).Project;
+                var newId = DocumentId.CreateNewId(project.Id, (string)null);
+                project.Solution.AddDocument(newId, document.Name, newRoot, document.Folders, document.FilePath).GetDocument(newId);
             }
             return project;
         }
