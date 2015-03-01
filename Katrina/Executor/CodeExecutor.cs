@@ -23,6 +23,8 @@ namespace AV.Cyclone.Katrina.Executor
 
         private readonly HashSet<CSharpCompilation> compilations =
             new HashSet<CSharpCompilation>();
+
+        private List<CSharpCompilation> executeCompilations;
         private List<CompilationEmitResult> compilationEmitResults;
         private readonly Dictionary<string, ForecastItem> forecastItems = new Dictionary<string, ForecastItem>();
 
@@ -35,6 +37,7 @@ namespace AV.Cyclone.Katrina.Executor
                 forecastItems[forecastItem.SyntaxTree.FilePath] = forecastItem;
                 compilations.Add(forecastItem.Compilation);
             }
+            executeCompilations = compilations.ToList();
         }
 
         public void UpdateFile(string fileName, SyntaxTree newSyntaxTree)
@@ -70,6 +73,9 @@ namespace AV.Cyclone.Katrina.Executor
 
         private void UpdateCompilation(CSharpCompilation oldCompilation, CSharpCompilation newCompilation)
         {
+            compilations.Remove(oldCompilation);
+            compilations.Add(newCompilation);
+            executeCompilations = compilations.ToList();
             foreach (var forecastItem in forecastItems.Values)
             {
                 if (forecastItem.Compilation == oldCompilation)
@@ -77,8 +83,6 @@ namespace AV.Cyclone.Katrina.Executor
                     forecastItem.Compilation = newCompilation;
                 }
             }
-            compilations.Remove(oldCompilation);
-            compilations.Add(newCompilation);
         }
 
         public void SetExecuteLogger(IExecuteLogger executeLogger)
@@ -94,13 +98,14 @@ namespace AV.Cyclone.Katrina.Executor
             {
                 tempDir = Path.Combine(Path.GetTempPath(), "_Cyclon_" + Guid.NewGuid());
                 Directory.CreateDirectory(tempDir);
-                compilationEmitResults = new List<CompilationEmitResult>(compilations.Count);
+                compilationEmitResults = new List<CompilationEmitResult>(executeCompilations.Count);
 
-                foreach (var compilation in compilations)
+                foreach (var compilation in executeCompilations)
                 {
                     var assemblyPath = Path.Combine(tempDir, compilation.AssemblyName + ".dll");
                     // TODO: Store emit results
                     var emitResult = compilation.Emit(assemblyPath);
+                    if (!emitResult.Success) return;
                     compilationEmitResults.Add(new CompilationEmitResult
                     {
                         AssemblyPath = assemblyPath,
@@ -142,7 +147,13 @@ namespace AV.Cyclone.Katrina.Executor
                 }
 
                 loader.SetExecuteLogger(new DomainExecuteLogger(Context.ExecuteLogger));
-                loader.Execute(classAssemblyIndex, className, methodName);
+                try
+                {
+                    loader.Execute(classAssemblyIndex, className, methodName);
+                }
+                catch (TargetInvocationException)
+                {
+                }
             }
             finally
             {
