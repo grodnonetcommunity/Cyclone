@@ -1,17 +1,17 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using AV.Cyclone.Sandy.Models.Operations;
 
 namespace AV.Cyclone.Katrina.Executor
 {
     public class LoopOperationBuilder : OperationBuilder
     {
-        public List<LoopIterationOperationBuilder> Iterations { get; } = new List<LoopIterationOperationBuilder>();
+        public List<LoopIterationOperationBuilder> Iterations { get; private set; }
 
         public int Iteration { get; set; }
 
         public void AddIteration(LoopIterationOperationBuilder iteration)
         {
+            this.Iterations = new List<LoopIterationOperationBuilder>();
             Iterations.Add(iteration);
         }
 

@@ -118,7 +118,7 @@ namespace AV.Cyclone.Katrina.Executor
             {
                 var executeThread = new Thread(Execute);
                 executeThread.Start();
-                if (!executeThread.Join(TimeSpan.FromSeconds(5)))
+                if (!executeThread.Join(TimeSpan.FromSeconds(50)))
                 {
                     executeThread.Abort();
                     if (Context.ExecuteLogger != null && Context.ExecuteLogger is OperationsExecuteLogger)
@@ -163,7 +163,9 @@ namespace AV.Cyclone.Katrina.Executor
 
         protected virtual void OnExecuted()
         {
-            Executed?.Invoke(this, EventArgs.Empty);
+            var executed = Executed;
+            if (executed != null)
+                executed.Invoke(this, EventArgs.Empty);
         }
 
         public void Dispose()

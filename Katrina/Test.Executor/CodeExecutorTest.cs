@@ -10,9 +10,21 @@ namespace Test.Executor
 {
     public class CodeExecutorTest
     {
-        public static MetadataReference Mscorelib => MetadataReference.CreateFromAssembly(typeof (object).Assembly);
+        public static MetadataReference Mscorelib
+        {
+            get
+            {
+                return MetadataReference.CreateFromAssembly(typeof (object).Assembly);
+            }
+        }
 
-        public static MetadataReference ExecutorInterfaces => MetadataReference.CreateFromAssembly(typeof (Context).Assembly);
+        public static MetadataReference ExecutorInterfaces
+        {
+            get
+            {
+                return MetadataReference.CreateFromAssembly(typeof(Context).Assembly);
+            }
+        }
 
         [Test]
         public void SimpleTest()

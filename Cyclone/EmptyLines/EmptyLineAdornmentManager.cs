@@ -70,9 +70,11 @@ namespace AV.Cyclone.EmtyLines
 
         private void Render()
         {
-            TagsChanged?.Invoke(this,
-                new SnapshotSpanEventArgs(new SnapshotSpan(_view.TextSnapshot,
-                    new Span(0, _view.TextSnapshot.Length))));
+            var tagsChanged = TagsChanged;
+            if (tagsChanged != null)
+                tagsChanged.Invoke(this,
+                    new SnapshotSpanEventArgs(new SnapshotSpan(_view.TextSnapshot,
+                        new Span(0, _view.TextSnapshot.Length))));
 
             foreach (var line in _view.TextViewLines)
                 // TODO [?]: implement more sensible handling of removing error tags, then use e.NewOrReformattedLines

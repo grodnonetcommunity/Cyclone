@@ -11,7 +11,12 @@ namespace AV.Cyclone.Katrina.Executor
         private OperationBuilder currentBuilder;
         private int iterationsCount = 0;
 
-        public Dictionary<MethodReference, List<List<Operation>>> MethodCalls { get; } = new Dictionary<MethodReference, List<List<Operation>>>();
+        public Dictionary<MethodReference, List<List<Operation>>> MethodCalls { get; private set; }
+
+        public OperationsExecuteLogger()
+        {
+            MethodCalls = new Dictionary<MethodReference, List<List<Operation>>>();
+        }
 
         public T LogAssign<T>(string expression, string fileNme, int lineNumber, T value)
         {

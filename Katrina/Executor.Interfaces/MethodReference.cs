@@ -8,9 +8,9 @@
             this.MethodName = methodName;
         }
 
-        public string FileName { get; }
+        public string FileName { get; private set; }
 
-        public string MethodName { get; }
+        public string MethodName { get; private set; }
 
         protected bool Equals(MethodReference other)
         {

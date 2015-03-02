@@ -7,17 +7,27 @@ namespace AV.Cyclone.Katrina.SyntaxProcessor
 {
     public class AddExecuteLoggerVisitor : CSharpSyntaxRewriter
     {
-        public string LogAssignMember { get; set; } = "AV.Cyclone.Katrina.Executor.Interfaces.Context.ExecuteLogger.LogAssign";
+        public string LogAssignMember { get; set; }
 
-        public string BeginLoopMember { get; set; } = "AV.Cyclone.Katrina.Executor.Interfaces.Context.ExecuteLogger.BeginLoop";
+        public string BeginLoopMember { get; set; }
 
-        public string LoopIterationMember { get; set; } = "AV.Cyclone.Katrina.Executor.Interfaces.Context.ExecuteLogger.LoopIteration";
+        public string LoopIterationMember { get; set; }
 
-        public string EndLoopMember { get; set; } = "AV.Cyclone.Katrina.Executor.Interfaces.Context.ExecuteLogger.EndLoop";
+        public string EndLoopMember { get; set; }
 
-        public string BeginMethodMember { get; set; } = "AV.Cyclone.Katrina.Executor.Interfaces.Context.ExecuteLogger.BeginMethod";
+        public string BeginMethodMember { get; set; }
 
-        public string EndMethodMember { get; set; } = "AV.Cyclone.Katrina.Executor.Interfaces.Context.ExecuteLogger.EndMethod";
+        public string EndMethodMember { get; set; }
+
+        public AddExecuteLoggerVisitor(bool visitIntoStructuredTrivia = false) : base(visitIntoStructuredTrivia)
+        {
+            LogAssignMember = "AV.Cyclone.Katrina.Executor.Interfaces.Context.ExecuteLogger.LogAssign";
+            BeginLoopMember = "AV.Cyclone.Katrina.Executor.Interfaces.Context.ExecuteLogger.BeginLoop";
+            LoopIterationMember = "AV.Cyclone.Katrina.Executor.Interfaces.Context.ExecuteLogger.LoopIteration";
+            EndLoopMember = "AV.Cyclone.Katrina.Executor.Interfaces.Context.ExecuteLogger.EndLoop";
+            BeginMethodMember = "AV.Cyclone.Katrina.Executor.Interfaces.Context.ExecuteLogger.BeginMethod";
+            EndMethodMember = "AV.Cyclone.Katrina.Executor.Interfaces.Context.ExecuteLogger.EndMethod";
+        }
 
         public override SyntaxNode VisitVariableDeclarator(VariableDeclaratorSyntax node)
         {

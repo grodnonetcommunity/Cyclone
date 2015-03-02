@@ -9,8 +9,14 @@ namespace AV.Cyclone.Sandy.Tests
 	[TestFixture]
 	public class ModelTestClass
 	{
-		public Execution Execution { get; set; } = new Execution();
-		[TestFixtureSetUp]
+		public Execution Execution { get; set; }
+
+	    public ModelTestClass()
+	    {
+	        Execution = new Execution();
+	    }
+
+	    [TestFixtureSetUp]
 		public void Init()
 		{
 			//The main List of operations goes here

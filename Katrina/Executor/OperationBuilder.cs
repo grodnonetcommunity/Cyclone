@@ -5,7 +5,12 @@ namespace AV.Cyclone.Katrina.Executor
 {
     public class OperationBuilder
     {
-        public List<Operation> Operations { get; } = new List<Operation>();
+        public List<Operation> Operations { get; private set; }
+
+        public OperationBuilder()
+        {
+            Operations = new List<Operation>();
+        }
 
         public void Add(Operation operation)
         {

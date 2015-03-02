@@ -124,14 +124,14 @@ namespace AV.Cyclone.Katrina.Executor
                 var assemblyLoaderAssemblyFileName = Path.Combine(tempDir, typeof(AssemblyLoader).Assembly.GetName().Name + ".dll");
                 if (!File.Exists(assemblyLoaderAssemblyFileName))
                     File.Copy(typeof (AssemblyLoader).Assembly.Location, assemblyLoaderAssemblyFileName);
-				AppDomain.CurrentDomain.AssemblyResolve += CurrentDomainOnAssemblyResolve;
-				AppDomainSetup domaininfo = new AppDomainSetup();
-				domaininfo.ApplicationBase = tempDir;
-				Evidence adevidence = AppDomain.CurrentDomain.Evidence;
-				executorDomain = AppDomain.CreateDomain("ExecutorDomain", adevidence, domaininfo
+                AppDomain.CurrentDomain.AssemblyResolve += CurrentDomainOnAssemblyResolve;
+                AppDomainSetup domaininfo = new AppDomainSetup();
+                domaininfo.ApplicationBase = tempDir;
+                Evidence adevidence = AppDomain.CurrentDomain.Evidence;
+                executorDomain = AppDomain.CreateDomain("ExecutorDomain", adevidence, domaininfo
                     /*new AppDomainSetup {ApplicationBase = tempDir, ApplicationTrust = AppDomain.CurrentDomain.ApplicationTrust}*/);
-	            
-				var loader =
+                
+                var loader =
                     (AssemblyLoader)
                         executorDomain.CreateInstanceAndUnwrap(typeof (AssemblyLoader).Assembly.FullName,
                             typeof (AssemblyLoader).FullName);
@@ -176,10 +176,10 @@ namespace AV.Cyclone.Katrina.Executor
             }
         }
 
-	    private Assembly CurrentDomainOnAssemblyResolve(object sender, ResolveEventArgs args)
-	    {
-		    AppDomain.CurrentDomain.AssemblyResolve -= CurrentDomainOnAssemblyResolve;
+        private Assembly CurrentDomainOnAssemblyResolve(object sender, ResolveEventArgs args)
+        {
+            AppDomain.CurrentDomain.AssemblyResolve -= CurrentDomainOnAssemblyResolve;
             return Assembly.Load(args.Name);
-		}
+        }
     }
 }

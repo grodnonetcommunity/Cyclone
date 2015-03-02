@@ -29,6 +29,9 @@ namespace AV.Cyclone.Sandy.OperationParser
 			}
 		}
 
-		public int Count => _elements.Count;
+	    public int Count
+	    {
+	        get { return _elements.Count; }
+	    }
 	}
 }

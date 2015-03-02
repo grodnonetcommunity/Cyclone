@@ -48,7 +48,8 @@ namespace AV.Cyclone.Sandy.OperationParser
 			{
 				//TODO for now only assign operations are supported
 				var singleAssignValue = operations.FirstOrDefault(v => v.IterationNumber == i) as AssignOperation;
-				var variableValueAsString = GetVariableValueAsString(singleAssignValue?.VariableValue);
+			    var variableValueAsString =
+			        GetVariableValueAsString(singleAssignValue != null ? singleAssignValue.VariableValue : null);
 
 				result.Add(new OutputItem(
 					variableValueAsString.Key, 

@@ -114,7 +114,7 @@ void M(){
 
         private static string RemoveEmptyChars(string value)
         {
-            return value.Replace("\r\n", "").Replace(" ", "").Replace("\t", "");
+            return value.Replace("\r\n", "").Replace("\r", "").Replace("\n", "").Replace(" ", "").Replace("\t", "");
         }
 
         private static MethodDeclarationSyntax ParseMethod(string source)

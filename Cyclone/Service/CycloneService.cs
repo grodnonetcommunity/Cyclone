@@ -25,7 +25,9 @@ namespace AV.Cyclone.Service
 
         protected virtual void OnCycloneChanged(CycloneEventArgs e)
         {
-            CycloneChanged?.Invoke(this, e);
+            var cycloneChanged = CycloneChanged;
+            if (cycloneChanged != null)
+                cycloneChanged.Invoke(this, e);
         }
     }
 }

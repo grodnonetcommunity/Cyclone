@@ -7,6 +7,6 @@
             FileName = fileName;
         }
 
-        public string FileName { get; }
+        public string FileName { get; private set; }
     }
 }

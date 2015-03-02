@@ -11,6 +11,8 @@ namespace AV.Cyclone.Sandy.OperationParser
 	{
 		public OperationSearchResult(IList<Operation> operations)
 		{
+		    AssignOperations = new List<AssignOperation>();
+		    LoopOperations = new Dictionary<LoopOperation, IList<AssignOperation>>();
 			//Just to be sure
 			AssignOperations.Clear();
 			LoopOperations.Clear();
@@ -42,9 +44,8 @@ namespace AV.Cyclone.Sandy.OperationParser
 			}
 		}
 
-		public IList<AssignOperation> AssignOperations { get; set; } = new List<AssignOperation>();
+		public IList<AssignOperation> AssignOperations { get; set; }
 
-		public Dictionary<LoopOperation, IList<AssignOperation>> LoopOperations { get; set; } =
-			new Dictionary<LoopOperation, IList<AssignOperation>>();
+		public Dictionary<LoopOperation, IList<AssignOperation>> LoopOperations { get; set; }
 	}
 }

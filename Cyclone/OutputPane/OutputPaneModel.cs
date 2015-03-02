@@ -52,7 +52,9 @@ namespace AV.Cyclone.OutputPane
 
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            var propertyChanged = PropertyChanged;
+            if (propertyChanged != null)
+                propertyChanged.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }
