@@ -72,8 +72,11 @@ namespace AV.Cyclone.OutputPane
 
         private void OnCycloneChanged(object sender, CycloneEventArgs cycloneEventArgs)
         {
-            if (ExamplesPackage.WeatherStation != null)
+            if (ExamplesPackage.WeatherStation != null && cycloneEventArgs.EventType == CycloneEventsType.Start)
+            {
                 ExamplesPackage.WeatherStation.Executed += WeatherStationOnExecuted;
+            }
+                
         }
 
         private void WeatherStationOnExecuted(object sender, EventArgs eventArgs)
@@ -152,25 +155,30 @@ namespace AV.Cyclone.OutputPane
             var nominalLineHeight = Model.SourceTextView.LineHeight;
             var viewLines = Model.SourceTextView.TextViewLines;
 
+            var expandLineInfos = new List<ExpandLineInfo>();
             // viewLines is one element more than first visible line
             for (int i = 0; i < viewLines.Count - 1; i++)
             {
 //                var lineHeight = viewLines[i + 1].Height;
 //                var topAdormentHeight = lineHeight - nominalLineHeight;
                 var index = i + sourceLineNumber;
-//                if (IsInitMarginSet[index])
-//                {
-//                    continue;
-//                }
-//                var wrapper = (UniformGrid)Model.ViewObjectModel[index];
-//                var a = wrapper.Children.OfType<UniformGrid>().FirstOrDefault();
-                Model.ViewObjectModel.SetAdorment(index);
+                //                if (IsInitMarginSet[index])
+                //                {
+                //                    continue;
+                //                }
+                //                var wrapper = (UniformGrid)Model.ViewObjectModel[index];
+                //                var a = wrapper.Children.OfType<UniformGrid>().FirstOrDefault();
+                expandLineInfos.Add(new ExpandLineInfo()
+                {
+                    LineNumber = index
+                });
 //                if (a != null)
 //                {
 //                    a.Margin = new Thickness(0, topAdormentHeight, 0, 0);
 //                    IsInitMarginSet[index] = true;
 //                }
             }
+            Model.ViewObjectModel.SetAdorments(expandLineInfos);
         }
     }
 }

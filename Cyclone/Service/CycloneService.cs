@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace AV.Cyclone.Service
 {
@@ -23,16 +24,12 @@ namespace AV.Cyclone.Service
             OnCycloneChanged(new StartCycloneEventArgs());
         }
 
-        public void ExpandLine(int lineNumber, double preferedSize)
+        public void ExpandLine(List<ExpandLineInfo> list)
         {
-            /*OnCycloneChanged(new ExpandLineEventArgs
+            OnCycloneChanged(new ExpandLineEventArgs
             {
-                ExpandLineInfo = new ExpandLineInfo
-                {
-                    LineNumber = lineNumber,
-                    PreferedSize = preferedSize
-                }
-            });*/
+                ExpandLineInfos = list
+            });
         }
 
         private void OnCycloneChanged(CycloneEventArgs e)

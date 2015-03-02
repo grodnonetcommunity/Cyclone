@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace AV.Cyclone.Service
@@ -7,6 +8,6 @@ namespace AV.Cyclone.Service
     {
         event EventHandler<CycloneEventArgs> CycloneChanged;
         void StartCyclone();
-        void ExpandLine(int lineNumber, double preferedSize);
+        void ExpandLine(List<ExpandLineInfo> list);
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace AV.Cyclone.Service
+﻿using System.Collections.Generic;
+
+namespace AV.Cyclone.Service
 {
     public class ExpandLineEventArgs : CycloneEventArgs
     {
@@ -6,7 +8,7 @@
         {
         }
 
-        public ExpandLineInfo ExpandLineInfo { get; set; }
+        public List<ExpandLineInfo> ExpandLineInfos { get; set; }
     }
 
     public class ExpandLineInfo

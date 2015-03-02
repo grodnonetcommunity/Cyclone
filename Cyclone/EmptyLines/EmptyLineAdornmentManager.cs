@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using AV.Cyclone.Service;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -13,8 +12,8 @@ namespace AV.Cyclone.EmtyLines
     {
         private bool _initialised1;
         private bool _initialised2;
-        private readonly IWpfTextView _view;
         private readonly ICycloneService _cycloneService;
+        private readonly IWpfTextView _view;
 
         public EmptyLineAdornmentManager(IWpfTextView view, ICycloneService cycloneService)
         {
@@ -23,31 +22,6 @@ namespace AV.Cyclone.EmtyLines
             EmptyLines = new Dictionary<int, EmptyLine>();
             _view.LayoutChanged += ViewOnLayoutChanged;
             _cycloneService.CycloneChanged += CycloneServiceOnCycloneChanged;
-        }
-
-        private void CycloneServiceOnCycloneChanged(object sender, CycloneEventArgs cycloneEventArgs)
-        {
-            if (cycloneEventArgs.EventType == CycloneEventsType.ExpandLines)
-            {
-                var data = cycloneEventArgs as ExpandLineEventArgs;
-                EmptyLine emptyLine;
-                if (data != null)
-                {
-                    var expandLineInfo = data.ExpandLineInfo;
-                    if (EmptyLines.TryGetValue(expandLineInfo.LineNumber, out emptyLine))
-                    {
-                        emptyLine.Height = expandLineInfo.PreferedSize;
-                    }
-                    else
-                    {
-                        EmptyLines.Add(expandLineInfo.LineNumber, new EmptyLine()
-                        {
-                            Height = expandLineInfo.PreferedSize
-                        });
-                    }
-                    Render();
-                }
-            }
         }
 
         public Dictionary<int, EmptyLine> EmptyLines { get; set; }
@@ -63,32 +37,43 @@ namespace AV.Cyclone.EmtyLines
 
         public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
 
+        private void CycloneServiceOnCycloneChanged(object sender, CycloneEventArgs cycloneEventArgs)
+        {
+            if (cycloneEventArgs.EventType == CycloneEventsType.ExpandLines)
+            {
+                var data = cycloneEventArgs as ExpandLineEventArgs;
+                EmptyLine emptyLine;
+                if (data != null)
+                {
+                    foreach (var expandLineInfo in data.ExpandLineInfos)
+                    {
+                        if (EmptyLines.TryGetValue(expandLineInfo.LineNumber, out emptyLine))
+                        {
+                            emptyLine.Height = expandLineInfo.PreferedSize;
+                        }
+                        else
+                        {
+                            EmptyLines.Add(expandLineInfo.LineNumber, new EmptyLine
+                            {
+                                Height = expandLineInfo.PreferedSize
+                            });
+                        }
+                    }
+                    Render();
+                }
+            }
+        }
+
         private void ViewOnLayoutChanged(object sender, TextViewLayoutChangedEventArgs textViewLayoutChangedEventArgs)
         {
+            var args = textViewLayoutChangedEventArgs;
+            if (!args.VerticalTranslation)
+                return;
             Render();
         }
 
         private void Render()
         {
-            TagsChanged?.Invoke(this,
-                new SnapshotSpanEventArgs(new SnapshotSpan(_view.TextSnapshot,
-                    new Span(0, _view.TextSnapshot.Length))));
-
-            foreach (var line in _view.TextViewLines)
-                // TODO [?]: implement more sensible handling of removing error tags, then use e.NewOrReformattedLines
-            {
-                var lineNumber = line.Snapshot.GetLineFromPosition(line.Start.Position).LineNumber;
-                //TODO [?]: Limit rate of calls to the below when user is editing a line
-                try
-                {
-                    CreateVisuals(line, lineNumber);
-                }
-                catch (InvalidOperationException ex)
-                {
-                    Debug.WriteLine(ex.Message);
-                }
-            }
-
             if (!_initialised1)
             {
                 _view.ZoomLevel++;
@@ -103,7 +88,6 @@ namespace AV.Cyclone.EmtyLines
 
         private void CreateVisuals(ITextViewLine line, int lineNumber)
         {
-            
         }
     }
 }

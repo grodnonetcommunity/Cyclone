@@ -97,14 +97,19 @@ namespace AV.Cyclone.OutputPane
             return new List<Execution>();
         }
 
-        public void SetAdorment(int lineIndex)
+        public void SetAdorments(List<ExpandLineInfo> expandLineInfos)
         {
-            var height = this[lineIndex].ActualHeight - _lineHeight;
-            if (height < 0)
+            foreach (var expandLineInfo in expandLineInfos)
             {
-                height = 0;
+                var height = this[expandLineInfo.LineNumber].ActualHeight - _lineHeight;
+                if (height < 0)
+                {
+                    height = 0;
+                }
+                expandLineInfo.PreferedSize = height;
             }
-            _cycloneService.ExpandLine(lineIndex, height);
+            
+            _cycloneService.ExpandLine(expandLineInfos);
         }
 
         [NotifyPropertyChangedInvocator]
