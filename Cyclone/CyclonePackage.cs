@@ -86,7 +86,8 @@ namespace AV.Cyclone
             if (vTextView != null)
             {
                 WeatherStationInit(vTextView);
-                GetCycloneService().StartCyclone();
+
+                CycloneServiceProvider.GetCycloneService().StartCyclone();
             }
         }
 
@@ -130,20 +131,6 @@ namespace AV.Cyclone
             // convert to IWpfTextviewHost
             viewHost = (IWpfTextViewHost)holder;
             return viewHost;
-        }
-
-        private ICycloneService GetCycloneService()
-        {
-            // get an instance of the associated IWpfTextViewHost
-            IWpfTextViewHost viewHost = GetIWpfTextViewHost();
-            if (viewHost == null)
-            {
-                return null;
-            }
-
-            ICycloneService cycloneService = CycloneServiceProvider.GetCycloneService(viewHost.TextView);
-
-            return cycloneService;
         }
 
         internal static DTE2 Dte

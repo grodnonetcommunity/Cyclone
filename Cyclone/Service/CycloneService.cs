@@ -2,8 +2,20 @@ using System;
 
 namespace AV.Cyclone.Service
 {
-    public class CycloneService : ICycloneService
+    public sealed class CycloneService : ICycloneService
     {
+        private static readonly Lazy<CycloneService> lazy =
+            new Lazy<CycloneService>(() => new CycloneService());
+
+        private CycloneService()
+        {
+        }
+
+        public static CycloneService Instance
+        {
+            get { return lazy.Value; }
+        }
+
         public event EventHandler<CycloneEventArgs> CycloneChanged;
 
         public void StartCyclone()
@@ -23,7 +35,7 @@ namespace AV.Cyclone.Service
             });*/
         }
 
-        protected virtual void OnCycloneChanged(CycloneEventArgs e)
+        private void OnCycloneChanged(CycloneEventArgs e)
         {
             CycloneChanged?.Invoke(this, e);
         }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
@@ -10,6 +11,7 @@ using System.Windows.Media;
 using AV.Cyclone.Annotations;
 using AV.Cyclone.Sandy.Models;
 using AV.Cyclone.Service;
+using EnvDTE;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -28,7 +30,7 @@ namespace AV.Cyclone.OutputPane
         {
             _view = view;
             Model = model;
-
+            _fullName = model.FilePath;
             _view.ItemsControl.ItemsSource = Model.ViewObjectModel;
 
 //            IsInitMarginSet = new bool[Model.ViewObjectModel.Elements.Count];
@@ -39,6 +41,7 @@ namespace AV.Cyclone.OutputPane
         }
 
         public double ZoomLevel = 1;
+        private static string _fullName;
 
         public IWpfTextView SourceTextView
         {
@@ -63,8 +66,8 @@ namespace AV.Cyclone.OutputPane
         {
             SourceTextView.LayoutChanged += UpdateScroll;
             SourceTextView.ZoomLevelChanged += UpdateZoom;
-            SourceTextView.TextBuffer.Changed += Reinitialize;
-            CycloneServiceProvider.GetCycloneService(SourceTextView).CycloneChanged += OnCycloneChanged;
+            
+            CycloneServiceProvider.GetCycloneService().CycloneChanged += OnCycloneChanged;
         }
 
         private void OnCycloneChanged(object sender, CycloneEventArgs cycloneEventArgs)
@@ -80,29 +83,17 @@ namespace AV.Cyclone.OutputPane
 
         public void InitOuputModule()
         {
-            var operations = ExamplesPackage.WeatherStation.GetOperations(ExamplesPackage.Dte.ActiveDocument.FullName);
-            Model.Reinit(operations);
+            Model.Reinit();
             _view.ItemsControl.ItemsSource = Model.ViewObjectModel;
-            
-            return;
         }
 
         private void Unsubscribe()
         {
             SourceTextView.LayoutChanged -= UpdateScroll;
             SourceTextView.ZoomLevelChanged -= UpdateZoom;
-            SourceTextView.TextBuffer.Changed -= Reinitialize;
         }
 
-        private void Reinitialize(object sender, TextContentChangedEventArgs e)
-        {
-            //TODO: added triggering of file update when document was changed
-            if (ExamplesPackage.WeatherStation != null)
-                ExamplesPackage.WeatherStation.FileUpdated(ExamplesPackage.Dte.ActiveDocument.FullName, e.After.GetText());
-
-            //IsInitMarginSet = new bool[Model.ViewObjectModel.Elements.Count];
-            
-        }
+      
 
         private void UpdateZoom(object sender, ZoomLevelChangedEventArgs e)
         {

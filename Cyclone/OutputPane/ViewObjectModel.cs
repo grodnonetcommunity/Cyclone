@@ -5,7 +5,6 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls.Primitives;
-using System.Windows.Media;
 using AV.Cyclone.Annotations;
 using AV.Cyclone.Sandy.Models;
 using AV.Cyclone.Sandy.OperationParser;
@@ -19,6 +18,7 @@ namespace AV.Cyclone.OutputPane
         private readonly int _numberOfLines;
         private readonly ICycloneService _cycloneService;
         private List<Execution> operations;
+        private readonly string _filePath;
 
         public ViewObjectModel(int numberOfLines, double lineHeight)
         {
@@ -26,10 +26,10 @@ namespace AV.Cyclone.OutputPane
             _lineHeight = lineHeight;
         }
 
-        public ViewObjectModel(int numberOfLines, double lineHeight, ICycloneService cycloneService, List<Execution> operations) : this(numberOfLines, lineHeight)
+        public ViewObjectModel(int numberOfLines, double lineHeight, ICycloneService cycloneService, string filePath) : this(numberOfLines, lineHeight)
         {
             this._cycloneService = cycloneService;
-            this.operations = operations;
+            _filePath = filePath;
             Init();
         }
 
@@ -58,9 +58,9 @@ namespace AV.Cyclone.OutputPane
         private void Init()
         {
             Elements = new ObservableCollection<FrameworkElement>();
-            
+            var operations = GetOperations() ?? new List<Execution>();
             UIGenerator generator = new UIGenerator(operations);
-            OutComponent components = generator.GetOutputComponents(ExamplesPackage.Dte.ActiveDocument.FullName);
+            OutComponent components = generator.GetOutputComponents(_filePath);
 
             for (var i = 0; i < _numberOfLines + 100; i++)
             {
@@ -88,6 +88,13 @@ namespace AV.Cyclone.OutputPane
                 wrap.Children.Add(elemToAdd);
                 Elements.Add(wrap);
             }
+        }
+
+        private List<Execution> GetOperations()
+        {
+            if (ExamplesPackage.WeatherStation != null)
+                return ExamplesPackage.WeatherStation.GetOperations(_filePath);
+            return new List<Execution>();
         }
 
         public void SetAdorment(int lineIndex)

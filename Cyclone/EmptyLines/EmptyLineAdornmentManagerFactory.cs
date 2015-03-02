@@ -16,7 +16,7 @@ namespace AV.Cyclone.EmtyLines
         public void TextViewCreated(IWpfTextView textView)
         {
             textView.Properties.GetOrCreateSingletonProperty(
-                () => new EmptyLineAdornmentManager(textView, CycloneServiceProvider.GetCycloneService(textView)));
+                () => new EmptyLineAdornmentManager(textView, CycloneServiceProvider.GetCycloneService()));
         }
     }
 }

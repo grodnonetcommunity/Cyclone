@@ -9,6 +9,7 @@ namespace AV.Cyclone.Margin
     public class Margin : MarginBase
     {
         private ICycloneService _cycloneService;
+        private readonly string _filePath;
 
         public Margin(IWpfTextView sourceView)
         {
@@ -16,9 +17,10 @@ namespace AV.Cyclone.Margin
             this.Width = 0;
         }
 
-        public Margin(IWpfTextView sourceView, ICycloneService cycloneService) : this(sourceView)
+        public Margin(IWpfTextView sourceView, ICycloneService cycloneService, string filePath) : this(sourceView)
         {
             _cycloneService = cycloneService;
+            _filePath = filePath;
             cycloneService.CycloneChanged += CycloneServiceOnCycloneChanged;
         }
 
@@ -36,9 +38,9 @@ namespace AV.Cyclone.Margin
 
         protected override FrameworkElement CreatePreviewControl()
         {
-            var model = new OutputPaneModel(SourceTextView);
-            OutputPaneView = OutputPaneView ?? new OutputPaneView(model);
-            return OutputPaneView;
+            var model = new OutputPaneModel(SourceTextView, _filePath);
+           
+            return new OutputPaneView(model); 
         }
     }
 }
