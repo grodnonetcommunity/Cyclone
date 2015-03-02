@@ -1,15 +1,57 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<CommandTable xmlns="http://schemas.microsoft.com/VisualStudio/2005-10-18/CommandTable" xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
- 
+<CommandTable xmlns="http://schemas.microsoft.com/VisualStudio/2005-10-18/CommandTable"
+              xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <!--This is the file that defines the IDs for all the commands exposed by VisualStudio. -->
+  <Extern href="stdidcmd.h" />
+
+  <!--This header contains the command ids for the menus provided by the shell. -->
+  <Extern href="vsshlids.h" />
+
+
   <Commands package="guidCyclonePkg">
+    <Groups>
+      <Group guid="guidCyclonePkgCmdSet" id="CyclonePkgMenuGroup" priority="0x0600">
+        <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_CODEWIN" />
+      </Group>
+    </Groups>
+
+    <Buttons>
+      <Button guid="guidCyclonePkgCmdSet" id="cmdidCyclonePkgStartCyclone" priority="0x0100" type="Button">
+        <Parent guid="guidCyclonePkgCmdSet" id="CyclonePkgMenuGroup" />
+        <Icon guid="guidImages" id="bmpPic1" />
+        <Strings>
+          <ButtonText>Start Cyclone</ButtonText>
+        </Strings>
+      </Button>
+    </Buttons>
+
+    <Bitmaps>
+      <Bitmap guid="guidImages" href="Resources\Cloud-Cyclone.png" usedList="bmpPic1" />
+    </Bitmaps>
   </Commands>
-  
+
+  <KeyBindings>
+    <KeyBinding guid="guidCyclonePkgCmdSet" id="cmdidCyclonePkgStartCyclone" mod1="Shift Alt" key1="C"
+                editor="guidVSStd97" />
+  </KeyBindings>
+
   <Symbols>
     <!-- This is the package guid. -->
     <GuidSymbol name="guidCyclonePkg" value="{90692408-765a-405e-927a-a8eaebe81bbd}" />
 
     <GuidSymbol name="guidCycloneCmdSetString" value="{446a9d89-6688-41bc-b98d-754008cf9883}">
+    </GuidSymbol>
+
+    <GuidSymbol name="guidCyclonePkgCmdSet" value="{3BB7351B-93D2-4176-8964-59D37C7F9762}">
+
+      <IDSymbol name="CyclonePkgMenuGroup" value="0x1020" />
+      <IDSymbol name="cmdidCyclonePkgStartCyclone" value="0x0100" />
+    </GuidSymbol>
+
+    <GuidSymbol name="guidImages" value="{ADB7F634-0EDF-43A5-9DF2-B5F63453CD0B}">
+      <IDSymbol name="bmpPic1" value="1" />
+
     </GuidSymbol>
   </Symbols>
 

@@ -1,7 +1,17 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.ComponentModel.Design;
+using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.InteropServices;
+using AV.Cyclone.Katrina.Executor;
+using AV.Cyclone.Service;
+using EnvDTE;
+using EnvDTE80;
+using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace AV.Cyclone
 {
@@ -25,6 +35,9 @@ namespace AV.Cyclone
     [ProvideMenuResource("Menus.ctmenu", 1)]
     public sealed class ExamplesPackage : Package
     {
+        private static DTE2 _dte;
+
+        public static WeatherStation WeatherStation;
         /// <summary>
         /// Default constructor of the package.
         /// Inside this method you can place any initialization code that does not require 
@@ -52,7 +65,92 @@ namespace AV.Cyclone
             Debug.WriteLine (string.Format(CultureInfo.CurrentCulture, "Entering Initialize() of: {0}", this.ToString()));
             base.Initialize();
 
+            OleMenuCommandService mcs = GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
+            if (null != mcs)
+            {
+                // Create the command for the menu item.
+                CommandID menuCommandID = new CommandID(GuidList.guidCyclonePkgCmdSet, (int)0x100);
+                MenuCommand menuItem = new MenuCommand(MenuItemCallback, menuCommandID);
+                mcs.AddCommand(menuItem);
+            }
         }
+
+        private void MenuItemCallback(object sender, EventArgs e)
+        {
+            var txtMgr =
+                (IVsTextManager)GetService(typeof(SVsTextManager));
+            var mustHaveFocus = 1;
+            IVsTextView vTextView;
+            txtMgr.GetActiveView(mustHaveFocus, null, out vTextView);
+
+            if (vTextView != null)
+            {
+                WeatherStationInit(vTextView);
+                GetCycloneService().StartCyclone();
+            }
+        }
+
+        private void WeatherStationInit(IVsTextView vTextView)
+        {
+            int initialLineNumber;
+            int initialColumnNumber;
+            vTextView.GetCaretPos(out initialLineNumber, out initialColumnNumber);
+            var solutionPath = ExamplesPackage.Dte.Solution.FileName;
+
+            var activeDocument = ExamplesPackage.Dte.ActiveDocument;
+            var activeDocumentPath = activeDocument.FullName;
+            var currentProjectName = activeDocument.ProjectItem.ContainingProject.Name;
+
+            WeatherStation = new WeatherStation(solutionPath, currentProjectName, activeDocumentPath, initialLineNumber);
+            WeatherStation.Start();
+        }
+
+        private IWpfTextViewHost GetIWpfTextViewHost()
+        {
+            // get an instance of IVsTextManager
+            IVsTextManager txtMgr = (IVsTextManager)GetService(typeof(SVsTextManager));
+            IVsTextView vTextView = null;
+            int mustHaveFocus = 1;
+            // get the active view from the TextManager
+            txtMgr.GetActiveView(mustHaveFocus, null, out vTextView);
+
+            // cast as IVsUSerData
+            IVsUserData userData = vTextView as IVsUserData;
+            if (userData == null)
+            {
+                Trace.WriteLine("No text view is currently open");
+                return null;
+            }
+
+            IWpfTextViewHost viewHost;
+            object holder;
+            // get the IWpfTextviewHost using the predefined guid for it
+            Guid guidViewHost = DefGuidList.guidIWpfTextViewHost;
+            userData.GetData(ref guidViewHost, out holder);
+            // convert to IWpfTextviewHost
+            viewHost = (IWpfTextViewHost)holder;
+            return viewHost;
+        }
+
+        private ICycloneService GetCycloneService()
+        {
+            // get an instance of the associated IWpfTextViewHost
+            IWpfTextViewHost viewHost = GetIWpfTextViewHost();
+            if (viewHost == null)
+            {
+                return null;
+            }
+
+            ICycloneService cycloneService = CycloneServiceProvider.GetCycloneService(viewHost.TextView);
+
+            return cycloneService;
+        }
+
+        internal static DTE2 Dte
+        {
+            get { return _dte ?? (_dte = ServiceProvider.GlobalProvider.GetService(typeof (DTE)) as DTE2); }
+        }
+
         #endregion
 
     }
