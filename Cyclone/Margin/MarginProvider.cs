@@ -15,7 +15,7 @@ namespace AV.Cyclone.Margin
     /// </summary>
     [Export(typeof (IWpfTextViewMarginProvider))]
     [Name("Margin")]
-    [Order(After = PredefinedMarginNames.VerticalScrollBar)]
+    [Order(Before = PredefinedMarginNames.VerticalScrollBar)]
     [MarginContainer(PredefinedMarginNames.Right)]
     [ContentType("CSharp")]
     [TextViewRole(PredefinedTextViewRoles.PrimaryDocument)]

@@ -14,7 +14,6 @@ namespace AV.Cyclone.Margin
         public Margin(IWpfTextView sourceView)
         {
             SourceTextView = sourceView;
-            this.Width = 0;
         }
 
         public Margin(IWpfTextView sourceView, ICycloneService cycloneService, string filePath) : this(sourceView)
@@ -28,7 +27,7 @@ namespace AV.Cyclone.Margin
         {
             if (cycloneEventArgs.EventType == CycloneEventsType.Start)
             {
-                this.Width = 400;
+                this.columnDefinition.Width = new GridLength(400);
             }
           
         }
