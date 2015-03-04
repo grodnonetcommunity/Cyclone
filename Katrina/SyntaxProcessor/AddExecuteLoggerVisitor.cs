@@ -49,6 +49,18 @@ namespace AV.Cyclone.Katrina.SyntaxProcessor
             return node.Update(node.Left, node.OperatorToken, invocation);
         }
 
+        public override SyntaxNode VisitIfStatement(IfStatementSyntax node)
+        {
+            var ifKeyword = VisitToken(node.IfKeyword);
+            var openParenToken = VisitToken(node.OpenParenToken);
+            var condition = (ExpressionSyntax)Visit(node.Condition);
+            condition = CreateLogAssignInvocationExpression(node, "if", condition);
+            var closeParenToken = VisitToken(node.CloseParenToken);
+            var statement = (StatementSyntax)Visit(node.Statement);
+            var @else = (ElseClauseSyntax)Visit(node.Else);
+            return node.Update(ifKeyword, openParenToken, condition, closeParenToken, statement, @else);
+        }
+
         public override SyntaxNode VisitWhileStatement(WhileStatementSyntax node)
         {
             var beginLoopInvocation = CreateBeginLoopInvocationExpression(node);
@@ -57,6 +69,7 @@ namespace AV.Cyclone.Katrina.SyntaxProcessor
             var whileKeyword = VisitToken(node.WhileKeyword);
             var openParenToken = VisitToken(node.OpenParenToken);
             var condition = (ExpressionSyntax)Visit(node.Condition);
+            condition = CreateLogAssignInvocationExpression(node, "while", condition);
             var closeParenToken = VisitToken(node.CloseParenToken);
             var statement = (StatementSyntax)Visit(node.Statement);
 

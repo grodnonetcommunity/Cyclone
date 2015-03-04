@@ -41,8 +41,8 @@ namespace AV.Cyclone.Sandy.OperationParser
 				variableNamePart.Append(EqualSign);
 			}
 			//variableNamePart.Append(LoopSeparationToken);
-			result.Add(new OutputItem(variableNamePart.ToString() == "return" ? "return" : "var ", MeasureGroup.Var, VariableValueNumber));
-			result.Add(new OutputItem(variableNamePart.ToString(), MeasureGroup.VariableNames, VariableName));
+			result.Add(new OutputItem(variableNamePart.ToString() == "return = " ? "return" : "var ", MeasureGroup.Var, VariableValueNumber));
+			result.Add(new OutputItem(variableNamePart.ToString() == "return = " ? "" :  variableNamePart.ToString(), MeasureGroup.VariableNames, VariableName));
 
 			for (int i = 0; i < parent.GetTotalNumberOfIteration; i++)
 			{

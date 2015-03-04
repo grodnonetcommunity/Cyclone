@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using AV.Cyclone.Sandy.Models;
 using AV.Cyclone.Service;
+using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace AV.Cyclone.OutputPane
@@ -11,18 +10,16 @@ namespace AV.Cyclone.OutputPane
     public class OutputPaneModel : INotifyPropertyChanged
     {
         private double _zoomLevel;
+        public readonly string FilePath;
 
-        public OutputPaneModel(IWpfTextView sourceTextView)
+        public OutputPaneModel(IWpfTextView sourceTextView, string filePath)
         {
+            FilePath = filePath;
             SourceTextView = sourceTextView;
-            ViewObjectModel = new ViewObjectModel(NuberOfLines, LineHeight, CycloneServiceProvider.GetCycloneService(SourceTextView), new List<Execution>());
-
+            ViewObjectModel = new ViewObjectModel(NuberOfLines, LineHeight, CycloneServiceProvider.GetCycloneService(),
+                FilePath);
+            SourceTextView.TextBuffer.Changed += Reinitialize;
             ZoomLevel = SourceTextView.ZoomLevel;
-        }
-
-        public void Reinit(List<Execution> operations)
-        {
-            ViewObjectModel = new ViewObjectModel(NuberOfLines, LineHeight, CycloneServiceProvider.GetCycloneService(SourceTextView), operations);
         }
 
         public IWpfTextView SourceTextView { get; set; }
@@ -49,6 +46,18 @@ namespace AV.Cyclone.OutputPane
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
+
+        private void Reinitialize(object sender, TextContentChangedEventArgs e)
+        {
+            if (ExamplesPackage.WeatherStation != null)
+                ExamplesPackage.WeatherStation.FileUpdated(FilePath, e.After.GetText());
+        }
+
+        public void Reinit( /*List<Execution> operations*/)
+        {
+            ViewObjectModel = new ViewObjectModel(NuberOfLines, LineHeight, CycloneServiceProvider.GetCycloneService(),
+                FilePath);
+        }
 
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {

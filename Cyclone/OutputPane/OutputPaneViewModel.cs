@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
@@ -10,6 +11,7 @@ using System.Windows.Media;
 using AV.Cyclone.Annotations;
 using AV.Cyclone.Sandy.Models;
 using AV.Cyclone.Service;
+using EnvDTE;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -28,7 +30,7 @@ namespace AV.Cyclone.OutputPane
         {
             _view = view;
             Model = model;
-
+            _fullName = model.FilePath;
             _view.ItemsControl.ItemsSource = Model.ViewObjectModel;
 
 //            IsInitMarginSet = new bool[Model.ViewObjectModel.Elements.Count];
@@ -39,6 +41,7 @@ namespace AV.Cyclone.OutputPane
         }
 
         public double ZoomLevel = 1;
+        private static string _fullName;
 
         public IWpfTextView SourceTextView
         {
@@ -63,14 +66,17 @@ namespace AV.Cyclone.OutputPane
         {
             SourceTextView.LayoutChanged += UpdateScroll;
             SourceTextView.ZoomLevelChanged += UpdateZoom;
-            SourceTextView.TextBuffer.Changed += Reinitialize;
-            CycloneServiceProvider.GetCycloneService(SourceTextView).CycloneChanged += OnCycloneChanged;
+            
+            CycloneServiceProvider.GetCycloneService().CycloneChanged += OnCycloneChanged;
         }
 
         private void OnCycloneChanged(object sender, CycloneEventArgs cycloneEventArgs)
         {
-            if (ExamplesPackage.WeatherStation != null)
+            if (ExamplesPackage.WeatherStation != null && cycloneEventArgs.EventType == CycloneEventsType.Start)
+            {
                 ExamplesPackage.WeatherStation.Executed += WeatherStationOnExecuted;
+            }
+                
         }
 
         private void WeatherStationOnExecuted(object sender, EventArgs eventArgs)
@@ -80,29 +86,17 @@ namespace AV.Cyclone.OutputPane
 
         public void InitOuputModule()
         {
-            var operations = ExamplesPackage.WeatherStation.GetOperations(ExamplesPackage.Dte.ActiveDocument.FullName);
-            Model.Reinit(operations);
+            Model.Reinit();
             _view.ItemsControl.ItemsSource = Model.ViewObjectModel;
-            
-            return;
         }
 
         private void Unsubscribe()
         {
             SourceTextView.LayoutChanged -= UpdateScroll;
             SourceTextView.ZoomLevelChanged -= UpdateZoom;
-            SourceTextView.TextBuffer.Changed -= Reinitialize;
         }
 
-        private void Reinitialize(object sender, TextContentChangedEventArgs e)
-        {
-            //TODO: added triggering of file update when document was changed
-            if (ExamplesPackage.WeatherStation != null)
-                ExamplesPackage.WeatherStation.FileUpdated(ExamplesPackage.Dte.ActiveDocument.FullName, e.After.GetText());
-
-            //IsInitMarginSet = new bool[Model.ViewObjectModel.Elements.Count];
-            
-        }
+      
 
         private void UpdateZoom(object sender, ZoomLevelChangedEventArgs e)
         {
@@ -163,25 +157,30 @@ namespace AV.Cyclone.OutputPane
             var nominalLineHeight = Model.SourceTextView.LineHeight;
             var viewLines = Model.SourceTextView.TextViewLines;
 
+            var expandLineInfos = new List<ExpandLineInfo>();
             // viewLines is one element more than first visible line
             for (int i = 0; i < viewLines.Count - 1; i++)
             {
 //                var lineHeight = viewLines[i + 1].Height;
 //                var topAdormentHeight = lineHeight - nominalLineHeight;
                 var index = i + sourceLineNumber;
-//                if (IsInitMarginSet[index])
-//                {
-//                    continue;
-//                }
-//                var wrapper = (UniformGrid)Model.ViewObjectModel[index];
-//                var a = wrapper.Children.OfType<UniformGrid>().FirstOrDefault();
-                Model.ViewObjectModel.SetAdorment(index);
+                //                if (IsInitMarginSet[index])
+                //                {
+                //                    continue;
+                //                }
+                //                var wrapper = (UniformGrid)Model.ViewObjectModel[index];
+                //                var a = wrapper.Children.OfType<UniformGrid>().FirstOrDefault();
+                expandLineInfos.Add(new ExpandLineInfo()
+                {
+                    LineNumber = index
+                });
 //                if (a != null)
 //                {
 //                    a.Margin = new Thickness(0, topAdormentHeight, 0, 0);
 //                    IsInitMarginSet[index] = true;
 //                }
             }
+            Model.ViewObjectModel.SetAdorments(expandLineInfos);
         }
     }
 }

@@ -15,7 +15,7 @@ namespace AV.Cyclone.EmtyLines
         {
             var manager =
                 textView.Properties.GetOrCreateSingletonProperty(
-                    () => new EmptyLineAdornmentManager(textView, CycloneServiceProvider.GetCycloneService(textView)));
+                    () => new EmptyLineAdornmentManager(textView, CycloneServiceProvider.GetCycloneService()));
             return new EmptyLineTransformSource(manager);
         }
     }

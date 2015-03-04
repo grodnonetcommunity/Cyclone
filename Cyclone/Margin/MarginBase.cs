@@ -13,6 +13,7 @@ namespace AV.Cyclone.Margin
         protected Dispatcher _dispatcher;
         private bool _isDisposed = false;
         private FrameworkElement _previewControl;
+        protected ColumnDefinition columnDefinition;
 
         protected MarginBase()
         {
@@ -25,12 +26,13 @@ namespace AV.Cyclone.Margin
 
         protected virtual void CreateMarginControls()
         {
-            int width = 400;
+            int width = 0;
 
             var grid = new Grid();
             grid.ColumnDefinitions.Add(new ColumnDefinition {Width = new GridLength(0, GridUnitType.Star)});
             grid.ColumnDefinitions.Add(new ColumnDefinition {Width = new GridLength(5, GridUnitType.Pixel)});
-            grid.ColumnDefinitions.Add(new ColumnDefinition {Width = new GridLength(width, GridUnitType.Pixel)});
+            columnDefinition = new ColumnDefinition {Width = new GridLength(width, GridUnitType.Pixel)};
+            grid.ColumnDefinitions.Add(columnDefinition);
             grid.RowDefinitions.Add(new RowDefinition());
 
             _previewControl = CreatePreviewControl();

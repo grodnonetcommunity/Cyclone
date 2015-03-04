@@ -31,7 +31,7 @@ namespace AV.Cyclone.EmtyLines
                 textView.Properties.GetOrCreateSingletonProperty(
                     () =>
                         new EmptyLineAdornmentManager((IWpfTextView) textView,
-                            CycloneServiceProvider.GetCycloneService((IWpfTextView) textView)));
+                            CycloneServiceProvider.GetCycloneService()));
             return imageAdornmentManager as ITagger<T>;
         }
     }

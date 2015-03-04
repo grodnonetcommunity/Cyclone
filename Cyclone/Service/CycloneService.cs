@@ -1,9 +1,22 @@
 using System;
+using System.Collections.Generic;
 
 namespace AV.Cyclone.Service
 {
-    public class CycloneService : ICycloneService
+    public sealed class CycloneService : ICycloneService
     {
+        private static readonly Lazy<CycloneService> lazy =
+            new Lazy<CycloneService>(() => new CycloneService());
+
+        private CycloneService()
+        {
+        }
+
+        public static CycloneService Instance
+        {
+            get { return lazy.Value; }
+        }
+
         public event EventHandler<CycloneEventArgs> CycloneChanged;
 
         public void StartCyclone()
@@ -11,19 +24,15 @@ namespace AV.Cyclone.Service
             OnCycloneChanged(new StartCycloneEventArgs());
         }
 
-        public void ExpandLine(int lineNumber, double preferedSize)
+        public void ExpandLine(List<ExpandLineInfo> list)
         {
-            /*OnCycloneChanged(new ExpandLineEventArgs
+            OnCycloneChanged(new ExpandLineEventArgs
             {
-                ExpandLineInfo = new ExpandLineInfo
-                {
-                    LineNumber = lineNumber,
-                    PreferedSize = preferedSize
-                }
-            });*/
+                ExpandLineInfos = list
+            });
         }
 
-        protected virtual void OnCycloneChanged(CycloneEventArgs e)
+        private void OnCycloneChanged(CycloneEventArgs e)
         {
             var cycloneChanged = CycloneChanged;
             if (cycloneChanged != null)
