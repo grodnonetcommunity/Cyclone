@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.Composition;
 using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Globalization;
@@ -7,10 +8,11 @@ using AV.Cyclone.Katrina.Executor;
 using AV.Cyclone.Service;
 using EnvDTE;
 using EnvDTE80;
-using Microsoft.VisualStudio.Editor;
+using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
+using DefGuidList = Microsoft.VisualStudio.Editor.DefGuidList;
 
 namespace AV.Cyclone
 {
@@ -34,6 +36,8 @@ namespace AV.Cyclone
     [ProvideMenuResource("Menus.ctmenu", 1)]
     public sealed class ExamplesPackage : Package
     {
+        [Import]
+        public ICycloneService cycloneService;
         private static DTE2 _dte;
 
         public static WeatherStation WeatherStation;
@@ -50,7 +54,6 @@ namespace AV.Cyclone
         }
 
 
-
         /////////////////////////////////////////////////////////////////////////////
         // Overridden Package Implementation
         #region Package Members
@@ -65,6 +68,8 @@ namespace AV.Cyclone
             base.Initialize();
 
             OleMenuCommandService mcs = GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
+            var componentModel = (IComponentModel)GetService(typeof(SComponentModel));
+            cycloneService = componentModel.GetService<ICycloneService>();
             if (null != mcs)
             {
                 // Create the command for the menu item.
@@ -86,7 +91,7 @@ namespace AV.Cyclone
             {
                 WeatherStationInit(vTextView);
 
-                CycloneServiceProvider.GetCycloneService().StartCyclone();
+                cycloneService.StartCyclone();
             }
         }
 

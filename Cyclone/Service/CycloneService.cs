@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 
 namespace AV.Cyclone.Service
 {
+    [Export(typeof(ICycloneService))]
     public sealed class CycloneService : ICycloneService
     {
         private static readonly Lazy<CycloneService> lazy =

@@ -27,6 +27,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Executor", "Katrina\Te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.SyntaxProcessor", "Katarina\Test.SyntaxProcessor\Test.SyntaxProcessor.csproj", "{6F280E7F-1D20-4780-839F-8F799C6DE089}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cyclone.Controls", "Cyclone.Controls\Cyclone.Controls.csproj", "{92956D30-2FE6-438F-A791-B3BE445E83FF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -73,6 +75,10 @@ Global
 		{6F280E7F-1D20-4780-839F-8F799C6DE089}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6F280E7F-1D20-4780-839F-8F799C6DE089}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6F280E7F-1D20-4780-839F-8F799C6DE089}.Release|Any CPU.Build.0 = Release|Any CPU
+		{92956D30-2FE6-438F-A791-B3BE445E83FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92956D30-2FE6-438F-A791-B3BE445E83FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{92956D30-2FE6-438F-A791-B3BE445E83FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{92956D30-2FE6-438F-A791-B3BE445E83FF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
