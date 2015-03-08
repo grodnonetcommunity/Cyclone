@@ -43,7 +43,7 @@ namespace AV.Cyclone.Sandy.OperationParser
 				foreach (var line in lines)
 				{
 					var uiElement = GetLine(line, fileName, execution);
-                    if (uiElement == null) continue;
+					if (uiElement == null) continue;
 					if (!uiComponents.ContainsKey(line))
 					{
 						var panel = new StackPanel
@@ -76,7 +76,7 @@ namespace AV.Cyclone.Sandy.OperationParser
 							};
 							panel.Children.Add(border);
 						}
-                        panel.Children.Add(uiElement);
+						panel.Children.Add(uiElement);
 					}
 				}
 			}

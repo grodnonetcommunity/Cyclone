@@ -1,23 +1,75 @@
 ﻿using System;
 using System.Windows.Media;
+using System.Windows.Threading;
 using AV.Cyclone.Sandy.Models;
+using AV.Cyclone.Sandy.OperationParser;
+using AV.Cyclone.Service;
 using Cyclon.Controls;
 using Microsoft.VisualStudio.PlatformUI;
+using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace AV.Cyclone.Margin
 {
     class CycloneMargin : IWpfTextViewMargin
     {
-        public const string MarginName = "Test.VisualStudioMargin";
+        private readonly ICycloneService cycloneService;
+        private readonly IWpfTextView textView;
+        private readonly ITextDocumentFactoryService documentFactoryService;
+        public const string MarginName = "Cyclone.WeatherStationMargin";
         private bool isDisposed;
         private readonly MarginContent marginContent;
+        private readonly Dispatcher dispatcher;
 
-        public CycloneMargin(IWpfTextView textView, ICloudCollection cloudCollection)
+        public CycloneMargin(ICycloneService cycloneService, IWpfTextView textView, ITextDocumentFactoryService documentFactoryService)
         {
             VSColorTheme.ThemeChanged += VsColorThemeOnThemeChanged;
-            this.marginContent = new MarginContent(new VisualStudioTextViewService(textView), cloudCollection);
+            this.cycloneService = cycloneService;
+            this.textView = textView;
+            this.documentFactoryService = documentFactoryService;
+            this.cycloneService.CycloneChanged += CycloneServiceOnCycloneChanged;
+            this.marginContent = new MarginContent(new VisualStudioTextViewService(textView));
+            this.marginContent.Width = 0;
+            dispatcher = Dispatcher.CurrentDispatcher;
             VsColorThemeOnThemeChanged(new ThemeChangedEventArgs(0));
+        }
+
+        private void CycloneServiceOnCycloneChanged(object sender, CycloneEventArgs cycloneEventArgs)
+        {
+            if (cycloneEventArgs.EventType == CycloneEventsType.Start)
+            {
+                if (ExamplesPackage.WeatherStation == null) return;
+                ExamplesPackage.WeatherStation.Executed += WeatherStationOnExecuted;
+            }
+        }
+
+        private void WeatherStationOnExecuted(object sender, EventArgs eventArgs)
+        {
+            dispatcher.BeginInvoke((Action) GetCloudCollection);
+        }
+
+        private void GetCloudCollection()
+        {
+            ITextDocument document;
+
+            if (!documentFactoryService.TryGetTextDocument(textView.TextDataModel.DocumentBuffer, out document))
+                return;
+            var operations = ExamplesPackage.WeatherStation.GetOperations(document.FilePath);
+            if (operations == null)
+                return;
+            var uiGenerator = new UIGenerator(operations);
+            var outComponent = uiGenerator.GetOutputComponents(document.FilePath);
+            CloudCollection = new OperationsCloudCollection(outComponent);
+        }
+
+        public ICloudCollection CloudCollection
+        {
+            get { return marginContent.CloudCollection; }
+            set
+            {
+                marginContent.CloudCollection = value;
+                marginContent.Width = marginContent.CloudCollection == null ? 0 : Double.NaN;
+            }
         }
 
         private void ThrowIfDisposed()

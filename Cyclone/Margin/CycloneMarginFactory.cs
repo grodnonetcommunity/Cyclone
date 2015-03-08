@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.Composition;
+﻿using System;
+using System.ComponentModel.Composition;
 using AV.Cyclone.Service;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -24,10 +25,9 @@ namespace AV.Cyclone.Margin
         {
             /*var cloudCollection = CycloneService.GetClouds(textViewHost.TextView);
             if (cloudCollection == null)
-                return null;
+                return null;*/
 
-            return new CycloneMargin(textViewHost.TextView, cloudCollection);*/
-            return null;
+            return new CycloneMargin(CycloneService, textViewHost.TextView, TextDocumentFactoryService);
         }
     }
 }
