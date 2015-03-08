@@ -16,6 +16,6 @@
         <GridSplitter Grid.Column="1" Grid.Row="0" Width="5" ResizeDirection="Columns" VerticalAlignment="Stretch"
                       HorizontalAlignment="Stretch" Background="Transparent"/>
 
-        <Canvas Grid.Row="0" Grid.Column="2" Name="contentCanvas" UseLayoutRounding="True"/>
+        <Canvas Grid.Row="0" Grid.Column="2" Name="contentCanvas" UseLayoutRounding="True" Grid.IsSharedSizeScope="True"/>
     </Grid>
 </UserControl>
