@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows;
 using System.Windows.Controls;
 using AV.Cyclone.Sandy.Models;
 using JetBrains.Annotations;
@@ -47,14 +48,38 @@ namespace Cyclon.Controls
                 if (!ReferenceEquals(lineControl.Parent, this) && lineControl.Parent != null)
                     lineControl.Parent.RemoveChild(lineControl);
 
-                if (lineControl is Control)
-                {
-                    ((Control)lineControl).FontSize = 12 * scale;
-                }
+                SetFontSize(lineControl, scale);
 
                 contentCanvas.Children.Add(lineControl);
                 Canvas.SetLeft(lineControl, 0);
                 Canvas.SetTop(lineControl, line.TextTop * scale);
+            }
+        }
+
+        private static void SetFontSize(FrameworkElement control, double scale)
+        {
+            if (control is Control)
+            {
+                ((Control) control).FontSize = 12*scale;
+            }
+            else if (control is Panel)
+            {
+                foreach (var child in ((Panel)control).Children)
+                {
+                    SetFontSize((FrameworkElement)child, scale);
+                }
+            }
+            else if (control is TextBlock)
+            {
+                ((TextBlock) control).FontSize = 12*scale;
+            }
+            else if (control is Decorator)
+            {
+                SetFontSize((FrameworkElement) ((Decorator) control).Child, scale);
+            }
+            else
+            {
+                
             }
         }
 
