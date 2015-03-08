@@ -92,6 +92,8 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EmptyLines\EmptyLineTransformSource.cs" />
+    <Compile Include="EmptyLines\EmptyLineTransformSourceProvider.cs" />
     <Compile Include="Guids.cs" />
     <Compile Include="Margin\Margin.cs" />
     <Compile Include="Margin\MarginBase.cs" />
