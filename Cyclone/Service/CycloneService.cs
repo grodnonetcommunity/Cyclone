@@ -26,14 +26,6 @@ namespace AV.Cyclone.Service
             OnCycloneChanged(new StartCycloneEventArgs());
         }
 
-        public void ExpandLine(List<ExpandLineInfo> list)
-        {
-            OnCycloneChanged(new ExpandLineEventArgs
-            {
-                ExpandLineInfos = list
-            });
-        }
-
         private void OnCycloneChanged(CycloneEventArgs e)
         {
             var cycloneChanged = CycloneChanged;
