@@ -34,6 +34,17 @@ namespace AV.Cyclone.Margin
             VsColorThemeOnThemeChanged(new ThemeChangedEventArgs(0));
         }
 
+        private void TextBufferOnChanged(object sender, TextContentChangedEventArgs e)
+        {
+            ITextDocument document;
+
+            if (!documentFactoryService.TryGetTextDocument(textView.TextDataModel.DocumentBuffer, out document))
+                return;
+
+            if (ExamplesPackage.WeatherStation == null) return;
+            ExamplesPackage.WeatherStation.FileUpdated(document.FilePath, e.After.GetText());
+        }
+
         private void CycloneServiceOnCycloneChanged(object sender, CycloneEventArgs cycloneEventArgs)
         {
             if (cycloneEventArgs.EventType == CycloneEventsType.Start)
@@ -60,6 +71,7 @@ namespace AV.Cyclone.Margin
             var uiGenerator = new UIGenerator(operations);
             var outComponent = uiGenerator.GetOutputComponents(document.FilePath);
             CloudCollection = new OperationsCloudCollection(outComponent);
+            textView.TextBuffer.Changed += TextBufferOnChanged;
         }
 
         public ICloudCollection CloudCollection

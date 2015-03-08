@@ -7,8 +7,6 @@ namespace AV.Cyclone
     public class OperationsCloudCollection : ICloudCollection
     {
         private readonly OutComponent outComponent;
-        private readonly UIGenerator uiGenerator;
-        private readonly string fileName;
 
         public OperationsCloudCollection(OutComponent outComponent)
         {
