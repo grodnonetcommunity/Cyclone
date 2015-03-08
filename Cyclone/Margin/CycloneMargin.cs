@@ -47,11 +47,8 @@ namespace AV.Cyclone.Margin
 
         private void CycloneServiceOnCycloneChanged(object sender, CycloneEventArgs cycloneEventArgs)
         {
-            if (cycloneEventArgs.EventType == CycloneEventsType.Start)
-            {
-                if (ExamplesPackage.WeatherStation == null) return;
-                ExamplesPackage.WeatherStation.Executed += WeatherStationOnExecuted;
-            }
+            if (ExamplesPackage.WeatherStation == null) return;
+            ExamplesPackage.WeatherStation.Executed += WeatherStationOnExecuted;
         }
 
         private void WeatherStationOnExecuted(object sender, EventArgs eventArgs)

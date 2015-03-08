@@ -23,7 +23,7 @@ namespace AV.Cyclone.Service
 
         public void StartCyclone()
         {
-            OnCycloneChanged(new StartCycloneEventArgs());
+            OnCycloneChanged(new CycloneEventArgs());
         }
 
         private void OnCycloneChanged(CycloneEventArgs e)
