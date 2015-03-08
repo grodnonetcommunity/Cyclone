@@ -8,7 +8,7 @@ namespace Test.Algorithms
         [Test]
         public void LessOrEqualRequired()
         {
-            var key = 3;
+            int key = 3, x = 0;
             var array = new[] {1, 2, 3, 4, 5, 6};
 
             var index = BinarySearch(key, array);

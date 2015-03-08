@@ -20,12 +20,7 @@ namespace AV.Cyclone.EmptyLines
 
         public ILineTransformSource Create(IWpfTextView textView)
         {
-            /*var cloudCollection = CycloneService.GetClouds(textView);
-            if (cloudCollection == null)
-                return null;
-
-            return new EmptyLineTransformSource(cloudCollection);*/
-            return null;
+            return new EmptyLineTransformSource(CycloneService, textView, TextDocumentFactoryService);
         }
     }
 }
