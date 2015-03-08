@@ -56,10 +56,10 @@ namespace AV.Cyclone.EmptyLines
             set
             {
                 cloudCollection = value;
-                foreach (var line in textView.TextViewLines)
-                {
-                    textView.DisplayTextLineContainingBufferPosition(line.Start, line.Top, ViewRelativePosition.Top);
-                }
+                // Hack for reformat code
+                var oldTabSize = textView.Options.GetOptionValue(DefaultOptions.TabSizeOptionId);
+                textView.Options.SetOptionValue(DefaultOptions.TabSizeOptionId, oldTabSize + 1);
+                textView.Options.SetOptionValue(DefaultOptions.TabSizeOptionId, oldTabSize);
             }
         }
 
@@ -71,7 +71,7 @@ namespace AV.Cyclone.EmptyLines
             var lineNumber = line.Snapshot.GetLineNumberFromPosition(line.Start.Position);
             var height = cloudCollection.GetHeight(lineNumber);
 
-            if (line.Height < height)
+            if (line.TextHeight < height)
             {
                 return new LineTransform(line.LineTransform.TopSpace,
                     line.LineTransform.BottomSpace + (height - line.Height), line.LineTransform.VerticalScale);
