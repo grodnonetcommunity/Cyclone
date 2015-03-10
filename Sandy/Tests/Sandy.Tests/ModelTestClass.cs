@@ -142,11 +142,11 @@ namespace AV.Cyclone.Sandy.Tests
 		{
 			UIGenerator generator = new UIGenerator(this.Execution);
 			List<Operation> resultFirst = new List<Operation>();
-			generator.SearchOperation(14, Execution.Operations, resultFirst, "1");
+			generator.SearchOperation(14, Execution.Operations, resultFirst);
 			Assert.AreEqual(resultFirst.Count, 2);
 
 			List<Operation> resultSecond = new List<Operation>();
-			generator.SearchOperation(10, Execution.Operations, resultSecond, "1");
+			generator.SearchOperation(10, Execution.Operations, resultSecond);
 			Assert.AreEqual(resultSecond.Count, 2);
 		}
 
@@ -154,7 +154,7 @@ namespace AV.Cyclone.Sandy.Tests
 		public void TotalComponentTest()
 		{
 			UIGenerator generator = new UIGenerator(this.Execution);
-			var components = generator.GetOutputComponents("1");
+			var components = generator.GetOutputComponents();
 			Assert.AreEqual(components.Count, 7);
 		}
 	}

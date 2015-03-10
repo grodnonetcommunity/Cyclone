@@ -62,7 +62,7 @@ namespace AV.Cyclone.Service
             if (operations == null)
                 return null;
             var uiGenerator = new UIGenerator(operations);
-            var outComponent = uiGenerator.GetOutputComponents(document.FilePath);
+            var outComponent = uiGenerator.GetOutputComponents();
 
             cloudCollection = new OperationsCloudCollection(outComponent);
             //cloudCollection.SetColorProvider(colorProviderService.GetColorProvider(textView));

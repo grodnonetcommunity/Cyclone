@@ -25,7 +25,7 @@ namespace AV.Cyclone.Sandy.OperationParser
 			_executions = executions;
 		}
 
-		public OutComponent GetOutputComponents(string fileName)
+		public OutComponent GetOutputComponents()
 		{
 			Dictionary<int, StackPanel> uiComponents = new Dictionary<int, StackPanel>();
 			var outComponent = new OutComponent(uiComponents);
@@ -39,10 +39,10 @@ namespace AV.Cyclone.Sandy.OperationParser
 			for (int i = 0; i < _executions.Count; i++)
 			{
 				var execution = _executions[i];
-				RecursiveSearchLineNumbers(execution.Operations.Where(op => op.FileName == fileName), lines);
+				RecursiveSearchLineNumbers(execution.Operations, lines);
 				foreach (var line in lines)
 				{
-					var uiElement = GetLine(line, fileName, execution);
+					var uiElement = GetLine(line, execution);
 					if (uiElement == null) continue;
 					if (!uiComponents.ContainsKey(line))
 					{
@@ -103,12 +103,12 @@ namespace AV.Cyclone.Sandy.OperationParser
 			}
 		} 
 
-		public UIElement GetLine(int lineNumber, string fileName, Execution execution)
+		public UIElement GetLine(int lineNumber, Execution execution)
 		{
 			var result = new StackPanel();
 
 			List<Operation> foundOperations = new List<Operation>();
-			SearchOperation(lineNumber, execution.Operations, foundOperations, fileName);
+			SearchOperation(lineNumber, execution.Operations, foundOperations);
 
 			//No component for this line
 			if (foundOperations.Count < 1)
@@ -185,10 +185,9 @@ namespace AV.Cyclone.Sandy.OperationParser
 
 		public void SearchOperation(int lineNumber, 
 			[NotNull]IList<Operation> operations, 
-			[NotNull]IList<Operation> results,[NotNull] string fileName)
+			[NotNull]IList<Operation> results)
 		{
-			foreach (var operation in operations
-				.Where(o => o.FileName == fileName))
+			foreach (var operation in operations)
 			{
 				if (operation.LineNumber == lineNumber)
 				{
@@ -206,7 +205,7 @@ namespace AV.Cyclone.Sandy.OperationParser
 							operationToPopulate.ParentOperation = loopOperation;
 							operationToPopulate.IterationNumber = loopOperationItem.Key;
 						}
-						SearchOperation(lineNumber, loopOperationItem.Value, results, fileName);
+						SearchOperation(lineNumber, loopOperationItem.Value, results);
 					}
 				}
 			}
