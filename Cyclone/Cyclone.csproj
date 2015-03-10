@@ -111,9 +111,7 @@
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="CyclonePackage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Service\CycloneEventsType.cs" />
     <Compile Include="Service\CycloneService.cs" />
-    <Compile Include="Service\ExpandLineEventArgs.cs" />
     <Compile Include="Service\ICycloneService.cs" />
     <Compile Include="Service\StartCycloneEventArgs.cs" />
     <Compile Include="Service\CycloneEventArgs.cs" />

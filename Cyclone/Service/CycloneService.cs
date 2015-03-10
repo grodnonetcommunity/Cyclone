@@ -1,44 +1,94 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Windows.Threading;
+using AV.Cyclone.Katrina.Executor;
+using AV.Cyclone.Sandy.Models;
+using AV.Cyclone.Sandy.OperationParser;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
 
 namespace AV.Cyclone.Service
 {
     [Export(typeof(ICycloneService))]
     public sealed class CycloneService : ICycloneService
     {
-        private static readonly Lazy<CycloneService> lazy =
-            new Lazy<CycloneService>(() => new CycloneService());
+        private readonly ITextDocumentFactoryService textDocumentFactoryService;
+        private readonly Dispatcher dispatcher;
+        private Dictionary<string, ICloudCollection> clouds = new Dictionary<string, ICloudCollection>();
+        private WeatherStation weatherStation;
 
-        private CycloneService()
+        [ImportingConstructor]
+        private CycloneService(ITextDocumentFactoryService textDocumentFactoryService)
         {
+            this.textDocumentFactoryService = textDocumentFactoryService;
+            this.dispatcher = Dispatcher.CurrentDispatcher;
         }
 
-        public static CycloneService Instance
+        public event EventHandler Changed;
+
+        public void StartCyclone(string solutionPath, string projectName, string filePath, int lineNumber)
         {
-            get { return lazy.Value; }
+            DisposeWeatherStation();
+            weatherStation = new WeatherStation(solutionPath, projectName, filePath, lineNumber);
+            weatherStation.Executed += WeatherStationOnExecuted;
+            weatherStation.Start();
         }
 
-        public event EventHandler<CycloneEventArgs> CycloneChanged;
-
-        public void StartCyclone()
+        public void UpdateFile(ITextView textView, string content)
         {
-            OnCycloneChanged(new StartCycloneEventArgs());
+            if (weatherStation == null) return;
+
+            ITextDocument document;
+
+            if (!textDocumentFactoryService.TryGetTextDocument(textView.TextDataModel.DocumentBuffer, out document))
+                return;
+
+            weatherStation.FileUpdated(document.FilePath, content);
         }
 
-        public void ExpandLine(List<ExpandLineInfo> list)
+        public ICloudCollection GetClouds(IWpfTextView textView)
         {
-            OnCycloneChanged(new ExpandLineEventArgs
+            ITextDocument document;
+
+            if (!textDocumentFactoryService.TryGetTextDocument(textView.TextDataModel.DocumentBuffer, out document))
+                return null;
+
+            ICloudCollection cloudCollection;
+            if (clouds.TryGetValue(document.FilePath, out cloudCollection))
+                return cloudCollection;
+
+            var operations = weatherStation.GetOperations(document.FilePath);
+            if (operations == null)
+                return null;
+            var uiGenerator = new UIGenerator(operations);
+            var outComponent = uiGenerator.GetOutputComponents(document.FilePath);
+
+            cloudCollection = new OperationsCloudCollection(outComponent);
+            //cloudCollection.SetColorProvider(colorProviderService.GetColorProvider(textView));
+            clouds.Add(document.FilePath, cloudCollection);
+            return cloudCollection;
+        }
+
+        private void WeatherStationOnExecuted(object sender, EventArgs eventArgs)
+        {
+            clouds = new Dictionary<string, ICloudCollection>();
+            dispatcher.BeginInvoke((Action)OnChanged);
+        }
+
+        private void DisposeWeatherStation()
+        {
+            if (weatherStation != null)
             {
-                ExpandLineInfos = list
-            });
+                weatherStation.Executed -= WeatherStationOnExecuted;
+                weatherStation.Dispose();
+            }
         }
 
-        private void OnCycloneChanged(CycloneEventArgs e)
+        private void OnChanged()
         {
-            var cycloneChanged = CycloneChanged;
-            if (cycloneChanged != null)
-                cycloneChanged.Invoke(this, e);
+            var handler = Changed;
+            if (handler != null) handler(this, EventArgs.Empty);
         }
     }
 }

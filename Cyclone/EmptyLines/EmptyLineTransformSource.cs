@@ -3,7 +3,6 @@ using System.Windows.Threading;
 using AV.Cyclone.Sandy.Models;
 using AV.Cyclone.Sandy.OperationParser;
 using AV.Cyclone.Service;
-using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Formatting;
 
@@ -13,45 +12,23 @@ namespace AV.Cyclone.EmptyLines
     {
         private readonly ICycloneService cycloneService;
         private readonly IWpfTextView textView;
-        private readonly ITextDocumentFactoryService documentFactoryService;
-        private readonly Dispatcher dispatcher;
         private ICloudCollection cloudCollection;
 
-        public EmptyLineTransformSource(ICycloneService cycloneService, IWpfTextView textView, ITextDocumentFactoryService documentFactoryService)
+        public EmptyLineTransformSource(ICycloneService cycloneService, IWpfTextView textView)
         {
-            this.dispatcher = Dispatcher.CurrentDispatcher;
             this.cycloneService = cycloneService;
             this.textView = textView;
-            this.documentFactoryService = documentFactoryService;
-            this.cycloneService.CycloneChanged += CycloneServiceOnCycloneChanged;
+            this.cycloneService.Changed += CycloneServiceOnChanged;
         }
 
-        private void CycloneServiceOnCycloneChanged(object sender, CycloneEventArgs cycloneEventArgs)
+        private void CycloneServiceOnChanged(object sender, EventArgs eventArgs)
         {
-            if (cycloneEventArgs.EventType == CycloneEventsType.Start)
-            {
-                if (ExamplesPackage.WeatherStation == null) return;
-                ExamplesPackage.WeatherStation.Executed += WeatherStationOnExecuted;
-            }
+            UpdateClouds();
         }
 
-        private void WeatherStationOnExecuted(object sender, EventArgs eventArgs)
+        private void UpdateClouds()
         {
-            dispatcher.BeginInvoke((Action)GetCloudCollection);
-        }
-
-        private void GetCloudCollection()
-        {
-            ITextDocument document;
-
-            if (!documentFactoryService.TryGetTextDocument(textView.TextDataModel.DocumentBuffer, out document))
-                return;
-            var operations = ExamplesPackage.WeatherStation.GetOperations(document.FilePath);
-            if (operations == null)
-                return;
-            var uiGenerator = new UIGenerator(operations);
-            var outComponent = uiGenerator.GetOutputComponents(document.FilePath);
-            CloudCollection = new OperationsCloudCollection(outComponent);
+            CloudCollection = cycloneService.GetClouds(textView);
         }
         public ICloudCollection CloudCollection
         {
@@ -59,10 +36,10 @@ namespace AV.Cyclone.EmptyLines
             set
             {
                 cloudCollection = value;
-                foreach (var line in textView.TextViewLines)
-                {
-                    textView.DisplayTextLineContainingBufferPosition(line.Start, line.Top, ViewRelativePosition.Top);
-                }
+                // Hack for reformat code
+                var oldTabSize = textView.Options.GetOptionValue(DefaultOptions.TabSizeOptionId);
+                textView.Options.SetOptionValue(DefaultOptions.TabSizeOptionId, oldTabSize + 1);
+                textView.Options.SetOptionValue(DefaultOptions.TabSizeOptionId, oldTabSize);
             }
         }
 
@@ -74,7 +51,7 @@ namespace AV.Cyclone.EmptyLines
             var lineNumber = line.Snapshot.GetLineNumberFromPosition(line.Start.Position);
             var height = cloudCollection.GetHeight(lineNumber);
 
-            if (line.Height < height)
+            if (line.TextHeight < height)
             {
                 return new LineTransform(line.LineTransform.TopSpace,
                     line.LineTransform.BottomSpace + (height - line.Height), line.LineTransform.VerticalScale);

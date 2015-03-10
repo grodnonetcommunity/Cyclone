@@ -1,9 +1,6 @@
 ﻿namespace AV.Cyclone.Service
 {
-    public class StartCycloneEventArgs : CycloneEventArgs
+    public class StartCycloneEventArgs
     {
-        public StartCycloneEventArgs() : base(CycloneEventsType.Start)
-        {
-        }
     }
 }

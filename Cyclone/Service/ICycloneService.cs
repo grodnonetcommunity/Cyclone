@@ -1,13 +1,17 @@
 using System;
-using System.Collections.Generic;
-using Microsoft.VisualStudio.TextManager.Interop;
+using AV.Cyclone.Sandy.Models;
+using Microsoft.VisualStudio.Text.Editor;
 
 namespace AV.Cyclone.Service
 {
     public interface ICycloneService
     {
-        event EventHandler<CycloneEventArgs> CycloneChanged;
-        void StartCyclone();
-        void ExpandLine(List<ExpandLineInfo> list);
+        event EventHandler Changed;
+
+        void StartCyclone(string solutionPath, string projectName, string filePath, int lineNumber);
+
+        ICloudCollection GetClouds(IWpfTextView textView);
+
+        void UpdateFile(ITextView textView, string content);
     }
 }
