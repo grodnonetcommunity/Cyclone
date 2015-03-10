@@ -5,13 +5,17 @@ namespace AV.Cyclone.Katrina.Executor
 {
     public class LoopOperationBuilder : OperationBuilder
     {
+        public LoopOperationBuilder()
+        {
+            this.Iterations = new List<LoopIterationOperationBuilder>();
+        }
+
         public List<LoopIterationOperationBuilder> Iterations { get; private set; }
 
         public int Iteration { get; set; }
 
         public void AddIteration(LoopIterationOperationBuilder iteration)
         {
-            this.Iterations = new List<LoopIterationOperationBuilder>();
             Iterations.Add(iteration);
         }
 
