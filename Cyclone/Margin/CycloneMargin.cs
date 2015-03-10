@@ -58,16 +58,7 @@ namespace AV.Cyclone.Margin
 
         private void GetCloudCollection()
         {
-            ITextDocument document;
-
-            if (!documentFactoryService.TryGetTextDocument(textView.TextDataModel.DocumentBuffer, out document))
-                return;
-            var operations = ExamplesPackage.WeatherStation.GetOperations(document.FilePath);
-            if (operations == null)
-                return;
-            var uiGenerator = new UIGenerator(operations);
-            var outComponent = uiGenerator.GetOutputComponents(document.FilePath);
-            CloudCollection = new OperationsCloudCollection(outComponent);
+            CloudCollection = cycloneService.GetClouds(textView);
             textView.TextBuffer.Changed += TextBufferOnChanged;
         }
 

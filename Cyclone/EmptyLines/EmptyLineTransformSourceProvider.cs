@@ -20,7 +20,7 @@ namespace AV.Cyclone.EmptyLines
 
         public ILineTransformSource Create(IWpfTextView textView)
         {
-            return new EmptyLineTransformSource(CycloneService, textView, TextDocumentFactoryService);
+            return new EmptyLineTransformSource(CycloneService, textView);
         }
     }
 }

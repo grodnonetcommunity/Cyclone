@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using AV.Cyclone.Sandy.Models;
+using Microsoft.VisualStudio.Text.Editor;
 
 namespace AV.Cyclone.Service
 {
@@ -8,5 +10,7 @@ namespace AV.Cyclone.Service
         event EventHandler<CycloneEventArgs> CycloneChanged;
 
         void StartCyclone();
+
+        ICloudCollection GetClouds(IWpfTextView textView);
     }
 }

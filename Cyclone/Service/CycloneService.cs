@@ -1,29 +1,53 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using AV.Cyclone.Sandy.Models;
+using AV.Cyclone.Sandy.OperationParser;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
 
 namespace AV.Cyclone.Service
 {
     [Export(typeof(ICycloneService))]
     public sealed class CycloneService : ICycloneService
     {
-        private static readonly Lazy<CycloneService> lazy =
-            new Lazy<CycloneService>(() => new CycloneService());
+        private readonly Dictionary<string, ICloudCollection> clouds = new Dictionary<string, ICloudCollection>();
+        private readonly ITextDocumentFactoryService textDocumentFactoryService;
 
-        private CycloneService()
+        [ImportingConstructor]
+        private CycloneService(ITextDocumentFactoryService textDocumentFactoryService)
         {
-        }
-
-        public static CycloneService Instance
-        {
-            get { return lazy.Value; }
+            this.textDocumentFactoryService = textDocumentFactoryService;
         }
 
         public event EventHandler<CycloneEventArgs> CycloneChanged;
-
+        
         public void StartCyclone()
         {
             OnCycloneChanged(new CycloneEventArgs());
+        }
+
+        public ICloudCollection GetClouds(IWpfTextView textView)
+        {
+            ITextDocument document;
+
+            if (!textDocumentFactoryService.TryGetTextDocument(textView.TextDataModel.DocumentBuffer, out document))
+                return null;
+
+            ICloudCollection cloudCollection;
+            if (clouds.TryGetValue(document.FilePath, out cloudCollection))
+                return cloudCollection;
+
+            var operations = ExamplesPackage.WeatherStation.GetOperations(document.FilePath);
+            if (operations == null)
+                return null;
+            var uiGenerator = new UIGenerator(operations);
+            var outComponent = uiGenerator.GetOutputComponents(document.FilePath);
+
+            cloudCollection = new OperationsCloudCollection(outComponent);
+            //cloudCollection.SetColorProvider(colorProviderService.GetColorProvider(textView));
+            clouds.Add(document.FilePath, cloudCollection);
+            return cloudCollection;
         }
 
         private void OnCycloneChanged(CycloneEventArgs e)
