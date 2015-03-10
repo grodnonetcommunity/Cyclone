@@ -58,9 +58,9 @@ namespace AV.Cyclone.Sandy.UITests
 			}
 
 			UIGenerator generator = new UIGenerator(executions);
-			TextBlocks.Text = File.ReadAllText("D:\\Projects\\GrandHackathon2015\\.TestSolution\\Algorithms\\BinarySearch.cs");
+			TextBlocks.Text = File.ReadAllText(@"..\..\..\..\..\.TestSolution\Algorithms\BinarySearch.cs");
 			int numLines = TextBlocks.Text.Length - TextBlocks.Text.Replace(Environment.NewLine, string.Empty).Length;
-			var components = generator.GetOutputComponents("D:\\Projects\\GrandHackathon2015\\.TestSolution\\Algorithms\\BinarySearch.cs");
+			var components = generator.GetOutputComponents();
             for (int i = 0; i < numLines; i++)
 			{
 				UIElement element = components[i];
