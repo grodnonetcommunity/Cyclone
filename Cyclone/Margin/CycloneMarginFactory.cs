@@ -27,7 +27,7 @@ namespace AV.Cyclone.Margin
             if (cloudCollection == null)
                 return null;*/
 
-            return new CycloneMargin(CycloneService, textViewHost.TextView, TextDocumentFactoryService);
+            return new CycloneMargin(CycloneService, textViewHost.TextView);
         }
     }
 }

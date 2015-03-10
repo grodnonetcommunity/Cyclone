@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Windows.Threading;
+using AV.Cyclone.Katrina.Executor;
 using AV.Cyclone.Sandy.Models;
 using AV.Cyclone.Sandy.OperationParser;
 using Microsoft.VisualStudio.Text;
@@ -11,20 +13,38 @@ namespace AV.Cyclone.Service
     [Export(typeof(ICycloneService))]
     public sealed class CycloneService : ICycloneService
     {
-        private readonly Dictionary<string, ICloudCollection> clouds = new Dictionary<string, ICloudCollection>();
         private readonly ITextDocumentFactoryService textDocumentFactoryService;
+        private readonly Dispatcher dispatcher;
+        private Dictionary<string, ICloudCollection> clouds = new Dictionary<string, ICloudCollection>();
+        private WeatherStation weatherStation;
 
         [ImportingConstructor]
         private CycloneService(ITextDocumentFactoryService textDocumentFactoryService)
         {
             this.textDocumentFactoryService = textDocumentFactoryService;
+            this.dispatcher = Dispatcher.CurrentDispatcher;
         }
 
-        public event EventHandler<CycloneEventArgs> CycloneChanged;
-        
-        public void StartCyclone()
+        public event EventHandler Changed;
+
+        public void StartCyclone(string solutionPath, string projectName, string filePath, int lineNumber)
         {
-            OnCycloneChanged(new CycloneEventArgs());
+            DisposeWeatherStation();
+            weatherStation = new WeatherStation(solutionPath, projectName, filePath, lineNumber);
+            weatherStation.Executed += WeatherStationOnExecuted;
+            weatherStation.Start();
+        }
+
+        public void UpdateFile(ITextView textView, string content)
+        {
+            if (weatherStation == null) return;
+
+            ITextDocument document;
+
+            if (!textDocumentFactoryService.TryGetTextDocument(textView.TextDataModel.DocumentBuffer, out document))
+                return;
+
+            weatherStation.FileUpdated(document.FilePath, content);
         }
 
         public ICloudCollection GetClouds(IWpfTextView textView)
@@ -38,7 +58,7 @@ namespace AV.Cyclone.Service
             if (clouds.TryGetValue(document.FilePath, out cloudCollection))
                 return cloudCollection;
 
-            var operations = ExamplesPackage.WeatherStation.GetOperations(document.FilePath);
+            var operations = weatherStation.GetOperations(document.FilePath);
             if (operations == null)
                 return null;
             var uiGenerator = new UIGenerator(operations);
@@ -50,11 +70,25 @@ namespace AV.Cyclone.Service
             return cloudCollection;
         }
 
-        private void OnCycloneChanged(CycloneEventArgs e)
+        private void WeatherStationOnExecuted(object sender, EventArgs eventArgs)
         {
-            var cycloneChanged = CycloneChanged;
-            if (cycloneChanged != null)
-                cycloneChanged.Invoke(this, e);
+            clouds = new Dictionary<string, ICloudCollection>();
+            dispatcher.BeginInvoke((Action)OnChanged);
+        }
+
+        private void DisposeWeatherStation()
+        {
+            if (weatherStation != null)
+            {
+                weatherStation.Executed -= WeatherStationOnExecuted;
+                weatherStation.Dispose();
+            }
+        }
+
+        private void OnChanged()
+        {
+            var handler = Changed;
+            if (handler != null) handler(this, EventArgs.Empty);
         }
     }
 }

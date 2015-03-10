@@ -39,8 +39,6 @@ namespace AV.Cyclone
         [Import]
         public ICycloneService cycloneService;
         private static DTE2 _dte;
-
-        public static WeatherStation WeatherStation;
         /// <summary>
         /// Default constructor of the package.
         /// Inside this method you can place any initialization code that does not require 
@@ -89,25 +87,17 @@ namespace AV.Cyclone
 
             if (vTextView != null)
             {
-                WeatherStationInit(vTextView);
+                int initialLineNumber;
+                int initialColumnNumber;
+                vTextView.GetCaretPos(out initialLineNumber, out initialColumnNumber);
+                var solutionPath = ExamplesPackage.Dte.Solution.FileName;
 
-                cycloneService.StartCyclone();
+                var activeDocument = ExamplesPackage.Dte.ActiveDocument;
+                var activeDocumentPath = activeDocument.FullName;
+                var currentProjectName = activeDocument.ProjectItem.ContainingProject.Name;
+
+                cycloneService.StartCyclone(solutionPath, currentProjectName, activeDocumentPath, initialLineNumber);
             }
-        }
-
-        private void WeatherStationInit(IVsTextView vTextView)
-        {
-            int initialLineNumber;
-            int initialColumnNumber;
-            vTextView.GetCaretPos(out initialLineNumber, out initialColumnNumber);
-            var solutionPath = ExamplesPackage.Dte.Solution.FileName;
-
-            var activeDocument = ExamplesPackage.Dte.ActiveDocument;
-            var activeDocumentPath = activeDocument.FullName;
-            var currentProjectName = activeDocument.ProjectItem.ContainingProject.Name;
-
-            WeatherStation = new WeatherStation(solutionPath, currentProjectName, activeDocumentPath, initialLineNumber);
-            WeatherStation.Start();
         }
 
         private IWpfTextViewHost GetIWpfTextViewHost()

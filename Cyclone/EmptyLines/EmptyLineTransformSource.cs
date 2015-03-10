@@ -12,29 +12,21 @@ namespace AV.Cyclone.EmptyLines
     {
         private readonly ICycloneService cycloneService;
         private readonly IWpfTextView textView;
-        private readonly Dispatcher dispatcher;
         private ICloudCollection cloudCollection;
 
         public EmptyLineTransformSource(ICycloneService cycloneService, IWpfTextView textView)
         {
-            this.dispatcher = Dispatcher.CurrentDispatcher;
             this.cycloneService = cycloneService;
             this.textView = textView;
-            this.cycloneService.CycloneChanged += CycloneServiceOnCycloneChanged;
+            this.cycloneService.Changed += CycloneServiceOnChanged;
         }
 
-        private void CycloneServiceOnCycloneChanged(object sender, CycloneEventArgs cycloneEventArgs)
+        private void CycloneServiceOnChanged(object sender, EventArgs eventArgs)
         {
-            if (ExamplesPackage.WeatherStation == null) return;
-            ExamplesPackage.WeatherStation.Executed += WeatherStationOnExecuted;
+            UpdateClouds();
         }
 
-        private void WeatherStationOnExecuted(object sender, EventArgs eventArgs)
-        {
-            dispatcher.BeginInvoke((Action)GetCloudCollection);
-        }
-
-        private void GetCloudCollection()
+        private void UpdateClouds()
         {
             CloudCollection = cycloneService.GetClouds(textView);
         }
