@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
+using System.Windows.Media;
 using AV.Cyclone.Katrina.Executor;
 using AV.Cyclone.Sandy.Models;
 using AV.Cyclone.Sandy.OperationParser;
@@ -16,12 +19,14 @@ namespace AV.Cyclone.Sandy.UITests
     {
         public MainWindow()
         {
-            var solutionPath = @"..\..\..\.TestSolution\TestSolution.sln";
+            var solutionFolderPath = GetSolutionPath(@"..\..\..\.TestSolution");
+            var solutionPath = Path.Combine(solutionFolderPath, "TestSolution.sln");
+            var relativeFilePath = @"Test.Algorithms\BinarySerchTest.cs";
+            var filePath = Path.Combine(solutionFolderPath, relativeFilePath);
             var projectName = "Test.Algorithms";
-            var realSolutionPath = GetSolutionPath(solutionPath);
 
             var workspace = MSBuildWorkspace.Create();
-            var solution = workspace.OpenSolutionAsync(realSolutionPath).Result.GetIsolatedSolution();
+            var solution = workspace.OpenSolutionAsync(solutionPath).Result.GetIsolatedSolution();
 
             var forecastExecutor = new ForecastExecutor(solution);
             forecastExecutor.SetStartupProject(projectName);
@@ -35,46 +40,50 @@ namespace AV.Cyclone.Sandy.UITests
             codeExecutor.Execute(projectName, files, "Test.Algorithms.BinarySerchTest", "LessOrEqualRequired");
 
             InitializeComponent();
-            List<Execution> executions = new List<Execution>();
-
-            var t = executeLogger.MethodCalls.First().Value;
-
-            foreach (var operationList in t)
-            {
-                //Simulate double
-                executions.Add(new Execution
-                {
-                    Operations = operationList
-                });
-                /*executions.Add(new Execution
-                {
-                    Operations = operationList
-                });*/
-            }
+            List<Execution> executions = new List<Execution>(executeLogger.MethodCalls
+                .Where(mr => mr.Key.FileName.EndsWith(relativeFilePath))
+                .SelectMany(e => e.Value)
+                .Select(e => new Execution {Operations = e}));
 
             UIGenerator generator = new UIGenerator(executions);
-            TextBlocks.Text = File.ReadAllText(@"..\..\..\..\..\.TestSolution\Algorithms\BinarySearch.cs");
-            int numLines = TextBlocks.Text.Length - TextBlocks.Text.Replace(Environment.NewLine, string.Empty).Length;
+            var fileContent = File.ReadAllText(filePath);
+            var lines = Regex.Split(fileContent, Environment.NewLine);
+            int numLines = lines.Length;
             var components = generator.GetOutputComponents();
             for (int i = 0; i < numLines; i++)
             {
-                UIElement element = components[i];
+                mainGrid.RowDefinitions.Add(new RowDefinition {Height = GridLength.Auto});
 
-                
-                if (element != null)
-                {
-                    MainPanel.Children.Add(element);
-                }
-                else
-                {
-                    MainPanel.Children.Add(new TextBlock());
-                }
+                var codeLine = CreateTextBlock(lines[i]);
+                var element = components[i];
+
+                AddControl(codeLine, i, 0);
+                if (element != null) AddControl(element, i, 1);
             }
         }
 
-        public string GetSolutionPath(string solutionPath, [CallerFilePath] string fileName = null)
+        private void AddControl(UIElement element, int row, int column)
         {
-            return Path.Combine(Path.GetDirectoryName(fileName), solutionPath);
+            Grid.SetRow(element, row);
+            Grid.SetColumn(element, column);
+
+            mainGrid.Children.Add(element);
+        }
+
+        private static TextBlock CreateTextBlock(string text)
+        {
+            var codeLine = new TextBlock(new Run(text))
+            {
+                FontFamily = new FontFamily("Consolas"),
+                FontSize = 12
+            };
+            return codeLine;
+        }
+
+        public string GetSolutionPath(string path, [CallerFilePath] string fileName = null)
+        {
+            var combinedPath = Path.Combine(Path.GetDirectoryName(fileName), path);
+            return Path.GetFullPath(combinedPath);
         }
     }
 }
