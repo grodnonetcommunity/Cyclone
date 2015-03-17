@@ -8,7 +8,7 @@ namespace Test.Algorithms
         [Test]
         public void LessOrEqualRequired()
         {
-            int key = 3, x = 0;
+            int key = 4, x = 0;
             var array = new[] {1, 2, 3, 4, 5, 6};
 
             var index = BinarySearch(key, array);
@@ -18,27 +18,20 @@ namespace Test.Algorithms
 
         public int BinarySearch(int key, int[] array)
         {
-            var low = 0;
+            int low = 0, x = 1;
             var high = array.Length - 1;
 
-            while (true)
-            {
-                var mid = (high + low) / 2;
-                var value = array[mid];
-
-                if (key > value)
-                {
-                    low = mid + 1;
-                }
-                else if (key < value)
-                {
-                    high = mid - 1;
-                }
-                else
-                {
-                    return mid;
-                }
-            }
+			int i = 0;
+			while (i < 5)
+			{
+				int j = 0;
+				while (j < 5)
+				{
+					x = i * 5 + j;
+					j = j + 1;
+				}
+				i = i + 1;
+			}
 
             return -1;
         }

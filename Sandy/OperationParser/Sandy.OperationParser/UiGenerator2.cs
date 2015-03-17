@@ -140,7 +140,7 @@ namespace AV.Cyclone.Sandy.OperationParser
             return CreateTextBlock(assignOperationItem.AssignOperation);
         }
 
-        private Grid CreateElement(ListExecuteTreeLineItem listItem, string sharedScopeName)
+        private FrameworkElement CreateElement(ListExecuteTreeLineItem listItem, string sharedScopeName)
         {
             var grid = new Grid
                        {
@@ -157,10 +157,19 @@ namespace AV.Cyclone.Sandy.OperationParser
             foreach (var item in listItem.Items)
             {
                 var itemElement = CreateElement(item.Value, sharedScopeName + "_I" + item.Key);
-                Grid.SetColumn(itemElement, item.Key);
-                Grid.SetRow(itemElement, 0);
-                grid.Children.Add(itemElement);
+                var border = new Border
+                {
+                    BorderBrush = new SolidColorBrush(Colors.Black),
+                    BorderThickness = new Thickness(1, 0, 1, 0),
+                    Margin = new Thickness(0, 0, -1, 0),
+                    Padding = new Thickness(2, 2, 2, 2),
+                    Child = itemElement,
+                };
+                Grid.SetColumn(border, item.Key);
+                Grid.SetRow(border, 0);
+                grid.Children.Add(border);
             }
+
 
             return grid;
         }

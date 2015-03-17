@@ -78,7 +78,8 @@ namespace AV.Cyclone.Sandy.UITests
             var codeLine = new TextBlock(new Run(text))
             {
                 FontFamily = new FontFamily("Consolas"),
-                FontSize = 12
+                FontSize = 12,
+                VerticalAlignment = VerticalAlignment.Center
             };
             return codeLine;
         }
