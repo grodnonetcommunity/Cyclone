@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using AV.Cyclone.Sandy.Models.Operations;
 
 namespace AV.Cyclone.Sandy.OperationParser
@@ -86,6 +87,24 @@ namespace AV.Cyclone.Sandy.OperationParser
             {
                 lines[listItem.Key].Add(listItem.Value);
             }
+        }
+
+        public static ExecuteTree Generate(IEnumerable<Operation> operations)
+        {
+            var result = new ExecuteTree();
+            foreach (var operation in operations)
+            {
+                if (operation is AssignOperation)
+                {
+                    result.Add((AssignOperation)operation);
+                }
+                else if (operation is LoopOperation)
+                {
+                    var loopOperation = (LoopOperation)operation;
+                    result.Add(loopOperation.Operations.Values.Select(Generate));
+                }
+            }
+            return result;
         }
     }
 }

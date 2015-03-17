@@ -1,4 +1,5 @@
-﻿using AV.Cyclone.Sandy.Models.Operations;
+﻿using System.Collections.Generic;
+using AV.Cyclone.Sandy.Models.Operations;
 using AV.Cyclone.Sandy.OperationParser;
 using NUnit.Framework;
 
@@ -92,6 +93,36 @@ namespace AV.Cyclone.Sandy.Tests
             executionTree.Add(new AssignOperation { LineNumber = 0, VariableName = "a", VariableValue = 50 });
             executionTree.Add(new AssignOperation { LineNumber = 1, VariableName = "b", VariableValue = 25 });
             executionTree.Add(new[] { executionTree1, executionTree2, executionTree3 });
+
+            Assert.AreEqual(4, executionTree.Lines.Count);
+        }
+
+        [Test]
+        public void GenerateTest()
+        {
+            var operations = new List<Operation>();
+
+            operations.Add(new AssignOperation{LineNumber = 0, VariableName = "a", VariableValue = 50});
+            operations.Add(new AssignOperation{LineNumber = 1, VariableName = "b", VariableValue = 25});
+
+            var loopOperation = new LoopOperation();
+
+            loopOperation.Operations[0] = new List<Operation>
+                                          {
+                                              new AssignOperation{LineNumber = 2, VariableName = "x", VariableValue = 10}
+                                          };
+            loopOperation.Operations[1] = new List<Operation>
+                                          {
+                                              new AssignOperation{LineNumber = 3, VariableName = "y", VariableValue = 20}
+                                          };
+            loopOperation.Operations[2] = new List<Operation>
+                                          {
+                                              new AssignOperation{LineNumber = 2, VariableName = "x", VariableValue = 30}
+                                          };
+
+            operations.Add(loopOperation);
+
+            var executionTree = ExecuteTree.Generate(operations);
 
             Assert.AreEqual(4, executionTree.Lines.Count);
         }
