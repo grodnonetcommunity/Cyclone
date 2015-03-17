@@ -49,11 +49,13 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ExecuteTree.cs" />
     <Compile Include="MeasureGroup.cs" />
     <Compile Include="OperationSearchResult.cs" />
     <Compile Include="OperationTypeParser.cs" />
     <Compile Include="OutComponent.cs" />
     <Compile Include="OutputItem.cs" />
+    <Compile Include="SparseArray.cs" />
     <Compile Include="UIGenerator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
