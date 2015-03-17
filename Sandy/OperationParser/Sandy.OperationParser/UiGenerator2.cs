@@ -26,7 +26,7 @@ namespace AV.Cyclone.Sandy.OperationParser
         {
             foreach (var line in executeTree.Lines)
             {
-                var grid = CreateGrid(line.Value.Executions[0], "Call0_");
+                var grid = CreateElement(line.Value.Executions[0], "Call0_");
                 grid.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
                 grid.Arrange(new Rect(grid.DesiredSize));
                 controls[line.Key] = grid;
@@ -63,31 +63,21 @@ namespace AV.Cyclone.Sandy.OperationParser
             throw new Exception(string.Format("Unknow ExecuteTreeLineItem type: {0}", lineItem.GetType().Name));
         }
 
-        private Grid CreateGrid(ExecuteTreeLineItem lineItem, string sharedScopeName)
+        private FrameworkElement CreateElement(ExecuteTreeLineItem lineItem, string sharedScopeName)
         {
             if (lineItem is AssignOperationExecuteTreeLineItem)
-                return CreateGrid((AssignOperationExecuteTreeLineItem)lineItem, sharedScopeName);
+                return CreateElement((AssignOperationExecuteTreeLineItem)lineItem, sharedScopeName);
             if (lineItem is ListExecuteTreeLineItem)
-                return CreateGrid((ListExecuteTreeLineItem)lineItem, sharedScopeName);
+                return CreateElement((ListExecuteTreeLineItem)lineItem, sharedScopeName);
             throw new Exception(string.Format("Unknow ExecuteTreeLineItem type: {0}", lineItem.GetType().Name));
         }
 
-        private Grid CreateGrid(AssignOperationExecuteTreeLineItem assignOperationItem, string sharedScopeName)
+        private Control CreateElement(AssignOperationExecuteTreeLineItem assignOperationItem, string sharedScopeName)
         {
-            var grid = new Grid();
-            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(0, GridUnitType.Auto), SharedSizeGroup = sharedScopeName });
-            grid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(0, GridUnitType.Auto) });
-
-            var textBlock = CreateTextBlock(assignOperationItem.AssignOperation);
-            Grid.SetColumn(textBlock, 0);
-            Grid.SetRow(textBlock, 0);
-
-            grid.Children.Add(textBlock);
-
-            return grid;
+            return CreateTextBlock(assignOperationItem.AssignOperation);
         }
 
-        private Grid CreateGrid(ListExecuteTreeLineItem listItem, string sharedScopeName)
+        private Grid CreateElement(ListExecuteTreeLineItem listItem, string sharedScopeName)
         {
             var grid = new Grid();
             for (int i = 0; i < GetColumns(listItem); i++)
@@ -99,10 +89,11 @@ namespace AV.Cyclone.Sandy.OperationParser
 
             foreach (var item in listItem.Items)
             {
-                var itemGrid = CreateGrid(item.Value, sharedScopeName + "_I" + item.Key);
-                Grid.SetColumn(itemGrid, item.Key);
-                Grid.SetRow(itemGrid, 0);
-                grid.Children.Add(itemGrid);
+                var itemElement = CreateElement(item.Value, sharedScopeName + "_I" + item.Key);
+                itemElement.Margin = new Thickness(5);
+                Grid.SetColumn(itemElement, item.Key);
+                Grid.SetRow(itemElement, 0);
+                grid.Children.Add(itemElement);
             }
 
             return grid;
@@ -116,10 +107,10 @@ namespace AV.Cyclone.Sandy.OperationParser
         private Control CreateTextBlock(string variable, object value)
         {
             var textBlock = new TextBlock();
-            textBlock.Inlines.Add(CreateRun("var ", "ColorProvider.KeywordBrush"));
-            textBlock.Inlines.Add(CreateRun(variable, "ColorProvider.IdentifierBrush"));
-            textBlock.Inlines.Add(CreateRun(" = ", "ColorProvider.IdentifierBrush"));
-            textBlock.Inlines.Add(CreateRun(value.ToString(), "ColorProvider.NumberBrush"));
+            //textBlock.Inlines.Add(CreateRun("var ", "ColorProvider.KeywordBrush"));
+            //textBlock.Inlines.Add(CreateRun(variable, "ColorProvider.IdentifierBrush"));
+            //textBlock.Inlines.Add(CreateRun(" = ", "ColorProvider.IdentifierBrush"));
+            textBlock.Inlines.Add(CreateRun(value));
 
             var contentControl = new ContentControl
                                  {
@@ -132,6 +123,19 @@ namespace AV.Cyclone.Sandy.OperationParser
             //contentControl.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
             //contentControl.Arrange(new Rect(contentControl.DesiredSize));
             return contentControl;
+        }
+
+        private Run CreateRun(object value)
+        {
+            if (value is int)
+            {
+                return CreateRun(value.ToString(), "ColorProvider.NumberBrush");
+            }
+            if (value is bool)
+            {
+                return CreateRun((bool)value ? "true" : "false", "ColorProvider.KeywordBrush");
+            }
+            return CreateRun(value.ToString(), "ColorProvider.IdentifierBrush");
         }
 
         private Run CreateRun(string text, string path)
