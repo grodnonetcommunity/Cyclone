@@ -5,11 +5,151 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Sandy.UITests"
         mc:Ignorable="d">
-	<Grid x:Name="mainGrid" Grid.IsSharedSizeScope="True">
-		<Grid.ColumnDefinitions>
-			<ColumnDefinition Width="*"/>
-			<ColumnDefinition Width="*"/>
-		</Grid.ColumnDefinitions>
-	</Grid>
-	
+    <Grid x:Name="mainGrid" Grid.IsSharedSizeScope="True" UseLayoutRounding="True">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        
+        <Grid Grid.Column="2" Grid.Row="20">
+            <Grid.Resources>
+                <Style TargetType="TextBlock">
+                    <Setter Property="FontFamily" Value="Consolas"/>
+                    <Setter Property="FontSize" Value="12"/>
+                    <Setter Property="Margin" Value="5 0 5 0"/>
+                </Style>
+            </Grid.Resources>
+            
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="Type"/>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="Name"/>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="EqualSign"/>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="Call0_Value_0"/>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="Call0_Value_1"/>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="Call0_Separator"/>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="Call1_Value_0"/>
+            </Grid.ColumnDefinitions>
+            
+            <TextBlock Grid.Column="0" Foreground="Blue">var</TextBlock>
+            <TextBlock Grid.Column="1" Foreground="Black">low</TextBlock>
+            <TextBlock Grid.Column="2" Foreground="Black">=</TextBlock>
+            <TextBlock Grid.Column="3" Foreground="Black">0</TextBlock>
+            <TextBlock Grid.Column="6" Foreground="Black">0</TextBlock>
+        </Grid>
+
+        <Grid Grid.Column="2" Grid.Row="21">
+            <Grid.Resources>
+                <Style TargetType="TextBlock">
+                    <Setter Property="FontFamily" Value="Consolas"/>
+                    <Setter Property="FontSize" Value="12"/>
+                    <Setter Property="Margin" Value="5 0 5 0"/>
+                </Style>
+            </Grid.Resources>
+            
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="Type"/>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="Name"/>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="EqualSign"/>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="Call0_Value_0"/>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="Call0_Value_1"/>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="Call0_Separator"/>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="Call1_Value_0"/>
+            </Grid.ColumnDefinitions>
+            
+            <TextBlock Grid.Column="0" Foreground="Blue">var</TextBlock>
+            <TextBlock Grid.Column="1" Foreground="Black">high</TextBlock>
+            <TextBlock Grid.Column="2" Foreground="Black">=</TextBlock>
+            <TextBlock Grid.Column="3" Foreground="Black">5</TextBlock>
+            <TextBlock Grid.Column="6" Foreground="Black">10</TextBlock>
+        </Grid>
+
+        <Grid Grid.Column="2" Grid.Row="25">
+            <Grid.Resources>
+                <Style TargetType="TextBlock">
+                    <Setter Property="FontFamily" Value="Consolas"/>
+                    <Setter Property="FontSize" Value="12"/>
+                    <Setter Property="Margin" Value="5 0 5 0"/>
+                </Style>
+            </Grid.Resources>
+            
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="Type"/>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="Name"/>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="EqualSign"/>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="Call0_Value_0"/>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="Call0_Value_1"/>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="Call0_Separator"/>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="Call1_Value_0"/>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="Call1_Value_1"/>
+            </Grid.ColumnDefinitions>
+            
+            <TextBlock Grid.Column="0" Foreground="Blue">var</TextBlock>
+            <TextBlock Grid.Column="1" Foreground="Black">mid</TextBlock>
+            <TextBlock Grid.Column="2" Foreground="Black">=</TextBlock>
+            <Border Grid.Column="3" BorderBrush="Black" BorderThickness="1 0 1 0" Margin="-1 0 0 0">
+                <TextBlock Foreground="Black" HorizontalAlignment="Center">2</TextBlock>
+            </Border>
+            <Border Grid.Column="4" BorderBrush="Black" BorderThickness="1 0 1 0" Margin="-1 0 0 0">
+                <TextBlock Foreground="Black" HorizontalAlignment="Center">4</TextBlock>
+            </Border>
+            <Border Grid.Column="6" BorderBrush="Black" BorderThickness="1 0 1 0" Margin="-1 0 0 0">
+                <TextBlock Foreground="Black" HorizontalAlignment="Center">5</TextBlock>
+            </Border>
+            <Border Grid.Column="7" BorderBrush="Black" BorderThickness="1 0 1 0" Margin="-1 0 0 0">
+                <TextBlock Foreground="Black" HorizontalAlignment="Center">7</TextBlock>
+            </Border>
+        </Grid>
+
+        <Grid Grid.Column="2" Grid.Row="28">
+            <Grid.Resources>
+                <Style TargetType="TextBlock">
+                    <Setter Property="FontFamily" Value="Consolas"/>
+                    <Setter Property="FontSize" Value="12"/>
+                    <Setter Property="Margin" Value="5 0 5 0"/>
+                </Style>
+            </Grid.Resources>
+            
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="Type"/>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="Name"/>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="EqualSign"/>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="Call0_Value_0"/>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="Call0_Value_1"/>
+                <ColumnDefinition Width="10" SharedSizeGroup="Call0_Separator"/>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="Call1_Value_0"/>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="Call1_Value_1"/>
+            </Grid.ColumnDefinitions>
+            
+            <TextBlock Grid.Column="0" Foreground="Blue">if</TextBlock>
+            <Border Grid.Column="3" BorderBrush="Black" BorderThickness="1 0 1 0" Margin="-1 0 0 0">
+                <TextBlock Foreground="Blue" HorizontalAlignment="Center">true</TextBlock>
+            </Border>
+            <Border Grid.Column="4" BorderBrush="Black" BorderThickness="1 0 1 0" Margin="-1 0 0 0">
+                <TextBlock Foreground="Blue" HorizontalAlignment="Center">false</TextBlock>
+            </Border>
+            <Border Grid.Column="6" BorderBrush="Black" BorderThickness="1 0 1 0" Margin="-1 0 0 0">
+                <TextBlock Foreground="Blue" HorizontalAlignment="Center">false</TextBlock>
+            </Border>
+            <Border Grid.Column="7" BorderBrush="Black" BorderThickness="1 0 1 0" Margin="-1 0 0 0">
+                <TextBlock Foreground="Blue" HorizontalAlignment="Center">false</TextBlock>
+            </Border>
+        </Grid>
+        
+        <Grid Grid.Column="2" Grid.Row="19" Grid.RowSpan="25">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="Type"/>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="Name"/>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="EqualSign"/>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="Call0_Value_0"/>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="Call0_Value_1"/>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="Call0_Separator"/>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="Call1_Value_0"/>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="Call1_Value_1"/>
+            </Grid.ColumnDefinitions>
+            
+            <Rectangle Grid.Column="5" VerticalAlignment="Stretch" Width="1" Stroke="Black" StrokeDashArray="5" Margin="5"/>
+        </Grid>
+    </Grid>
+    
 </Window>
