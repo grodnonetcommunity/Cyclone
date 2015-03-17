@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using AV.Cyclone.Sandy.Models.Operations;
 using AV.Cyclone.Sandy.OperationParser;
 using NUnit.Framework;
@@ -44,11 +45,11 @@ namespace AV.Cyclone.Sandy.Tests
             Assert.That(executionTree.Lines[1].Executions, Has.Count.EqualTo(1).And.All.InstanceOf<ListExecuteTreeLineItem>());
             Assert.That(executionTree.Lines[2].Executions, Has.Count.EqualTo(1).And.All.InstanceOf<ListExecuteTreeLineItem>());
 
-            Assert.That(((ListExecuteTreeLineItem)executionTree.Lines[0].Executions[0]).Items,
+            Assert.That(((ListExecuteTreeLineItem)executionTree.Lines[0].Executions[0]).Items.Select(e => e.Value).ToList(),
                         Has.Count.EqualTo(2).And.All.InstanceOf<AssignOperationExecuteTreeLineItem>());
-            Assert.That(((ListExecuteTreeLineItem)executionTree.Lines[1].Executions[0]).Items,
+            Assert.That(((ListExecuteTreeLineItem)executionTree.Lines[1].Executions[0]).Items.Select(e => e.Value).ToList(),
                         Has.Count.EqualTo(2).And.All.InstanceOf<AssignOperationExecuteTreeLineItem>());
-            Assert.That(((ListExecuteTreeLineItem)executionTree.Lines[2].Executions[0]).Items,
+            Assert.That(((ListExecuteTreeLineItem)executionTree.Lines[2].Executions[0]).Items.Select(e => e.Value).ToList(),
                         Has.Count.EqualTo(2).And.All.InstanceOf<AssignOperationExecuteTreeLineItem>());
         }
 

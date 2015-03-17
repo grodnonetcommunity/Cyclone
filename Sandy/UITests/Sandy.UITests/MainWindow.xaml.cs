@@ -40,12 +40,15 @@ namespace AV.Cyclone.Sandy.UITests
             codeExecutor.Execute(projectName, files, "Test.Algorithms.BinarySerchTest", "LessOrEqualRequired");
 
             InitializeComponent();
-            List<Execution> executions = new List<Execution>(executeLogger.MethodCalls
+            var executions = new List<Execution>(executeLogger.MethodCalls
                 .Where(mr => mr.Key.FileName.EndsWith(relativeFilePath))
                 .SelectMany(e => e.Value)
                 .Select(e => new Execution {Operations = e}));
 
-            UIGenerator generator = new UIGenerator(executions);
+            var executeTree = ExecuteTree.Generate(executions[0].Operations);
+            var generator = new UiGenerator2();
+            generator.Generate(executeTree);
+            
             var fileContent = File.ReadAllText(filePath);
             var lines = Regex.Split(fileContent, Environment.NewLine);
             int numLines = lines.Length;

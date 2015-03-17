@@ -24,6 +24,7 @@ namespace AV.Cyclone.Sandy.OperationParser
                 array[index] = value;
                 return value;
             }
+            set { array[index] = value; }
         }
 
         public int Count

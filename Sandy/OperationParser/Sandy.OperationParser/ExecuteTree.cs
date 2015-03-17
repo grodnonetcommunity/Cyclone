@@ -11,16 +11,16 @@ namespace AV.Cyclone.Sandy.OperationParser
 
     public class ListExecuteTreeLineItem : ExecuteTreeLineItem
     {
-        private readonly List<ExecuteTreeLineItem> items = new List<ExecuteTreeLineItem>();
+        private readonly SparseArray<ExecuteTreeLineItem> items = new SparseArray<ExecuteTreeLineItem>(line => new ListExecuteTreeLineItem());
 
-        public void Add(ExecuteTreeLineItem item)
+        public void Add(int iteration, ExecuteTreeLineItem item)
         {
-            items.Add(item);
+            items[iteration] = item;
         }
 
-        public List<ExecuteTreeLineItem> Items
+        public List<KeyValuePair<int, ExecuteTreeLineItem>> Items
         {
-            get { return items; }
+            get { return items.ToList(); }
         }
     }
 
@@ -69,17 +69,18 @@ namespace AV.Cyclone.Sandy.OperationParser
             lines[line].Add(new AssignOperationExecuteTreeLineItem(assignOperation));
         }
 
-        public void Add(IEnumerable<ExecuteTree> executeTrees)
+        public void Add(IList<ExecuteTree> executeTrees)
         {
             var list = new SparseArray<ListExecuteTreeLineItem>(line => new ListExecuteTreeLineItem());
-            foreach (var executeTree in executeTrees)
+            for (int i = 0; i < executeTrees.Count; i++)
             {
+                var executeTree = executeTrees[i];
                 foreach (var line in executeTree.lines)
                 {
                     var listItem = list[line.Key];
                     foreach (var execution in line.Value.Executions)
                     {
-                        listItem.Add(execution);
+                        listItem.Add(i, execution);
                     }
                 }
             }
@@ -101,7 +102,7 @@ namespace AV.Cyclone.Sandy.OperationParser
                 else if (operation is LoopOperation)
                 {
                     var loopOperation = (LoopOperation)operation;
-                    result.Add(loopOperation.Operations.Values.Select(Generate));
+                    result.Add(loopOperation.Operations.Values.Select(Generate).ToList());
                 }
             }
             return result;
