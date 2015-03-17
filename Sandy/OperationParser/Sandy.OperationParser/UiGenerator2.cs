@@ -46,10 +46,10 @@ namespace AV.Cyclone.Sandy.OperationParser
 
                 for (var i = 0; i < line.Value.Executions.Count; i++)
                 {
-                    var element = CreateElement(line.Value.Executions[0], methodName + "_I" + i);
+                    var element = CreateElement(line.Value.Executions[i], methodName + "_I" + i);
 
                     Grid.SetColumn(element, 3);
-                    Grid.SetRow(element, 0);
+                    Grid.SetRow(element, i);
 
                     grid.Children.Add(element);
                 }
