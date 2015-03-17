@@ -46,6 +46,12 @@ namespace AV.Cyclone.Sandy.OperationParser
 
                 for (var i = 0; i < line.Value.Executions.Count; i++)
                 {
+                    var element = CreateElement(line.Value.Executions[0], methodName + "_I" + i);
+
+                    Grid.SetColumn(element, 3);
+                    Grid.SetRow(element, 0);
+
+                    grid.Children.Add(element);
                 }
 
                 grid.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
@@ -136,7 +142,11 @@ namespace AV.Cyclone.Sandy.OperationParser
 
         private Grid CreateElement(ListExecuteTreeLineItem listItem, string sharedScopeName)
         {
-            var grid = new Grid();
+            var grid = new Grid
+                       {
+                           Margin = new Thickness(5, 0, 5, 0),
+                           VerticalAlignment = VerticalAlignment.Center
+                       };
             for (int i = 0; i < GetColumns(listItem); i++)
             {
                 grid.ColumnDefinitions.Add(new ColumnDefinition {Width = new GridLength(0, GridUnitType.Auto), SharedSizeGroup = sharedScopeName + "_I" + i});
@@ -147,7 +157,6 @@ namespace AV.Cyclone.Sandy.OperationParser
             foreach (var item in listItem.Items)
             {
                 var itemElement = CreateElement(item.Value, sharedScopeName + "_I" + item.Key);
-                itemElement.Margin = new Thickness(5);
                 Grid.SetColumn(itemElement, item.Key);
                 Grid.SetRow(itemElement, 0);
                 grid.Children.Add(itemElement);
