@@ -172,11 +172,7 @@ namespace AV.Cyclone.Sandy.OperationParser
 
         private void AddTextBlock(Grid grid, int column, int columnSpan, int row, string text, string foregroundBinding)
         {
-            var textBlock = new TextBlock(CreateRun(text, foregroundBinding))
-                            {
-                                Margin = new Thickness(5, 0, 5, 0),
-                                VerticalAlignment = VerticalAlignment.Center
-                            };
+            var textBlock = CreateTextBlock(text, foregroundBinding);
 
             Grid.SetColumn(textBlock, column);
             Grid.SetColumnSpan(textBlock, columnSpan);
@@ -187,28 +183,33 @@ namespace AV.Cyclone.Sandy.OperationParser
 
         private Control CreateTextBlock(AssignOperation assignOperation)
         {
-            return CreateTextBlock(assignOperation.VariableName, assignOperation.VariableValue);
+            return CreateTextBlock(assignOperation.VariableValue);
         }
 
-        private Control CreateTextBlock(string variable, object value)
+        private Control CreateTextBlock(object value)
         {
-            var textBlock = new TextBlock();
-            //textBlock.Inlines.Add(CreateRun("var ", "ColorProvider.KeywordBrush"));
-            //textBlock.Inlines.Add(CreateRun(variable, "ColorProvider.IdentifierBrush"));
-            //textBlock.Inlines.Add(CreateRun(" = ", "ColorProvider.IdentifierBrush"));
-            textBlock.Inlines.Add(CreateRun(value));
+            return new ContentControl
+                   {
+                       Content = CreateTextBlock(CreateRun(value)),
+                       FontFamily = new FontFamily("Consolas"),
+                       FontSize = 12,
+                       UseLayoutRounding = true
+                   };
+        }
 
-            var contentControl = new ContentControl
-                                 {
-                                     Content = textBlock,
-                                     FontFamily = new FontFamily("Consolas"),
-                                     FontSize = 12,
-                                     UseLayoutRounding = true
-                                 };
-            // TODO: Move measure into Grid creation
-            //contentControl.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
-            //contentControl.Arrange(new Rect(contentControl.DesiredSize));
-            return contentControl;
+        private TextBlock CreateTextBlock(string text, string foregroundBinding)
+        {
+            return CreateTextBlock(CreateRun(text, foregroundBinding));
+        }
+
+        private static TextBlock CreateTextBlock(Run run)
+        {
+            var textBlock = new TextBlock(run)
+                            {
+                                Margin = new Thickness(5, 0, 5, 0),
+                                VerticalAlignment = VerticalAlignment.Center
+                            };
+            return textBlock;
         }
 
         private Run CreateRun(object value)
