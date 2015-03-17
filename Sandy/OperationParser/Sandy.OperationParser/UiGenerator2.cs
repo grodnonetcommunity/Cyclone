@@ -16,6 +16,8 @@ namespace AV.Cyclone.Sandy.OperationParser
 {
     public class UiGenerator2 : INotifyPropertyChanged, IUIGenerator
     {
+        private static readonly string[] keywordVariableNames = {"while", "if", "return"};
+
         private static readonly SandyColorProvider sandyColorProvider = new SandyColorProvider();
         private SandyColorProvider colorProvider = sandyColorProvider;
         private readonly Dictionary<int, UIElement> controls = new Dictionary<int, UIElement>();
@@ -24,9 +26,28 @@ namespace AV.Cyclone.Sandy.OperationParser
 
         public void Generate(ExecuteTree executeTree)
         {
+            var methodName = "Method";
             foreach (var line in executeTree.Lines)
             {
-                var grid = CreateElement(line.Value.Executions[0], "Call0_");
+                var variables = GetVariables(line.Value);
+                var grid = new Grid();
+                grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(0, GridUnitType.Auto), SharedSizeGroup = methodName + "_Type"});
+                grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(0, GridUnitType.Auto), SharedSizeGroup = methodName + "_Name"});
+                grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(0, GridUnitType.Auto), SharedSizeGroup = methodName + "_EqualSign"});
+                for (var c = 0; c < GetColumns(line.Value); c++)
+                {
+                    grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(0, GridUnitType.Auto), SharedSizeGroup = methodName + "_I" + c });
+                }
+                for (var r = 0; r < variables.Count; r++)
+                {
+                    grid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(0, GridUnitType.Auto) });
+                    CreateVariableTextBlock(grid, r, variables[r]);
+                }
+
+                for (var i = 0; i < line.Value.Executions.Count; i++)
+                {
+                }
+
                 grid.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
                 grid.Arrange(new Rect(grid.DesiredSize));
                 controls[line.Key] = grid;
@@ -47,6 +68,42 @@ namespace AV.Cyclone.Sandy.OperationParser
                 colorProvider = value;
                 OnPropertyChanged();
             }
+        }
+
+        private List<string> GetVariables(ExecuteTreeLine line)
+        {
+            var variables = new List<string>();
+            foreach (var execution in line.Executions)
+            {
+                AddVariables(variables, execution);
+            }
+            return variables;
+        }
+
+        private void AddVariables(List<string> variables, ExecuteTreeLineItem lineItem)
+        {
+            if (lineItem is AssignOperationExecuteTreeLineItem)
+            {
+                AddVariable(variables, ((AssignOperationExecuteTreeLineItem)lineItem).AssignOperation.VariableName);
+            }
+            else if (lineItem is ListExecuteTreeLineItem)
+            {
+                foreach (var item in ((ListExecuteTreeLineItem)lineItem).Items)
+                {
+                    AddVariables(variables, item.Value);
+                }
+            }
+        }
+
+        private void AddVariable(List<string> variables, string variableName)
+        {
+            if (variables.Contains(variableName)) return;
+            variables.Add(variableName);
+        }
+
+        private int GetColumns(ExecuteTreeLine line)
+        {
+            return line.Executions.Max(e => GetColumns(e));
         }
 
         private int GetColumns(ExecuteTreeLineItem lineItem)
@@ -97,6 +154,35 @@ namespace AV.Cyclone.Sandy.OperationParser
             }
 
             return grid;
+        }
+
+        private void CreateVariableTextBlock(Grid grid, int row, string variable)
+        {
+            if (Array.IndexOf(keywordVariableNames, variable) >= 0)
+            {
+                AddTextBlock(grid, 0, 3, row, variable, "ColorProvider.KeywordBrush");
+            }
+            else
+            {
+                AddTextBlock(grid, 0, 1, row, "var", "ColorProvider.KeywordBrush");
+                AddTextBlock(grid, 1, 1, row, variable, "ColorProvider.IdentifierBrush");
+                AddTextBlock(grid, 2, 1, row, "=", "ColorProvider.OperatorBrush");
+            }
+        }
+
+        private void AddTextBlock(Grid grid, int column, int columnSpan, int row, string text, string foregroundBinding)
+        {
+            var textBlock = new TextBlock(CreateRun(text, foregroundBinding))
+                            {
+                                Margin = new Thickness(5, 0, 5, 0),
+                                VerticalAlignment = VerticalAlignment.Center
+                            };
+
+            Grid.SetColumn(textBlock, column);
+            Grid.SetColumnSpan(textBlock, columnSpan);
+            Grid.SetRow(textBlock, row);
+
+            grid.Children.Add(textBlock);
         }
 
         private Control CreateTextBlock(AssignOperation assignOperation)
