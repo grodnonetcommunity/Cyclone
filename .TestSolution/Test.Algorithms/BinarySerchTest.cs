@@ -22,12 +22,12 @@ namespace Test.Algorithms
             var high = array.Length - 1;
 
 			int i = 0;
-			while (i < 5)
+			while (i < 4)
 			{
 				int j = 0;
-				while (j < 5)
+				while (j < 3)
 				{
-					x = i * 5 + j;
+					x = i * 3 + j;
 					j = j + 1;
 				}
 				i = i + 1;

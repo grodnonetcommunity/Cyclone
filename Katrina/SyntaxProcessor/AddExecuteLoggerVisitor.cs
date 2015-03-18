@@ -75,9 +75,8 @@ namespace AV.Cyclone.Katrina.SyntaxProcessor
 
             var loopIterationInvocation = CreateLoopIterationInvocationExpression(statement);
             var whileBody = SyntaxFactory.Block(
-                SyntaxFactory.ExpressionStatement(loopIterationInvocation),
-                statement
-                );
+                statement,
+                SyntaxFactory.ExpressionStatement(loopIterationInvocation));
 
             node = node.Update(whileKeyword, openParenToken, condition, closeParenToken, whileBody);
 
