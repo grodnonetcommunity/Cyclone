@@ -27,6 +27,7 @@ namespace AV.Cyclone.Sandy.OperationParser
         public void Generate(ExecuteTree executeTree)
         {
             var methodName = "Method";
+            var columns = GetColumns(executeTree);
             foreach (var lineItem in executeTree.Lines)
             {
                 var lineNumber = lineItem.Key;
@@ -49,7 +50,7 @@ namespace AV.Cyclone.Sandy.OperationParser
                     var executeTreeLineItems = line.GetList(variables[r]);
                     for (var i = 0; i < executeTreeLineItems.Count; i++)
                     {
-                        var element = CreateElement(executeTreeLineItems[i], methodName + "_Values");
+                        var element = CreateElement(executeTreeLineItems[i], methodName + "_Values", columns);
 
                         Grid.SetColumn(element, 3 + i);
                         Grid.SetRow(element, r);
@@ -112,6 +113,11 @@ namespace AV.Cyclone.Sandy.OperationParser
             variables.Add(variableName);
         }
 
+        private int GetColumns(ExecuteTree executeTree)
+        {
+            return executeTree.Lines.Max(e => GetColumns(e.Value));
+        }
+
         private int GetColumns(ExecuteTreeLine line)
         {
             return line.Executions.SelectMany(e => e.Value).Max(e => GetColumns(e));
@@ -131,28 +137,28 @@ namespace AV.Cyclone.Sandy.OperationParser
             throw new Exception(string.Format("Unknow ExecuteTreeLineItem type: {0}", lineItem.GetType().Name));
         }
 
-        private FrameworkElement CreateElement(ExecuteTreeLineItem lineItem, string sharedScopeName)
+        private FrameworkElement CreateElement(ExecuteTreeLineItem lineItem, string sharedScopeName, int columns)
         {
             if (lineItem is AssignOperationExecuteTreeLineItem)
-                return CreateElement((AssignOperationExecuteTreeLineItem)lineItem, sharedScopeName);
+                return CreateElement((AssignOperationExecuteTreeLineItem)lineItem);
             if (lineItem is ListExecuteTreeLineItem)
-                return CreateElement((ListExecuteTreeLineItem)lineItem, sharedScopeName);
+                return CreateElement((ListExecuteTreeLineItem)lineItem, sharedScopeName, columns);
             throw new Exception(string.Format("Unknow ExecuteTreeLineItem type: {0}", lineItem.GetType().Name));
         }
 
-        private Control CreateElement(AssignOperationExecuteTreeLineItem assignOperationItem, string sharedScopeName)
+        private Control CreateElement(AssignOperationExecuteTreeLineItem assignOperationItem)
         {
             return CreateTextBlock(assignOperationItem.AssignOperation);
         }
 
-        private FrameworkElement CreateElement(ListExecuteTreeLineItem listItem, string sharedScopeName)
+        private FrameworkElement CreateElement(ListExecuteTreeLineItem listItem, string sharedScopeName, int columns)
         {
             var grid = new Grid
                        {
                            Margin = new Thickness(5, 0, 5, 0),
                            VerticalAlignment = VerticalAlignment.Center
                        };
-            for (int i = 0; i < GetColumns(listItem); i++)
+            for (int i = 0; i < columns; i++)
             {
                 grid.ColumnDefinitions.Add(new ColumnDefinition {Width = new GridLength(0, GridUnitType.Auto), SharedSizeGroup = sharedScopeName + "_I" + i});
             }
@@ -161,7 +167,7 @@ namespace AV.Cyclone.Sandy.OperationParser
 
             foreach (var item in listItem.Items)
             {
-                var itemElement = CreateElement(item.Value, sharedScopeName + "_I" + item.Key);
+                var itemElement = CreateElement(item.Value, sharedScopeName + "_I" + item.Key, GetColumns(listItem));
                 var border = new Border
                 {
                     BorderBrush = new SolidColorBrush(Colors.Black),
