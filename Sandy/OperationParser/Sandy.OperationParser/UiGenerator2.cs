@@ -37,10 +37,7 @@ namespace AV.Cyclone.Sandy.OperationParser
                 grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(0, GridUnitType.Auto), SharedSizeGroup = methodName + "_Type"});
                 grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(0, GridUnitType.Auto), SharedSizeGroup = methodName + "_Name"});
                 grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(0, GridUnitType.Auto), SharedSizeGroup = methodName + "_EqualSign"});
-                for (var c = 0; c < GetColumns(line); c++)
-                {
-                    grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(0, GridUnitType.Auto), SharedSizeGroup = methodName + "_I" + c });
-                }
+                grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(0, GridUnitType.Auto), SharedSizeGroup = methodName + "_Values"});
                 for (var r = 0; r < variables.Count; r++)
                 {
                     grid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(0, GridUnitType.Auto) });
@@ -52,7 +49,7 @@ namespace AV.Cyclone.Sandy.OperationParser
                     var executeTreeLineItems = line.GetList(variables[r]);
                     for (var i = 0; i < executeTreeLineItems.Count; i++)
                     {
-                        var element = CreateElement(executeTreeLineItems[i], methodName + "_I" + i);
+                        var element = CreateElement(executeTreeLineItems[i], methodName + "_Values");
 
                         Grid.SetColumn(element, 3 + i);
                         Grid.SetRow(element, r);
