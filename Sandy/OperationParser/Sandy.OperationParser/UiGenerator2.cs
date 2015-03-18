@@ -27,14 +27,17 @@ namespace AV.Cyclone.Sandy.OperationParser
         public void Generate(ExecuteTree executeTree)
         {
             var methodName = "Method";
-            foreach (var line in executeTree.Lines)
+            foreach (var lineItem in executeTree.Lines)
             {
-                var variables = GetVariables(line.Value);
+                var lineNumber = lineItem.Key;
+                var line = lineItem.Value;
+
+                var variables = GetVariables(line);
                 var grid = new Grid();
                 grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(0, GridUnitType.Auto), SharedSizeGroup = methodName + "_Type"});
                 grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(0, GridUnitType.Auto), SharedSizeGroup = methodName + "_Name"});
                 grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(0, GridUnitType.Auto), SharedSizeGroup = methodName + "_EqualSign"});
-                for (var c = 0; c < GetColumns(line.Value); c++)
+                for (var c = 0; c < GetColumns(line); c++)
                 {
                     grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(0, GridUnitType.Auto), SharedSizeGroup = methodName + "_I" + c });
                 }
@@ -44,19 +47,23 @@ namespace AV.Cyclone.Sandy.OperationParser
                     CreateVariableTextBlock(grid, r, variables[r]);
                 }
 
-                for (var i = 0; i < line.Value.Executions.Count; i++)
+                for (var r = 0; r < variables.Count; r++)
                 {
-                    var element = CreateElement(line.Value.Executions[i], methodName + "_I" + i);
+                    var executeTreeLineItems = line.GetList(variables[r]);
+                    for (var i = 0; i < executeTreeLineItems.Count; i++)
+                    {
+                        var element = CreateElement(executeTreeLineItems[i], methodName + "_I" + i);
 
-                    Grid.SetColumn(element, 3);
-                    Grid.SetRow(element, i);
+                        Grid.SetColumn(element, 3 + i);
+                        Grid.SetRow(element, r);
 
-                    grid.Children.Add(element);
+                        grid.Children.Add(element);
+                    }
                 }
 
                 grid.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
                 grid.Arrange(new Rect(grid.DesiredSize));
-                controls[line.Key] = grid;
+                controls[lineNumber] = grid;
             }
         }
 
@@ -79,9 +86,10 @@ namespace AV.Cyclone.Sandy.OperationParser
         private List<string> GetVariables(ExecuteTreeLine line)
         {
             var variables = new List<string>();
-            foreach (var execution in line.Executions)
+            foreach (var variable in line.Variables)
             {
-                AddVariables(variables, execution);
+                if (!variables.Contains(variable))
+                    variables.Add(variable);
             }
             return variables;
         }
@@ -109,7 +117,7 @@ namespace AV.Cyclone.Sandy.OperationParser
 
         private int GetColumns(ExecuteTreeLine line)
         {
-            return line.Executions.Max(e => GetColumns(e));
+            return line.Executions.SelectMany(e => e.Value).Max(e => GetColumns(e));
         }
 
         private int GetColumns(ExecuteTreeLineItem lineItem)

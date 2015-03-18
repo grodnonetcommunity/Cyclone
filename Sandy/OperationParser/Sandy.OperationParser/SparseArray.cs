@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 
 namespace AV.Cyclone.Sandy.OperationParser
 {
@@ -9,6 +10,10 @@ namespace AV.Cyclone.Sandy.OperationParser
         private readonly Dictionary<int, T> array = new Dictionary<int, T>();
         private readonly Func<int, T> activator;
 
+        public SparseArray() : this(null)
+        {
+        }
+
         public SparseArray(Func<int, T> activator)
         {
             this.activator = activator;
@@ -16,15 +21,15 @@ namespace AV.Cyclone.Sandy.OperationParser
 
         public T this[int index]
         {
-            get
-            {
-                T value;
-                if (array.TryGetValue(index, out value)) return value;
-                value = activator(index);
-                array[index] = value;
-                return value;
-            }
+            get { return GetOrAddInternal(index, activator); }
             set { array[index] = value; }
+        }
+
+        public T GetOrAdd(int index, [NotNull] Func<int, T> factory)
+        {
+            if (factory == null) 
+                throw new ArgumentNullException("factory");
+            return GetOrAddInternal(index, factory);
         }
 
         public int Count
@@ -40,6 +45,15 @@ namespace AV.Cyclone.Sandy.OperationParser
         public IEnumerator<KeyValuePair<int, T>> GetEnumerator()
         {
             return array.GetEnumerator();
+        }
+
+        private T GetOrAddInternal(int index, Func<int, T> factory)
+        {
+            T value;
+            if (array.TryGetValue(index, out value) || factory == null) return value;
+            value = factory(index);
+            array[index] = value;
+            return value;
         }
     }
 }
