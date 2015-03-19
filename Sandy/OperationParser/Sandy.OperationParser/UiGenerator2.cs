@@ -28,6 +28,9 @@ namespace AV.Cyclone.Sandy.OperationParser
         {
             var methodName = "Method";
             var columns = GetColumns(executeTree);
+            var deep = GetDeep(executeTree);
+            var columnsDeep = new int[deep];
+            GetDeepColumns(executeTree, columnsDeep);
             foreach (var lineItem in executeTree.Lines)
             {
                 var lineNumber = lineItem.Key;
@@ -47,22 +50,74 @@ namespace AV.Cyclone.Sandy.OperationParser
 
                 for (var r = 0; r < variables.Count; r++)
                 {
-                    var executeTreeLineItems = line.GetList(variables[r]);
-                    for (var i = 0; i < executeTreeLineItems.Count; i++)
-                    {
-                        var element = CreateElement(executeTreeLineItems[i], methodName + "_Values", columns);
+                    var executeTreeLineItem = line.GetLineItem(variables[r]);
+                    var element = CreateElement(executeTreeLineItem, methodName + "_Values", columnsDeep, 0);
 
-                        Grid.SetColumn(element, 3 + i);
-                        Grid.SetRow(element, r);
+                    Grid.SetColumn(element, 3);
+                    Grid.SetRow(element, r);
 
-                        grid.Children.Add(element);
-                    }
+                    grid.Children.Add(element);
                 }
 
                 grid.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
                 grid.Arrange(new Rect(grid.DesiredSize));
                 controls[lineNumber] = grid;
             }
+        }
+
+        private void GetDeepColumns(ExecuteTree executeTree, int[] columnsDeep)
+        {
+            GetDeepColumns(executeTree.Lines.Select(e => e.Value), columnsDeep);
+        }
+
+        private void GetDeepColumns(IEnumerable<ExecuteTreeLine> executeTreeLines, int[] columnsDeep)
+        {
+            foreach (var executeTreeLine in executeTreeLines)
+            {
+                foreach (var executeTreeLineItem in executeTreeLine.Executions.Values)
+                {
+                    GetDeepColumns(executeTreeLineItem, columnsDeep, 0);
+                }
+            }
+        }
+
+        private void GetDeepColumns(ExecuteTreeLineItem executeTreeLineItem, int[] columnsDeep, int deep)
+        {
+            if (executeTreeLineItem is AssignOperationExecuteTreeLineItem)
+            {
+                columnsDeep[deep] = Math.Max(columnsDeep[deep], 1);
+            }
+            else if (executeTreeLineItem is ListExecuteTreeLineItem)
+            {
+                var items = ((ListExecuteTreeLineItem)executeTreeLineItem).Items;
+                columnsDeep[deep] = Math.Max(columnsDeep[deep], items.Count);
+                foreach (var item in items)
+                {
+                    GetDeepColumns(item.Value, columnsDeep, deep + 1);
+                }
+            }
+        }
+
+        private int GetDeep(ExecuteTree executeTree)
+        {
+            return executeTree.Lines.Max(e => GetDeep(e.Value));
+        }
+
+        private int GetDeep(ExecuteTreeLine executeTreeLine)
+        {
+            return executeTreeLine.Executions.Values.Max(e => GetDeep(e));
+        }
+
+        private int GetDeep(ExecuteTreeLineItem executeTreeLineItem)
+        {
+            if (executeTreeLineItem is AssignOperationExecuteTreeLineItem)
+                return 1;
+            if (executeTreeLineItem is ListExecuteTreeLineItem)
+            {
+                return ((ListExecuteTreeLineItem)executeTreeLineItem)
+                           .Items.Select(e => e.Value).Max(e => GetDeep(e)) + 1;
+            }
+            throw new Exception(string.Format("Unknow ExecuteTreeLineItem type: {0}", executeTreeLineItem.GetType().Name));
         }
 
         public OutComponent GetOutputComponents()
@@ -120,7 +175,7 @@ namespace AV.Cyclone.Sandy.OperationParser
 
         private int GetColumns(ExecuteTreeLine line)
         {
-            return line.Executions.SelectMany(e => e.Value).Max(e => GetColumns(e));
+            return line.Executions.Max(e => GetColumns(e.Value));
         }
 
         private int GetColumns(ExecuteTreeLineItem lineItem)
@@ -137,12 +192,12 @@ namespace AV.Cyclone.Sandy.OperationParser
             throw new Exception(string.Format("Unknow ExecuteTreeLineItem type: {0}", lineItem.GetType().Name));
         }
 
-        private FrameworkElement CreateElement(ExecuteTreeLineItem lineItem, string sharedScopeName, int columns)
+        private FrameworkElement CreateElement(ExecuteTreeLineItem lineItem, string sharedScopeName, int[] columnsDeep, int deep)
         {
             if (lineItem is AssignOperationExecuteTreeLineItem)
                 return CreateElement((AssignOperationExecuteTreeLineItem)lineItem);
             if (lineItem is ListExecuteTreeLineItem)
-                return CreateElement((ListExecuteTreeLineItem)lineItem, sharedScopeName, columns);
+                return CreateElement((ListExecuteTreeLineItem)lineItem, sharedScopeName, columnsDeep, deep);
             throw new Exception(string.Format("Unknow ExecuteTreeLineItem type: {0}", lineItem.GetType().Name));
         }
 
@@ -151,14 +206,14 @@ namespace AV.Cyclone.Sandy.OperationParser
             return CreateTextBlock(assignOperationItem.AssignOperation);
         }
 
-        private FrameworkElement CreateElement(ListExecuteTreeLineItem listItem, string sharedScopeName, int columns)
+        private FrameworkElement CreateElement(ListExecuteTreeLineItem listItem, string sharedScopeName, int[] columnsDeep, int deep)
         {
             var grid = new Grid
                        {
                            Margin = new Thickness(5, 0, 5, 0),
                            VerticalAlignment = VerticalAlignment.Center
                        };
-            for (int i = 0; i < columns; i++)
+            for (int i = 0; i < columnsDeep[deep]; i++)
             {
                 grid.ColumnDefinitions.Add(new ColumnDefinition {Width = new GridLength(0, GridUnitType.Auto), SharedSizeGroup = sharedScopeName + "_I" + i});
             }
@@ -167,7 +222,7 @@ namespace AV.Cyclone.Sandy.OperationParser
 
             foreach (var item in listItem.Items)
             {
-                var itemElement = CreateElement(item.Value, sharedScopeName + "_I" + item.Key, GetColumns(listItem));
+                var itemElement = CreateElement(item.Value, sharedScopeName + "_I" + item.Key, columnsDeep, deep + 1);
                 var border = new Border
                 {
                     BorderBrush = new SolidColorBrush(Colors.Black),

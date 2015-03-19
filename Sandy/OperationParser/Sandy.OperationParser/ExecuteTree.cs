@@ -1,13 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using AV.Cyclone.Sandy.Models.Operations;
 
 namespace AV.Cyclone.Sandy.OperationParser
 {
+    [DebuggerDisplay("{DebuggerDisplay,nq}")]
     public abstract class ExecuteTreeLineItem
     {
         public abstract string Variable { get; }
+
+        public abstract string DebuggerDisplay { get; }
     }
 
     public class ListExecuteTreeLineItem : ExecuteTreeLineItem
@@ -37,6 +41,11 @@ namespace AV.Cyclone.Sandy.OperationParser
         {
             get { return items.ToList(); }
         }
+
+        public override string DebuggerDisplay
+        {
+            get { return "[" + string.Join(", ", items.Select(e => e.Value.DebuggerDisplay)) + "]"; }
+        }
     }
 
     public class AssignOperationExecuteTreeLineItem : ExecuteTreeLineItem
@@ -57,19 +66,25 @@ namespace AV.Cyclone.Sandy.OperationParser
         {
             get { return assignOperation; }
         }
+
+        public override string DebuggerDisplay
+        {
+            get { return string.Format("{0} = {1}", AssignOperation.VariableName, AssignOperation.VariableValue); }
+        }
     }
 
     public class ExecuteTreeLine
     {
-        private readonly Dictionary<string, List<ExecuteTreeLineItem>> executions = new Dictionary<string, List<ExecuteTreeLineItem>>();
+        private readonly Dictionary<string, ExecuteTreeLineItem> executions = new Dictionary<string, ExecuteTreeLineItem>();
 
         public void Add(ExecuteTreeLineItem item)
         {
-            var list = GetList(item.Variable);
-            list.Add(item);
+            if (executions.ContainsKey(item.Variable))
+                throw new Exception(string.Format("Already added one item for variable {0}", item.Variable));
+            executions.Add(item.Variable, item);
         }
 
-        public Dictionary<string, List<ExecuteTreeLineItem>> Executions
+        public Dictionary<string, ExecuteTreeLineItem> Executions
         {
             get { return executions; }
         }
@@ -79,13 +94,9 @@ namespace AV.Cyclone.Sandy.OperationParser
             get { return executions.Keys; }
         }
 
-        public List<ExecuteTreeLineItem> GetList(string variableName)
+        public ExecuteTreeLineItem GetLineItem(string variableName)
         {
-            List<ExecuteTreeLineItem> list;
-            if (executions.TryGetValue(variableName, out list)) return list;
-            list = new List<ExecuteTreeLineItem>();
-            executions[variableName] = list;
-            return list;
+            return executions[variableName];
         }
     }
 
@@ -116,10 +127,7 @@ namespace AV.Cyclone.Sandy.OperationParser
                     {
                         var copyVariable = variable;
                         var listItem = list.GetOrAdd(line.Key, _ => new ListExecuteTreeLineItem(copyVariable));
-                        foreach (var execution in line.Value.GetList(copyVariable))
-                        {
-                            listItem.Add(i, execution);
-                        }
+                        listItem.Add(i, line.Value.GetLineItem(copyVariable));
                     }
                 }
             }

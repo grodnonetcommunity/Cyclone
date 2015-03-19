@@ -40,12 +40,17 @@ namespace AV.Cyclone.Sandy.UITests
             codeExecutor.Execute(projectName, files, "Test.Algorithms.BinarySerchTest", "LessOrEqualRequired");
 
             InitializeComponent();
-            var executions = new List<Execution>(executeLogger.MethodCalls
-                .Where(mr => mr.Key.FileName.EndsWith(relativeFilePath))
+            var executions = executeLogger
+                .MethodCalls
+                .Where(mr => mr.Key.FileName.EndsWith(relativeFilePath) &&
+                             mr.Key.MethodName == "BinarySearch")
                 .SelectMany(e => e.Value)
-                .Select(e => new Execution {Operations = e}));
+                .Select(e => new Execution {Operations = e})
+                .ToList();
 
-            var executeTree = ExecuteTree.Generate(executions[0].Operations);
+            var executeTree1 = ExecuteTree.Generate(executions[0].Operations);
+            var executeTree = new ExecuteTree();
+            executeTree.Add(new[] {executeTree1, executeTree1});
             var generator = new UiGenerator2();
             generator.Generate(executeTree);
             
