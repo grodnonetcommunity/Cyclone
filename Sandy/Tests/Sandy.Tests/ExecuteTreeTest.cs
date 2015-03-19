@@ -11,7 +11,7 @@ namespace AV.Cyclone.Sandy.Tests
         [Test]
         public void AssignOperationTest()
         {
-            var executionTree = new ExecuteTree();
+            var executionTree = new ExecuteTree("Test");
 
             executionTree.Add(new AssignOperation{LineNumber = 0, VariableName = "x", VariableValue = 0});
             executionTree.Add(new AssignOperation{LineNumber = 1, VariableName = "y", VariableValue = 0});
@@ -23,19 +23,19 @@ namespace AV.Cyclone.Sandy.Tests
         [Test]
         public void MergeTest()
         {
-            var executionTree1 = new ExecuteTree();
+            var executionTree1 = new ExecuteTree("Test");
 
             executionTree1.Add(new AssignOperation{LineNumber = 0, VariableName = "x", VariableValue = 100});
             executionTree1.Add(new AssignOperation{LineNumber = 1, VariableName = "y", VariableValue = 200});
             executionTree1.Add(new AssignOperation{LineNumber = 2, VariableName = "z", VariableValue = 300});
 
-            var executionTree2 = new ExecuteTree();
+            var executionTree2 = new ExecuteTree("Test");
 
             executionTree2.Add(new AssignOperation{LineNumber = 0, VariableName = "x", VariableValue = 101});
             executionTree2.Add(new AssignOperation{LineNumber = 1, VariableName = "y", VariableValue = 201});
             executionTree2.Add(new AssignOperation{LineNumber = 2, VariableName = "z", VariableValue = 301});
 
-            var executionTree = new ExecuteTree();
+            var executionTree = new ExecuteTree("Test");
 
             executionTree.Add(new[] {executionTree1, executionTree2});
 
@@ -56,16 +56,16 @@ namespace AV.Cyclone.Sandy.Tests
         [Test]
         public void ComplexMergeTest()
         {
-            var executionTree1 = new ExecuteTree();
+            var executionTree1 = new ExecuteTree("Test");
 
             executionTree1.Add(new AssignOperation{LineNumber = 2, VariableName = "x", VariableValue = 100});
             executionTree1.Add(new AssignOperation{LineNumber = 4, VariableName = "z", VariableValue = 300});
 
-            var executionTree2 = new ExecuteTree();
+            var executionTree2 = new ExecuteTree("Test");
 
             executionTree2.Add(new AssignOperation{LineNumber = 3, VariableName = "y", VariableValue = 201});
 
-            var executionTree = new ExecuteTree();
+            var executionTree = new ExecuteTree("Test");
 
             executionTree.Add(new AssignOperation { LineNumber = 0, VariableName = "a", VariableValue = 50 });
             executionTree.Add(new AssignOperation { LineNumber = 1, VariableName = "b", VariableValue = 25 });
@@ -77,19 +77,19 @@ namespace AV.Cyclone.Sandy.Tests
         [Test]
         public void ComplexMergeTest2()
         {
-            var executionTree1 = new ExecuteTree();
+            var executionTree1 = new ExecuteTree("Test");
 
             executionTree1.Add(new AssignOperation{LineNumber = 2, VariableName = "x", VariableValue = 100});
 
-            var executionTree2 = new ExecuteTree();
+            var executionTree2 = new ExecuteTree("Test");
 
             executionTree2.Add(new AssignOperation{LineNumber = 3, VariableName = "y", VariableValue = 201});
 
-            var executionTree3 = new ExecuteTree();
+            var executionTree3 = new ExecuteTree("Test");
 
             executionTree1.Add(new AssignOperation { LineNumber = 2, VariableName = "x", VariableValue = 300 });
 
-            var executionTree = new ExecuteTree();
+            var executionTree = new ExecuteTree("Test");
 
             executionTree.Add(new AssignOperation { LineNumber = 0, VariableName = "a", VariableValue = 50 });
             executionTree.Add(new AssignOperation { LineNumber = 1, VariableName = "b", VariableValue = 25 });
@@ -123,7 +123,7 @@ namespace AV.Cyclone.Sandy.Tests
 
             operations.Add(loopOperation);
 
-            var executionTree = ExecuteTree.Generate(operations);
+            var executionTree = ExecuteTree.Generate("Test", operations);
 
             Assert.AreEqual(4, executionTree.Lines.Count);
         }

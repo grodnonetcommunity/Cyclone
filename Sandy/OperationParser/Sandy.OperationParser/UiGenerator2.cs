@@ -26,7 +26,7 @@ namespace AV.Cyclone.Sandy.OperationParser
 
         public void Generate(ExecuteTree executeTree)
         {
-            var methodName = "Method";
+            var methodName = executeTree.MethodName;
             var columns = GetColumns(executeTree);
             var deep = GetDeep(executeTree);
             var columnsDeep = new int[deep];

@@ -102,7 +102,18 @@ namespace AV.Cyclone.Sandy.OperationParser
 
     public class ExecuteTree
     {
+        private readonly string methodName;
         private readonly SparseArray<ExecuteTreeLine> lines = new SparseArray<ExecuteTreeLine>(line => new ExecuteTreeLine());
+
+        public ExecuteTree(string methodName)
+        {
+            this.methodName = methodName;
+        }
+
+        public string MethodName
+        {
+            get { return methodName; }
+        }
 
         public SparseArray<ExecuteTreeLine> Lines
         {
@@ -137,9 +148,9 @@ namespace AV.Cyclone.Sandy.OperationParser
             }
         }
 
-        public static ExecuteTree Generate(IEnumerable<Operation> operations)
+        public static ExecuteTree Generate(string methodName, IEnumerable<Operation> operations)
         {
-            var result = new ExecuteTree();
+            var result = new ExecuteTree(methodName);
             foreach (var operation in operations)
             {
                 if (operation is AssignOperation)
@@ -149,7 +160,7 @@ namespace AV.Cyclone.Sandy.OperationParser
                 else if (operation is LoopOperation)
                 {
                     var loopOperation = (LoopOperation)operation;
-                    result.Add(loopOperation.Operations.Values.Select(Generate).ToList());
+                    result.Add(loopOperation.Operations.Values.Select(e => Generate(methodName, e)).ToList());
                 }
             }
             return result;
