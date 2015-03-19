@@ -20,17 +20,17 @@ namespace AV.Cyclone.Sandy.OperationParser
 
         private static readonly SandyColorProvider sandyColorProvider = new SandyColorProvider();
         private SandyColorProvider colorProvider = sandyColorProvider;
-        private readonly Dictionary<int, UIElement> controls = new Dictionary<int, UIElement>();
+        private readonly CompositeOutComponent outComponent = new CompositeOutComponent();
 
         public event PropertyChangedEventHandler PropertyChanged;
 
         public void Generate(ExecuteTree executeTree)
         {
             var methodName = executeTree.MethodName;
-            var columns = GetColumns(executeTree);
             var deep = GetDeep(executeTree);
             var columnsDeep = new int[deep];
             GetDeepColumns(executeTree, columnsDeep);
+            var controls = new Dictionary<int, UIElement>();
             foreach (var lineItem in executeTree.Lines)
             {
                 var lineNumber = lineItem.Key;
@@ -63,6 +63,7 @@ namespace AV.Cyclone.Sandy.OperationParser
                 grid.Arrange(new Rect(grid.DesiredSize));
                 controls[lineNumber] = grid;
             }
+            outComponent.AddComponent(new OutComponent(controls));
         }
 
         private void GetDeepColumns(ExecuteTree executeTree, int[] columnsDeep)
@@ -120,9 +121,9 @@ namespace AV.Cyclone.Sandy.OperationParser
             throw new Exception(string.Format("Unknow ExecuteTreeLineItem type: {0}", executeTreeLineItem.GetType().Name));
         }
 
-        public OutComponent GetOutputComponents()
+        public IOutComponent GetOutputComponents()
         {
-            return new OutComponent(controls);
+            return outComponent;
         }
 
         public SandyColorProvider ColorProvider

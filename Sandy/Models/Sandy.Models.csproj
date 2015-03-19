@@ -50,8 +50,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Annotation\AnnotationFramework.cs" />
+    <Compile Include="CompositeOutComponent.cs" />
     <Compile Include="Execution.cs" />
     <Compile Include="ICloudCollection.cs" />
+    <Compile Include="IOutComponent.cs" />
     <Compile Include="IUIGenerator.cs" />
     <Compile Include="Operations\AssignOperation.cs" />
     <Compile Include="Operations\LoopOperation.cs" />

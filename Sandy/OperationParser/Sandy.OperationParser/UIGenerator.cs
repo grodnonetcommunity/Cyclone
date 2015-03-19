@@ -25,7 +25,7 @@ namespace AV.Cyclone.Sandy.OperationParser
 			_executions = executions;
 		}
 
-		public OutComponent GetOutputComponents()
+		public IOutComponent GetOutputComponents()
 		{
 			Dictionary<int, UIElement> uiComponents = new Dictionary<int, UIElement>();
 			var outComponent = new OutComponent(uiComponents);
