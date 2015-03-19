@@ -148,6 +148,16 @@ namespace AV.Cyclone.Sandy.OperationParser
             }
         }
 
+        public static ExecuteTree Generate(string methodName, IEnumerable<IEnumerable<Operation>> operations)
+        {
+            var executeTrees = operations.Select(e => Generate(methodName, e)).ToList();
+            if (executeTrees.Count <= 1) return executeTrees.FirstOrDefault();
+
+            var executeTree = new ExecuteTree(methodName);
+            executeTree.Add(executeTrees);
+            return executeTree;
+        }
+
         public static ExecuteTree Generate(string methodName, IEnumerable<Operation> operations)
         {
             var result = new ExecuteTree(methodName);
