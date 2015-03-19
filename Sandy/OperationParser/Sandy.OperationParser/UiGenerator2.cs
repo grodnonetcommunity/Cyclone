@@ -289,25 +289,53 @@ namespace AV.Cyclone.Sandy.OperationParser
 
         private static TextBlock CreateTextBlock(Run run)
         {
-            var textBlock = new TextBlock(run)
+            return CreateTextBlock(new[] {run});
+        }
+
+        private static TextBlock CreateTextBlock(IEnumerable<Inline> runs)
+        {
+            var textBlock = new TextBlock()
                             {
                                 Margin = new Thickness(5, 0, 5, 0),
                                 VerticalAlignment = VerticalAlignment.Center
                             };
+            textBlock.Inlines.AddRange(runs);
             return textBlock;
         }
 
-        private Run CreateRun(object value)
+        private IEnumerable<Run> CreateRun(object value)
         {
+            if (value == null)
+            {
+                return new[] {CreateRun(null, "ColorProvider.KeywordBrush")};
+            }
             if (value is int)
             {
-                return CreateRun(value.ToString(), "ColorProvider.NumberBrush");
+                return new[] {CreateRun(value.ToString(), "ColorProvider.NumberBrush")};
             }
             if (value is bool)
             {
-                return CreateRun((bool)value ? "true" : "false", "ColorProvider.KeywordBrush");
+                return new[] {CreateRun((bool)value ? "true" : "false", "ColorProvider.KeywordBrush")};
             }
-            return CreateRun(value.ToString(), "ColorProvider.IdentifierBrush");
+            if (value.GetType().IsArray)
+            {
+                var arrayRuns = new List<Run>();
+                arrayRuns.Add(CreateRun("[", "ColorProvider.IdentifierBrush"));
+                // TODO: Work with multi-dimension array
+                var array = (Array)value;
+                for (var i = 0; i < array.Length; i++)
+                {
+                    var item = array.GetValue(i);
+                    arrayRuns.AddRange(CreateRun(item));
+                    if (i < array.Length - 1)
+                    {
+                        arrayRuns.Add(CreateRun(", ", "ColorProvider.IdentifierBrush"));
+                    }
+                }
+                arrayRuns.Add(CreateRun("]", "ColorProvider.IdentifierBrush"));
+                return arrayRuns;
+            }
+            return new[] {CreateRun(value.ToString(), "ColorProvider.IdentifierBrush")};
         }
 
         private Run CreateRun(string text, string path)
