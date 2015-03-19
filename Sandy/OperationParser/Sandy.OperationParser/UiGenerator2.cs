@@ -16,6 +16,13 @@ namespace AV.Cyclone.Sandy.OperationParser
 {
     public class UiGenerator2 : INotifyPropertyChanged, IUIGenerator
     {
+        private const string ColorProviderKeywordBrushPath = "ColorProvider.KeywordBrush";
+        private const string ColorProviderOperatorBrush = "ColorProvider.OperatorBrush";
+        private const string ColorProviderIdentifierBrushPath = "ColorProvider.IdentifierBrush";
+        private const string ColorProviderNumberBrushPath = "ColorProvider.NumberBrush";
+        private const string ColorProviderStringBrushPath = "ColorProvider.StringBrush";
+        private const string ColorProviderCharacterBrushPath = "ColorProvider.CharacterBrush";
+
         private static readonly string[] keywordVariableNames = {"while", "if", "return"};
 
         private static readonly SandyColorProvider sandyColorProvider = new SandyColorProvider();
@@ -245,13 +252,13 @@ namespace AV.Cyclone.Sandy.OperationParser
         {
             if (Array.IndexOf(keywordVariableNames, variable) >= 0)
             {
-                AddTextBlock(grid, 0, 3, row, variable, "ColorProvider.KeywordBrush");
+                AddTextBlock(grid, 0, 3, row, variable, ColorProviderKeywordBrushPath);
             }
             else
             {
-                AddTextBlock(grid, 0, 1, row, "var", "ColorProvider.KeywordBrush");
-                AddTextBlock(grid, 1, 1, row, variable, "ColorProvider.IdentifierBrush");
-                AddTextBlock(grid, 2, 1, row, "=", "ColorProvider.OperatorBrush");
+                AddTextBlock(grid, 0, 1, row, "var", ColorProviderKeywordBrushPath);
+                AddTextBlock(grid, 1, 1, row, variable, ColorProviderIdentifierBrushPath);
+                AddTextBlock(grid, 2, 1, row, "=", ColorProviderOperatorBrush);
             }
         }
 
@@ -307,20 +314,28 @@ namespace AV.Cyclone.Sandy.OperationParser
         {
             if (value == null)
             {
-                return new[] {CreateRun(null, "ColorProvider.KeywordBrush")};
+                return new[] {CreateRun(null, ColorProviderKeywordBrushPath)};
             }
             if (value is int)
             {
-                return new[] {CreateRun(value.ToString(), "ColorProvider.NumberBrush")};
+                return new[] {CreateRun(value.ToString(), ColorProviderNumberBrushPath)};
             }
             if (value is bool)
             {
-                return new[] {CreateRun((bool)value ? "true" : "false", "ColorProvider.KeywordBrush")};
+                return new[] {CreateRun((bool)value ? "true" : "false", ColorProviderKeywordBrushPath)};
+            }
+            if (value is string)
+            {
+                return new[] {CreateRun('"' + value.ToString() + '"', ColorProviderStringBrushPath)};
+            }
+            if (value is char)
+            {
+                return new[] {CreateRun("'" + value + "'", ColorProviderCharacterBrushPath)};
             }
             if (value.GetType().IsArray)
             {
                 var arrayRuns = new List<Run>();
-                arrayRuns.Add(CreateRun("[", "ColorProvider.IdentifierBrush"));
+                arrayRuns.Add(CreateRun("[", ColorProviderIdentifierBrushPath));
                 // TODO: Work with multi-dimension array
                 var array = (Array)value;
                 for (var i = 0; i < array.Length; i++)
@@ -329,13 +344,13 @@ namespace AV.Cyclone.Sandy.OperationParser
                     arrayRuns.AddRange(CreateRun(item));
                     if (i < array.Length - 1)
                     {
-                        arrayRuns.Add(CreateRun(", ", "ColorProvider.IdentifierBrush"));
+                        arrayRuns.Add(CreateRun(", ", ColorProviderIdentifierBrushPath));
                     }
                 }
-                arrayRuns.Add(CreateRun("]", "ColorProvider.IdentifierBrush"));
+                arrayRuns.Add(CreateRun("]", ColorProviderIdentifierBrushPath));
                 return arrayRuns;
             }
-            return new[] {CreateRun(value.ToString(), "ColorProvider.IdentifierBrush")};
+            return new[] {CreateRun(value.ToString(), ColorProviderIdentifierBrushPath)};
         }
 
         private Run CreateRun(string text, string path)
