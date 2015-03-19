@@ -1,4 +1,6 @@
-﻿namespace AV.Cyclone.Katrina.Executor.Interfaces
+﻿using System;
+
+namespace AV.Cyclone.Katrina.Executor.Interfaces
 {
     public class MethodReference
     {
@@ -14,7 +16,7 @@
 
         protected bool Equals(MethodReference other)
         {
-            return string.Equals(FileName, other.FileName) && string.Equals(MethodName, other.MethodName);
+            return string.Equals(FileName, other.FileName, StringComparison.InvariantCultureIgnoreCase) && string.Equals(MethodName, other.MethodName);
         }
 
         public override bool Equals(object obj)

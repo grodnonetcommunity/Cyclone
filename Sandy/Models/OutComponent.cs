@@ -1,18 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace AV.Cyclone.Sandy.OperationParser
+namespace AV.Cyclone.Sandy.Models
 {
 	public class OutComponent
 	{
-		private readonly Dictionary<int, StackPanel> _elements;
+		private readonly Dictionary<int, UIElement> _elements;
 
-		public OutComponent(Dictionary<int, StackPanel> elements)
+		public OutComponent(Dictionary<int, UIElement> elements)
 		{
 			_elements = elements;
 		}

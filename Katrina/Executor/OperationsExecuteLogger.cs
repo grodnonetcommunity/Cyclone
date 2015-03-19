@@ -49,23 +49,17 @@ namespace AV.Cyclone.Katrina.Executor
             iterationsCount = 0;
             executeStack.Push(currentBuilder);
             currentBuilder = new LoopOperationBuilder();
+            BeginLoopIteration(fileName, lineNumber);
         }
 
         public void LoopIteration(string fileName, int lineNumber)
         {
-            if (currentBuilder is LoopOperationBuilder)
+            EndLoopIteration(fileName, lineNumber);
+            if (iterationsCount++ > 100)
             {
-                BeginLoopIteration(fileName, lineNumber);
+                throw new Exception("Exit");
             }
-            else
-            {
-                EndLoopIteration(fileName, lineNumber);
-                if (iterationsCount++ > 100)
-                {
-                    throw new Exception("Exit");
-                }
-                BeginLoopIteration(fileName, lineNumber);
-            }
+            BeginLoopIteration(fileName, lineNumber);
         }
 
         private void BeginLoopIteration(string fileName, int lineNumber)

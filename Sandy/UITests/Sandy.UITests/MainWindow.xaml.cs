@@ -9,6 +9,7 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
 using AV.Cyclone.Katrina.Executor;
+using AV.Cyclone.Katrina.Executor.Interfaces;
 using AV.Cyclone.Sandy.Models;
 using AV.Cyclone.Sandy.OperationParser;
 using Microsoft.CodeAnalysis.MSBuild;
@@ -40,12 +41,16 @@ namespace AV.Cyclone.Sandy.UITests
             codeExecutor.Execute(projectName, files, "Test.Algorithms.BinarySerchTest", "LessOrEqualRequired");
 
             InitializeComponent();
-            List<Execution> executions = new List<Execution>(executeLogger.MethodCalls
-                .Where(mr => mr.Key.FileName.EndsWith(relativeFilePath))
-                .SelectMany(e => e.Value)
-                .Select(e => new Execution {Operations = e}));
+            var methodName = "BinarySearch";
+            var methodCalls = executeLogger
+                .MethodCalls[new MethodReference(filePath, methodName)];
 
-            UIGenerator generator = new UIGenerator(executions);
+            var executeTree1 = ExecuteTree.Generate(methodName, methodCalls);
+            var executeTree = new ExecuteTree(methodName);
+            executeTree.Add(new[] {executeTree1, executeTree1});
+            var generator = new UiGenerator2();
+            generator.Generate(executeTree);
+            
             var fileContent = File.ReadAllText(filePath);
             var lines = Regex.Split(fileContent, Environment.NewLine);
             int numLines = lines.Length;
@@ -75,7 +80,8 @@ namespace AV.Cyclone.Sandy.UITests
             var codeLine = new TextBlock(new Run(text))
             {
                 FontFamily = new FontFamily("Consolas"),
-                FontSize = 12
+                FontSize = 12,
+                VerticalAlignment = VerticalAlignment.Center
             };
             return codeLine;
         }

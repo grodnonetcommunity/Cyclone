@@ -10,7 +10,7 @@ using JetBrains.Annotations;
 
 namespace AV.Cyclone.Sandy.OperationParser
 {
-	public class UIGenerator
+	public class UIGenerator : IUIGenerator
 	{
 		private readonly IList<Execution> _executions;
 		private readonly OperationTypeParser _operationTypeParser = new OperationTypeParser();
@@ -27,7 +27,7 @@ namespace AV.Cyclone.Sandy.OperationParser
 
 		public OutComponent GetOutputComponents()
 		{
-			Dictionary<int, StackPanel> uiComponents = new Dictionary<int, StackPanel>();
+			Dictionary<int, UIElement> uiComponents = new Dictionary<int, UIElement>();
 			var outComponent = new OutComponent(uiComponents);
 			if (_executions == null)
 			{
@@ -55,7 +55,7 @@ namespace AV.Cyclone.Sandy.OperationParser
 					}
 					else
 					{
-						var panel = uiComponents[line];
+						var panel = (Panel)uiComponents[line];
 						IList<UIElement> replaced = new List<UIElement>();
 						foreach (var child in panel.Children)
 						{
