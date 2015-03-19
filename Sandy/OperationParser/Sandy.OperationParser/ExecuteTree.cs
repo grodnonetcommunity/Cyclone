@@ -128,7 +128,7 @@ namespace AV.Cyclone.Sandy.OperationParser
 
         public void Add(IList<ExecuteTree> executeTrees)
         {
-            var list = new SparseArray<ListExecuteTreeLineItem>();
+            var list = new SparseArray<Dictionary<string, ListExecuteTreeLineItem>>();
             for (var i = 0; i < executeTrees.Count; i++)
             {
                 var executeTree = executeTrees[i];
@@ -136,15 +136,23 @@ namespace AV.Cyclone.Sandy.OperationParser
                 {
                     foreach (var variable in line.Value.Variables)
                     {
-                        var copyVariable = variable;
-                        var listItem = list.GetOrAdd(line.Key, _ => new ListExecuteTreeLineItem(copyVariable));
-                        listItem.Add(i, line.Value.GetLineItem(copyVariable));
+                        var variableLineItems = list.GetOrAdd(line.Key, _ => new Dictionary<string, ListExecuteTreeLineItem>());
+                        ListExecuteTreeLineItem lineItem;
+                        if (!variableLineItems.TryGetValue(variable, out lineItem))
+                        {
+                            lineItem = new ListExecuteTreeLineItem(variable);
+                            variableLineItems.Add(variable, lineItem);
+                        }
+                        lineItem.Add(i, line.Value.GetLineItem(variable));
                     }
                 }
             }
-            foreach (var listItem in list)
+            foreach (var variableLineItem in list)
             {
-                lines[listItem.Key].Add(listItem.Value);
+                foreach (var listItem in variableLineItem.Value.Values)
+                {
+                    lines[variableLineItem.Key].Add(listItem);
+                }
             }
         }
 

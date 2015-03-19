@@ -127,5 +127,20 @@ namespace AV.Cyclone.Sandy.Tests
 
             Assert.AreEqual(4, executionTree.Lines.Count);
         }
+
+        [Test]
+        public void TwoVariablesOnTheSameLineTest()
+        {
+            var operations1 = new List<Operation>
+                              {
+                                  new AssignOperation {LineNumber = 0, VariableName = "x", VariableValue = 1},
+                                  new AssignOperation {LineNumber = 0, VariableName = "y", VariableValue = 1},
+                              };
+
+            var executionTree1 = ExecuteTree.Generate("Test", operations1);
+
+            var executionTree = new ExecuteTree("Test");
+            executionTree.Add(new [] {executionTree1, executionTree1, });
+        }
     }
 }
