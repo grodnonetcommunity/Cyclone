@@ -222,12 +222,12 @@ namespace AV.Cyclone.Sandy.OperationParser
                 var itemElement = CreateElement(outComponent, item.Value, sharedScopeName + "_I" + item.Key, columnsDeep, deep + 1);
                 var border = new Border
                 {
-                    BorderBrush = new SolidColorBrush(Colors.Black),
                     BorderThickness = new Thickness(1, 0, 1, 0),
                     Margin = new Thickness(0, 0, -1, 0),
                     Padding = new Thickness(2, 2, 2, 2),
                     Child = itemElement,
                 };
+                border.SetBinding(Border.BorderBrushProperty, CreateBinding(outComponent, ColorProviderOperatorBrush));
                 Grid.SetColumn(border, item.Key);
                 Grid.SetRow(border, 0);
                 grid.Children.Add(border);
