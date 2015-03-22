@@ -8,6 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Media;
+using AV.Cyclone.Katrina.Executor.Interfaces;
 using AV.Cyclone.Sandy.Models;
 using AV.Cyclone.Sandy.Models.Operations;
 using JetBrains.Annotations;
@@ -343,6 +344,10 @@ namespace AV.Cyclone.Sandy.OperationParser
             if (value is char)
             {
                 return new[] {CreateRun("'" + value + "'", ColorProviderCharacterBrushPath)};
+            }
+            if (value is ToStringValue)
+            {
+                return new[] {CreateRun(((ToStringValue)value).Value, ColorProviderIdentifierBrushPath)};
             }
             if (value.GetType().IsArray)
             {

@@ -46,7 +46,7 @@ namespace AV.Cyclone.Katrina.Executor.Interfaces
             if (value == null) return null;
             var type = value.GetType();
             if (IsSupportedType(type)) return value;
-            return value.ToString();
+            return new ToStringValue(value.ToString());
         }
 
         private static bool IsSupportedType(Type type)
