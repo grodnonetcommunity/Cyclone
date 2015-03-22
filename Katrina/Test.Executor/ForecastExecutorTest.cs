@@ -51,7 +51,7 @@ class Class
 
             var codeExecutor = new CodeExecutor();
             codeExecutor.Init(forecastItems);
-            var executeLogger = new MockExecuteLoggerHelper();
+            var executeLogger = new MockExecuteLogger();
             codeExecutor.SetExecuteLogger(executeLogger);
             codeExecutor.Execute("Project2", null, "Class", "Method");
 
@@ -75,7 +75,7 @@ class Class
 
             var codeExecutor = new CodeExecutor();
             codeExecutor.Init(forecastItems);
-            var executeLogger = new MockExecuteLoggerHelper();
+            var executeLogger = new MockExecuteLogger();
             codeExecutor.SetExecuteLogger(executeLogger);
             codeExecutor.Execute(projectName, files, "Test.Algorithms.BinarySerchTest", "LessOrEqualRequired");
 

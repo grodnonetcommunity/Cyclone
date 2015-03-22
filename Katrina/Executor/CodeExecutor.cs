@@ -27,6 +27,7 @@ namespace AV.Cyclone.Katrina.Executor
         private List<CSharpCompilation> executeCompilations;
         private List<CompilationEmitResult> compilationEmitResults;
         private readonly Dictionary<string, ForecastItem> forecastItems = new Dictionary<string, ForecastItem>();
+        private IExecuteLogger currentExecuteLogger;
 
         public void Init(IEnumerable<ForecastItem> items)
         {
@@ -85,9 +86,9 @@ namespace AV.Cyclone.Katrina.Executor
             }
         }
 
-        public void SetExecuteLogger(IExecuteLoggerHelper executeLogger)
+        public void SetExecuteLogger(IExecuteLogger executeLogger)
         {
-            Context.ExecuteLoggerHelper = executeLogger;
+            this.currentExecuteLogger = executeLogger;
         }
 
         public void Execute(string compilationName, string[] files, string className, string methodName)
@@ -146,7 +147,7 @@ namespace AV.Cyclone.Katrina.Executor
                         classAssemblyIndex = i;
                 }
 
-                loader.SetExecuteLogger(new DomainExecuteLogger(Context.ExecuteLoggerHelper));
+                loader.SetExecuteLogger(new DomainExecuteLogger(currentExecuteLogger));
                 try
                 {
                     loader.Execute(classAssemblyIndex, className, methodName);

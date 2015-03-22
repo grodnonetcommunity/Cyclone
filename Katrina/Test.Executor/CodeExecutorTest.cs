@@ -46,7 +46,7 @@ class Class
                 compilationOptions);
 
             var executor = new CodeExecutor();
-            var executeLogger = new MockExecuteLoggerHelper();
+            var executeLogger = new MockExecuteLogger();
 
             executor.Init(new[]
             {
@@ -93,7 +93,7 @@ class Class
                 compilationOptions);
 
             var executor = new CodeExecutor();
-            var executeLogger = new MockExecuteLoggerHelper();
+            var executeLogger = new MockExecuteLogger();
 
             var stopwatch = Stopwatch.StartNew();
             executor.Init(new[]
@@ -152,7 +152,7 @@ class Class
                 compilationOptions);
 
             var executor = new CodeExecutor();
-            var executeLogger = new MockExecuteLoggerHelper();
+            var executeLogger = new MockExecuteLogger();
 
             var stopwatch = Stopwatch.StartNew();
             executor.Init(new[]

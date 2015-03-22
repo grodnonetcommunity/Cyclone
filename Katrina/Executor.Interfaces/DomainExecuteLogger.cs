@@ -2,18 +2,18 @@
 
 namespace AV.Cyclone.Katrina.Executor.Interfaces
 {
-    public class DomainExecuteLogger : MarshalByRefObject, IExecuteLoggerHelper
+    public class DomainExecuteLogger : MarshalByRefObject, IExecuteLogger
     {
-        private readonly IExecuteLoggerHelper executeLogger;
+        private readonly IExecuteLogger executeLogger;
 
-        public DomainExecuteLogger(IExecuteLoggerHelper executeLogger)
+        public DomainExecuteLogger(IExecuteLogger executeLogger)
         {
             this.executeLogger = executeLogger;
         }
 
-        public T LogAssign<T>(string expression, string fileNme, int lineNumber, T value)
+        public void LogAssign(string expression, string fileNme, int lineNumber, object value)
         {
-            return executeLogger.LogAssign(expression, fileNme, lineNumber, value);
+            executeLogger.LogAssign(expression, fileNme, lineNumber, value);
         }
 
         public void BeginMethod(string methodName, string fileName, int lineNumber)

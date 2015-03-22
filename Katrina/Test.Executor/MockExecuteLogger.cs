@@ -3,14 +3,13 @@ using AV.Cyclone.Katrina.Executor.Interfaces;
 
 namespace Test.Executor
 {
-    public class MockExecuteLoggerHelper : IExecuteLoggerHelper
+    public class MockExecuteLogger : IExecuteLogger
     {
         public readonly List<string> assigns = new List<string>();
 
-        public T LogAssign<T>(string expression, string fileNme, int lineNumber, T value)
+        public void LogAssign(string expression, string fileNme, int lineNumber, object value)
         {
             assigns.Add(string.Format("{0} = {1}", expression, value));
-            return value;
         }
 
         public void BeginMethod(string methodName, string fileName, int lineNumber)
