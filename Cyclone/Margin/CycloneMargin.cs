@@ -28,6 +28,7 @@ namespace AV.Cyclone.Margin
             this.marginContent = new MarginContent(new VisualStudioTextViewService(textView));
             this.marginContent.Width = 0;
             VsColorThemeOnThemeChanged(new ThemeChangedEventArgs(0));
+            UpdateClouds();
         }
 
         private void TextBufferOnChanged(object sender, TextContentChangedEventArgs e)

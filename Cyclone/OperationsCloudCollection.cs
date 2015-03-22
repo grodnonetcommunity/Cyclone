@@ -6,9 +6,9 @@ namespace AV.Cyclone
 {
     public class OperationsCloudCollection : ICloudCollection
     {
-        private readonly OutComponent outComponent;
+        private readonly IOutComponent outComponent;
 
-        public OperationsCloudCollection(OutComponent outComponent)
+        public OperationsCloudCollection(IOutComponent outComponent)
         {
             this.outComponent = outComponent;
         }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using AV.Cyclone.Sandy.Models.Operations;
 
 namespace AV.Cyclone.Katrina.Executor
@@ -26,12 +27,7 @@ namespace AV.Cyclone.Katrina.Executor
 
         public LoopOperation Build(string fileName, int lineNumber)
         {
-            var operations = new Dictionary<int, IList<Operation>>();
-            for (var i = 0; i < Iterations.Count; i++)
-            {
-                var iteration = Iterations[i];
-                operations.Add(i, iteration.Operations);
-            }
+            var operations = Iterations.Select(iteration => (IList<Operation>)iteration.Operations).ToList();
             return new LoopOperation
             {
                 FileName = fileName,

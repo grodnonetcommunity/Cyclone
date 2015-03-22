@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Media;
+using JetBrains.Annotations;
 
 namespace AV.Cyclone.Sandy.Models
 {
@@ -10,11 +11,15 @@ namespace AV.Cyclone.Sandy.Models
         public static readonly SolidColorBrush DefaultNumberBrush = new SolidColorBrush(Colors.Black);
         public static readonly SolidColorBrush DefaultOperatorBrush = new SolidColorBrush(Colors.Black);
         public static readonly SolidColorBrush DefaultIdentifierBrush = new SolidColorBrush(Colors.Black);
+        public static readonly SolidColorBrush DefaultStringBrush = new SolidColorBrush(Colors.Brown);
+        public static readonly SolidColorBrush DefaultCharacterBrush = new SolidColorBrush(Colors.Brown);
 
         private Brush keywordBrush = DefaultKeywordBrush;
         private Brush identifierBrush = DefaultNumberBrush;
         private Brush operatorBrush = DefaultOperatorBrush;
         private Brush numberBrush = DefaultIdentifierBrush;
+        private Brush stringBrush = DefaultStringBrush;
+        private Brush characterBrush = DefaultCharacterBrush;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -62,6 +67,29 @@ namespace AV.Cyclone.Sandy.Models
             }
         }
 
+        public Brush StringBrush
+        {
+            get { return stringBrush; }
+            set
+            {
+                if (Equals(value, stringBrush)) return;
+                stringBrush = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public Brush CharacterBrush
+        {
+            get { return characterBrush; }
+            set
+            {
+                if (Equals(value, characterBrush)) return;
+                characterBrush = value;
+                OnPropertyChanged();
+            }
+        }
+
+        [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             var handler = PropertyChanged;

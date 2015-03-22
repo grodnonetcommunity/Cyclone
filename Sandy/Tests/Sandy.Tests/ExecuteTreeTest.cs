@@ -87,7 +87,7 @@ namespace AV.Cyclone.Sandy.Tests
 
             var executionTree3 = new ExecuteTree("Test");
 
-            executionTree1.Add(new AssignOperation { LineNumber = 2, VariableName = "x", VariableValue = 300 });
+            executionTree3.Add(new AssignOperation { LineNumber = 2, VariableName = "x", VariableValue = 300 });
 
             var executionTree = new ExecuteTree("Test");
 
@@ -108,18 +108,18 @@ namespace AV.Cyclone.Sandy.Tests
 
             var loopOperation = new LoopOperation();
 
-            loopOperation.Operations[0] = new List<Operation>
-                                          {
-                                              new AssignOperation{LineNumber = 2, VariableName = "x", VariableValue = 10}
-                                          };
-            loopOperation.Operations[1] = new List<Operation>
-                                          {
-                                              new AssignOperation{LineNumber = 3, VariableName = "y", VariableValue = 20}
-                                          };
-            loopOperation.Operations[2] = new List<Operation>
-                                          {
-                                              new AssignOperation{LineNumber = 2, VariableName = "x", VariableValue = 30}
-                                          };
+            loopOperation.Operations.Add(new List<Operation>
+                                         {
+                                             new AssignOperation {LineNumber = 2, VariableName = "x", VariableValue = 10}
+                                         });
+            loopOperation.Operations.Add(new List<Operation>
+                                         {
+                                             new AssignOperation {LineNumber = 3, VariableName = "y", VariableValue = 20}
+                                         });
+            loopOperation.Operations.Add(new List<Operation>
+                                         {
+                                             new AssignOperation {LineNumber = 2, VariableName = "x", VariableValue = 30}
+                                         });
 
             operations.Add(loopOperation);
 

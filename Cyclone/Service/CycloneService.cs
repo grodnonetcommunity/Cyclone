@@ -49,6 +49,9 @@ namespace AV.Cyclone.Service
 
         public ICloudCollection GetClouds(IWpfTextView textView)
         {
+            if (weatherStation == null)
+                return null;
+
             ITextDocument document;
 
             if (!textDocumentFactoryService.TryGetTextDocument(textView.TextDataModel.DocumentBuffer, out document))
@@ -58,11 +61,16 @@ namespace AV.Cyclone.Service
             if (clouds.TryGetValue(document.FilePath, out cloudCollection))
                 return cloudCollection;
 
-            var operations = weatherStation.GetOperations(document.FilePath);
-            if (operations == null)
+            var methodCalls = weatherStation.GetMethodCalls(document.FilePath);
+            if (methodCalls == null)
                 return null;
-            var uiGenerator = new UIGenerator(operations);
-            var outComponent = uiGenerator.GetOutputComponents();
+            var generator = new UiGenerator2();
+            foreach (var methodCall in methodCalls)
+            {
+                var executeTree = ExecuteTree.Generate(methodCall.Key, methodCall.Value);
+                generator.Generate(executeTree);
+            }
+            var outComponent = generator.GetOutputComponents();
 
             cloudCollection = new OperationsCloudCollection(outComponent);
             //cloudCollection.SetColorProvider(colorProviderService.GetColorProvider(textView));

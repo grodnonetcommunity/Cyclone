@@ -42,15 +42,14 @@ namespace AV.Cyclone.Sandy.UITests
 
             InitializeComponent();
             var methodName = "BinarySearch";
-            var methodCalls = executeLogger
-                .MethodCalls[new MethodReference(filePath, methodName)];
 
-            var executeTree1 = ExecuteTree.Generate(methodName, methodCalls);
-            var executeTree = new ExecuteTree(methodName);
-            executeTree.Add(new[] {executeTree1, executeTree1});
             var generator = new UiGenerator2();
-            generator.Generate(executeTree);
-            
+            foreach (var methodCall in executeLogger.MethodCalls)
+            {
+                var executeTree = ExecuteTree.Generate(methodCall.Key.MethodName, methodCall.Value);
+                generator.Generate(executeTree);
+            }
+
             var fileContent = File.ReadAllText(filePath);
             var lines = Regex.Split(fileContent, Environment.NewLine);
             int numLines = lines.Length;
