@@ -1,4 +1,6 @@
-﻿namespace AV.Cyclone.Katrina.Executor.Interfaces
+﻿using System;
+
+namespace AV.Cyclone.Katrina.Executor.Interfaces
 {
     public class SerializerExecuteLogger : IExecuteLogger
     {
@@ -12,15 +14,6 @@
         public void LogAssign(string expression, string fileNme, int lineNumber, object value)
         {
             executeLogger.LogAssign(expression, fileNme, lineNumber, SerializeValue(value));
-        }
-
-        private static object SerializeValue(object value)
-        {
-            if (value == null) return null;
-            var type = value.GetType();
-            if (type.IsPrimitive) return value;
-
-            return value.ToString();
         }
 
         public void BeginMethod(string methodName, string fileName, int lineNumber)
@@ -46,6 +39,22 @@
         public void EndLoop(string fileName, int lineNumber)
         {
             executeLogger.EndLoop(fileName, lineNumber);
+        }
+
+        private static object SerializeValue(object value)
+        {
+            if (value == null) return null;
+            var type = value.GetType();
+            if (IsSupportedType(type)) return value;
+            return value.ToString();
+        }
+
+        private static bool IsSupportedType(Type type)
+        {
+            if (type.IsPrimitive) return true;
+            if (type.IsArray) return IsSupportedType(type.GetElementType());
+            if (type == typeof(string)) return true;
+            return false;
         }
     }
 }

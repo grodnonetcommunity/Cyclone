@@ -231,5 +231,40 @@ class Class
 
             CollectionAssert.AreEqual(new[] { "a = 1", "b = 1", "c = Class+TestClass" }, executeLogger.assigns);
         }
+
+        [Test]
+        public void ArraySerializeTest()
+        {
+            var source = @"
+class Class
+{
+    public void Method()
+    {
+        var a = AV.Cyclone.Katrina.Executor.Interfaces.Context.ExecuteLoggerHelper.LogAssign(""a"","""",4, new int[] {1, 2, 3, 4});
+    }
+}
+";
+            var syntaxTree = CSharpSyntaxTree.ParseText(source);
+
+            var compilationOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary);
+            var compilaton = CSharpCompilation.Create("Temp.dll", new[] { syntaxTree, }, new[] { Mscorelib, ExecutorInterfaces, },
+                compilationOptions);
+
+            var executor = new CodeExecutor();
+            var executeLogger = new MockExecuteLogger();
+
+            executor.Init(new[]
+            {
+                new ForecastItem
+                {
+                    Compilation = compilaton,
+                    SyntaxTree = syntaxTree
+                }
+            });
+            executor.SetExecuteLogger(executeLogger);
+            executor.Execute(compilaton.AssemblyName, null, "Class", "Method");
+
+            Assert.AreEqual(new[] {1, 2, 3, 4}, executeLogger.values[0]);
+        }
     }
 }
