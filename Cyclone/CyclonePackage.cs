@@ -71,13 +71,18 @@ namespace AV.Cyclone
             if (null != mcs)
             {
                 // Create the command for the menu item.
-                CommandID menuCommandID = new CommandID(GuidList.guidCyclonePkgCmdSet, (int)0x100);
-                MenuCommand menuItem = new MenuCommand(MenuItemCallback, menuCommandID);
-                mcs.AddCommand(menuItem);
+                var startCycloneMenuCommandId = new CommandID(GuidList.guidCyclonePkgCmdSet, 0x100);
+                var stopCycloneMenuCommandId = new CommandID(GuidList.guidCyclonePkgCmdSet, 0x101);
+
+                var startCycloneMenuItem = new MenuCommand(StartCycloneMenuItemCallback, startCycloneMenuCommandId);
+                var stopCycloneMenuItem = new MenuCommand(StopCycloneMenuItemCallback, stopCycloneMenuCommandId);
+
+                mcs.AddCommand(startCycloneMenuItem);
+                mcs.AddCommand(stopCycloneMenuItem);
             }
         }
 
-        private void MenuItemCallback(object sender, EventArgs e)
+        private void StartCycloneMenuItemCallback(object sender, EventArgs e)
         {
             var txtMgr =
                 (IVsTextManager)GetService(typeof(SVsTextManager));
@@ -98,6 +103,11 @@ namespace AV.Cyclone
 
                 cycloneService.StartCyclone(solutionPath, currentProjectName, activeDocumentPath, initialLineNumber);
             }
+        }
+
+        private void StopCycloneMenuItemCallback(object sender, EventArgs e)
+        {
+            cycloneService.StopCyclone();
         }
 
         private IWpfTextViewHost GetIWpfTextViewHost()

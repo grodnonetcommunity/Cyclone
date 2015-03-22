@@ -35,6 +35,12 @@ namespace AV.Cyclone.Service
             weatherStation.Start();
         }
 
+        public void StopCyclone()
+        {
+            DisposeWeatherStation();
+            OnChanged();
+        }
+
         public void UpdateFile(ITextView textView, string content)
         {
             if (weatherStation == null) return;
@@ -90,6 +96,7 @@ namespace AV.Cyclone.Service
             {
                 weatherStation.Executed -= WeatherStationOnExecuted;
                 weatherStation.Dispose();
+                weatherStation = null;
             }
         }
 

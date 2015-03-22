@@ -10,6 +10,8 @@ namespace AV.Cyclone.Service
 
         void StartCyclone(string solutionPath, string projectName, string filePath, int lineNumber);
 
+        void StopCyclone();
+
         ICloudCollection GetClouds(IWpfTextView textView);
 
         void UpdateFile(ITextView textView, string content);
