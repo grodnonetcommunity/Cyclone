@@ -25,7 +25,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Executor.Interfaces", "Katr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Executor", "Katrina\Test.Executor\Test.Executor.csproj", "{8891FECC-2CF7-4EB2-8D9A-455EE10DAA73}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.SyntaxProcessor", "Katarina\Test.SyntaxProcessor\Test.SyntaxProcessor.csproj", "{6F280E7F-1D20-4780-839F-8F799C6DE089}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.SyntaxProcessor", "Katrina\Test.SyntaxProcessor\Test.SyntaxProcessor.csproj", "{6F280E7F-1D20-4780-839F-8F799C6DE089}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cyclone.Controls", "Cyclone.Controls\Cyclone.Controls.csproj", "{92956D30-2FE6-438F-A791-B3BE445E83FF}"
 EndProject
