@@ -87,7 +87,7 @@ namespace AV.Cyclone.Sandy.Tests
 
             var executionTree3 = new ExecuteTree("Test");
 
-            executionTree1.Add(new AssignOperation { LineNumber = 2, VariableName = "x", VariableValue = 300 });
+            executionTree3.Add(new AssignOperation { LineNumber = 2, VariableName = "x", VariableValue = 300 });
 
             var executionTree = new ExecuteTree("Test");
 

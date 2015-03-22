@@ -53,10 +53,10 @@ namespace Test.SyntaxProcessor
     try
     {
         BL("""", 0);
-        while (true) 
+        while (LA(""while"", """", 0, true))
         {
-            LI("""", 0);
             {}
+            LI("""", 0);
         }
     }
     finally
