@@ -1,21 +1,25 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Windows;
-using System.Windows.Controls;
+using JetBrains.Annotations;
 
 namespace AV.Cyclone.Sandy.Models
 {
-    public class OutComponent : IOutComponent
+    public class OutComponent : IOutComponent, INotifyPropertyChanged
     {
-        private readonly int minLineNumber;
-        private readonly int maxLineNumber;
+        private int minLineNumber;
+        private int maxLineNumber;
+        private static readonly SandyColorProvider sandyColorProvider = new SandyColorProvider();
+        private SandyColorProvider colorProvider = sandyColorProvider;
         private readonly Dictionary<int, UIElement> elements;
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         public OutComponent(Dictionary<int, UIElement> elements)
         {
             this.elements = elements;
-            this.minLineNumber = this.elements.Keys.Min();
-            this.maxLineNumber = this.elements.Keys.Max();
         }
 
         public int MinLineNumber
@@ -45,6 +49,35 @@ namespace AV.Cyclone.Sandy.Models
         public int Count
         {
             get { return elements.Count; }
+        }
+
+        public SandyColorProvider ColorProvider
+        {
+            get { return colorProvider; }
+            set
+            {
+                if (Equals(value, colorProvider)) return;
+                colorProvider = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public void SetColorProvider(SandyColorProvider newColorProvider)
+        {
+            this.ColorProvider = newColorProvider;
+        }
+
+        public void Freeze()
+        {
+            this.minLineNumber = this.elements.Keys.Min();
+            this.maxLineNumber = this.elements.Keys.Max();
+        }
+
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            var handler = PropertyChanged;
+            if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

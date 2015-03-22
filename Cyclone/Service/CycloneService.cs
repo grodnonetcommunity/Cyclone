@@ -14,14 +14,16 @@ namespace AV.Cyclone.Service
     public sealed class CycloneService : ICycloneService
     {
         private readonly ITextDocumentFactoryService textDocumentFactoryService;
+        private readonly ColorProviderService colorProviderService;
         private readonly Dispatcher dispatcher;
         private Dictionary<string, ICloudCollection> clouds = new Dictionary<string, ICloudCollection>();
         private WeatherStation weatherStation;
 
         [ImportingConstructor]
-        private CycloneService(ITextDocumentFactoryService textDocumentFactoryService)
+        private CycloneService(ITextDocumentFactoryService textDocumentFactoryService, ColorProviderService colorProviderService)
         {
             this.textDocumentFactoryService = textDocumentFactoryService;
+            this.colorProviderService = colorProviderService;
             this.dispatcher = Dispatcher.CurrentDispatcher;
         }
 
@@ -80,7 +82,7 @@ namespace AV.Cyclone.Service
 
             cloudCollection = new OperationsCloudCollection(outComponent);
             cloudCollection = new CycloneCloudCollection(cloudCollection, textView);
-            //cloudCollection.SetColorProvider(colorProviderService.GetColorProvider(textView));
+            cloudCollection.SetColorProvider(colorProviderService.GetColorProvider(textView));
             clouds.Add(document.FilePath, cloudCollection);
             return cloudCollection;
         }
