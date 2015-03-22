@@ -55,7 +55,6 @@
     <Compile Include="OperationTypeParser.cs" />
     <Compile Include="OutputItem.cs" />
     <Compile Include="SparseArray.cs" />
-    <Compile Include="UIGenerator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UiGenerator2.cs" />
   </ItemGroup>
