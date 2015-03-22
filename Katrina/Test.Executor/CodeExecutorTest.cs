@@ -205,7 +205,7 @@ class Class
     {
         var a = AV.Cyclone.Katrina.Executor.Interfaces.Context.ExecuteLoggerHelper.LogAssign(""a"","""",4,1);
         var b = AV.Cyclone.Katrina.Executor.Interfaces.Context.ExecuteLoggerHelper.LogAssign(""b"","""",4,1);
-        var c = AV.Cyclone.Katrina.Executor.Interfaces.Context.ExecuteLoggerHelper.LogAssign(""b"","""",4, new TestClass());
+        var c = AV.Cyclone.Katrina.Executor.Interfaces.Context.ExecuteLoggerHelper.LogAssign(""c"","""",4, new TestClass());
     }
 }
 ";
@@ -229,7 +229,7 @@ class Class
             executor.SetExecuteLogger(executeLogger);
             executor.Execute(compilaton.AssemblyName, null, "Class", "Method");
 
-            CollectionAssert.AreEqual(new[] { "a = 1", "b = 1" }, executeLogger.assigns);
+            CollectionAssert.AreEqual(new[] { "a = 1", "b = 1", "c = Class+TestClass" }, executeLogger.assigns);
         }
     }
 }
