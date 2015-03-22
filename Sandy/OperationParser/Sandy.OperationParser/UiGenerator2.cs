@@ -45,8 +45,7 @@ namespace AV.Cyclone.Sandy.OperationParser
 
                 var variables = GetVariables(line);
                 var grid = new Grid();
-                grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(0, GridUnitType.Auto), SharedSizeGroup = methodName + "_Type"});
-                grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(0, GridUnitType.Auto), SharedSizeGroup = methodName + "_Name"});
+                grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(0, GridUnitType.Auto), SharedSizeGroup = methodName + "_Type_Name"});
                 grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(0, GridUnitType.Auto), SharedSizeGroup = methodName + "_EqualSign"});
                 grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(0, GridUnitType.Auto), SharedSizeGroup = methodName + "_Values"});
                 for (var r = 0; r < variables.Count; r++)
@@ -60,7 +59,7 @@ namespace AV.Cyclone.Sandy.OperationParser
                     var executeTreeLineItem = line.GetLineItem(variables[r]);
                     var element = CreateElement(executeTreeLineItem, methodName + "_Values", columnsDeep, 0);
 
-                    Grid.SetColumn(element, 3);
+                    Grid.SetColumn(element, 2);
                     Grid.SetRow(element, r);
 
                     grid.Children.Add(element);
@@ -252,22 +251,25 @@ namespace AV.Cyclone.Sandy.OperationParser
         {
             if (Array.IndexOf(keywordVariableNames, variable) >= 0)
             {
-                AddTextBlock(grid, 0, 3, row, variable, ColorProviderKeywordBrushPath);
+                AddTextBlock(grid, 0, row, variable, ColorProviderKeywordBrushPath);
             }
             else
             {
-                AddTextBlock(grid, 0, 1, row, "var", ColorProviderKeywordBrushPath);
-                AddTextBlock(grid, 1, 1, row, variable, ColorProviderIdentifierBrushPath);
-                AddTextBlock(grid, 2, 1, row, "=", ColorProviderOperatorBrush);
+                AddTextBlock(grid, 0, row, new[] {"var ", variable}, new[] {ColorProviderKeywordBrushPath, ColorProviderIdentifierBrushPath});
+                AddTextBlock(grid, 1, row, "=", ColorProviderOperatorBrush);
             }
         }
 
-        private void AddTextBlock(Grid grid, int column, int columnSpan, int row, string text, string foregroundBinding)
+        private void AddTextBlock(Grid grid, int column, int row, string text, string foregroundBinding)
         {
-            var textBlock = CreateTextBlock(text, foregroundBinding);
+            AddTextBlock(grid, column, row, new[] {text}, new[] {foregroundBinding});
+        }
+
+        private void AddTextBlock(Grid grid, int column, int row, string[] texts, string[] foregroundsBinding)
+        {
+            var textBlock = CreateTextBlock(texts, foregroundsBinding);
 
             Grid.SetColumn(textBlock, column);
-            Grid.SetColumnSpan(textBlock, columnSpan);
             Grid.SetRow(textBlock, row);
 
             grid.Children.Add(textBlock);
@@ -289,9 +291,17 @@ namespace AV.Cyclone.Sandy.OperationParser
                    };
         }
 
-        private TextBlock CreateTextBlock(string text, string foregroundBinding)
+        private TextBlock CreateTextBlock(IReadOnlyList<string> texts, IReadOnlyList<string> foregroundsBinding)
         {
-            return CreateTextBlock(CreateRun(text, foregroundBinding));
+            var runs = new Inline[texts.Count];
+            for (var i = 0; i < texts.Count; i++)
+            {
+                var text = texts[i];
+                var foregroundBinding = foregroundsBinding[i];
+                runs[i] = CreateRun(text, foregroundBinding);
+            }
+
+            return CreateTextBlock(runs);
         }
 
         private static TextBlock CreateTextBlock(Run run)
@@ -304,7 +314,9 @@ namespace AV.Cyclone.Sandy.OperationParser
             var textBlock = new TextBlock()
                             {
                                 Margin = new Thickness(5, 0, 5, 0),
-                                VerticalAlignment = VerticalAlignment.Center
+                                VerticalAlignment = VerticalAlignment.Center,
+                                FontFamily = new FontFamily("Consolas"),
+                                FontSize = 12
                             };
             textBlock.Inlines.AddRange(runs);
             return textBlock;
