@@ -316,8 +316,6 @@ namespace AV.Cyclone.Sandy.OperationParser
                             {
                                 Margin = new Thickness(5, 0, 5, 0),
                                 VerticalAlignment = VerticalAlignment.Center,
-                                FontFamily = new FontFamily("Consolas"),
-                                FontSize = 12
                             };
             textBlock.Inlines.AddRange(runs);
             return textBlock;
