@@ -79,6 +79,7 @@ namespace AV.Cyclone.Service
             var outComponent = generator.GetOutputComponents();
 
             cloudCollection = new OperationsCloudCollection(outComponent);
+            cloudCollection = new CycloneCloudCollection(cloudCollection, textView);
             //cloudCollection.SetColorProvider(colorProviderService.GetColorProvider(textView));
             clouds.Add(document.FilePath, cloudCollection);
             return cloudCollection;
