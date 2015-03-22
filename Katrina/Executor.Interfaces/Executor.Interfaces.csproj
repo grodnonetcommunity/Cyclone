@@ -48,7 +48,7 @@
     <Compile Include="AssemblyLoader.cs" />
     <Compile Include="Context.cs" />
     <Compile Include="DomainExecuteLogger.cs" />
-    <Compile Include="IExecuteLogger.cs" />
+    <Compile Include="IExecuteLoggerHelper.cs" />
     <Compile Include="MethodReference.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

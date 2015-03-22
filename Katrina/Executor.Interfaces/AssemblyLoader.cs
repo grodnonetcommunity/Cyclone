@@ -15,9 +15,9 @@ namespace AV.Cyclone.Katrina.Executor.Interfaces
             return index;
         }
 
-        public void SetExecuteLogger(IExecuteLogger executeLogger)
+        public void SetExecuteLogger(IExecuteLoggerHelper executeLogger)
         {
-            Context.ExecuteLogger = executeLogger;
+            Context.ExecuteLoggerHelper = executeLogger;
         }
 
         public void Execute(int assemblyIndex, string className, string methodName)

@@ -129,9 +129,9 @@ namespace AV.Cyclone.Katrina.Executor
                 if (!executeThread.Join(TimeSpan.FromSeconds(50)))
                 {
                     executeThread.Abort();
-                    if (Context.ExecuteLogger != null && Context.ExecuteLogger is OperationsExecuteLogger)
+                    if (Context.ExecuteLoggerHelper != null && Context.ExecuteLoggerHelper is OperationsExecuteLogger)
                     {
-                        var operationsExecuteLogger = ((OperationsExecuteLogger)Context.ExecuteLogger);
+                        var operationsExecuteLogger = ((OperationsExecuteLogger)Context.ExecuteLoggerHelper);
                         operationsExecuteLogger.CollapseExecutor();
                         UpdateOperations(operationsExecuteLogger.MethodCalls);
 

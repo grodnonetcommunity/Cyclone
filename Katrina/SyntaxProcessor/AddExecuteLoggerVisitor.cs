@@ -21,12 +21,12 @@ namespace AV.Cyclone.Katrina.SyntaxProcessor
 
         public AddExecuteLoggerVisitor(bool visitIntoStructuredTrivia = false) : base(visitIntoStructuredTrivia)
         {
-            LogAssignMember = "AV.Cyclone.Katrina.Executor.Interfaces.Context.ExecuteLogger.LogAssign";
-            BeginLoopMember = "AV.Cyclone.Katrina.Executor.Interfaces.Context.ExecuteLogger.BeginLoop";
-            LoopIterationMember = "AV.Cyclone.Katrina.Executor.Interfaces.Context.ExecuteLogger.LoopIteration";
-            EndLoopMember = "AV.Cyclone.Katrina.Executor.Interfaces.Context.ExecuteLogger.EndLoop";
-            BeginMethodMember = "AV.Cyclone.Katrina.Executor.Interfaces.Context.ExecuteLogger.BeginMethod";
-            EndMethodMember = "AV.Cyclone.Katrina.Executor.Interfaces.Context.ExecuteLogger.EndMethod";
+            LogAssignMember = "AV.Cyclone.Katrina.Executor.Interfaces.Context.ExecuteLoggerHelper.LogAssign";
+            BeginLoopMember = "AV.Cyclone.Katrina.Executor.Interfaces.Context.ExecuteLoggerHelper.BeginLoop";
+            LoopIterationMember = "AV.Cyclone.Katrina.Executor.Interfaces.Context.ExecuteLoggerHelper.LoopIteration";
+            EndLoopMember = "AV.Cyclone.Katrina.Executor.Interfaces.Context.ExecuteLoggerHelper.EndLoop";
+            BeginMethodMember = "AV.Cyclone.Katrina.Executor.Interfaces.Context.ExecuteLoggerHelper.BeginMethod";
+            EndMethodMember = "AV.Cyclone.Katrina.Executor.Interfaces.Context.ExecuteLoggerHelper.EndMethod";
         }
 
         public override SyntaxNode VisitVariableDeclarator(VariableDeclaratorSyntax node)

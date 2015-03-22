@@ -34,8 +34,8 @@ class Class
 {
     public void Method()
     {
-        var a = AV.Cyclone.Katrina.Executor.Interfaces.Context.ExecuteLogger.LogAssign(""a"","""",4,1);
-        var b = AV.Cyclone.Katrina.Executor.Interfaces.Context.ExecuteLogger.LogAssign(""b"","""",4,1);
+        var a = AV.Cyclone.Katrina.Executor.Interfaces.Context.ExecuteLoggerHelper.LogAssign(""a"","""",4,1);
+        var b = AV.Cyclone.Katrina.Executor.Interfaces.Context.ExecuteLoggerHelper.LogAssign(""b"","""",4,1);
     }
 }
 ";
@@ -46,7 +46,7 @@ class Class
                 compilationOptions);
 
             var executor = new CodeExecutor();
-            var executeLogger = new MockExecuteLogger();
+            var executeLogger = new MockExecuteLoggerHelper();
 
             executor.Init(new[]
             {
@@ -70,7 +70,7 @@ class Class
 {
     public void Method()
     {
-        var a = AV.Cyclone.Katrina.Executor.Interfaces.Context.ExecuteLogger.LogAssign(""a"","""",4,1);
+        var a = AV.Cyclone.Katrina.Executor.Interfaces.Context.ExecuteLoggerHelper.LogAssign(""a"","""",4,1);
     }
 }
 ";
@@ -79,8 +79,8 @@ class Class
 {
     public void Method()
     {
-        var a = AV.Cyclone.Katrina.Executor.Interfaces.Context.ExecuteLogger.LogAssign(""a"","""",4,1);
-        var b = AV.Cyclone.Katrina.Executor.Interfaces.Context.ExecuteLogger.LogAssign(""b"","""",4,1);
+        var a = AV.Cyclone.Katrina.Executor.Interfaces.Context.ExecuteLoggerHelper.LogAssign(""a"","""",4,1);
+        var b = AV.Cyclone.Katrina.Executor.Interfaces.Context.ExecuteLoggerHelper.LogAssign(""b"","""",4,1);
     }
 }
 ";
@@ -93,7 +93,7 @@ class Class
                 compilationOptions);
 
             var executor = new CodeExecutor();
-            var executeLogger = new MockExecuteLogger();
+            var executeLogger = new MockExecuteLoggerHelper();
 
             var stopwatch = Stopwatch.StartNew();
             executor.Init(new[]
@@ -129,7 +129,7 @@ class Class
 {
     public void Method()
     {
-        var a = AV.Cyclone.Katrina.Executor.Interfaces.Context.ExecuteLogger.LogAssign(""a"","""",4,1);
+        var a = AV.Cyclone.Katrina.Executor.Interfaces.Context.ExecuteLoggerHelper.LogAssign(""a"","""",4,1);
     }
 }
 ";
@@ -138,8 +138,8 @@ class Class
 {
     public void Method()
     {
-        var a = AV.Cyclone.Katrina.Executor.Interfaces.Context.ExecuteLogger.LogAssign(""a"","""",4,1);
-        var b = AV.Cyclone.Katrina.Executor.Interfaces.Context.ExecuteLogger.LogAssign(""b"","""",4,1);
+        var a = AV.Cyclone.Katrina.Executor.Interfaces.Context.ExecuteLoggerHelper.LogAssign(""a"","""",4,1);
+        var b = AV.Cyclone.Katrina.Executor.Interfaces.Context.ExecuteLoggerHelper.LogAssign(""b"","""",4,1);
     }
 }
 ";
@@ -152,7 +152,7 @@ class Class
                 compilationOptions);
 
             var executor = new CodeExecutor();
-            var executeLogger = new MockExecuteLogger();
+            var executeLogger = new MockExecuteLoggerHelper();
 
             var stopwatch = Stopwatch.StartNew();
             executor.Init(new[]

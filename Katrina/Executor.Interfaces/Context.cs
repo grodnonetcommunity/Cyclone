@@ -2,6 +2,6 @@
 {
     public static class Context
     {
-        public static IExecuteLogger ExecuteLogger { get; set; }
+        public static IExecuteLoggerHelper ExecuteLoggerHelper { get; set; }
     }
 }

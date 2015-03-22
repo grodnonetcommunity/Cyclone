@@ -5,7 +5,7 @@ using AV.Cyclone.Sandy.Models.Operations;
 
 namespace AV.Cyclone.Katrina.Executor
 {
-    public class OperationsExecuteLogger : IExecuteLogger
+    public class OperationsExecuteLogger : IExecuteLoggerHelper
     {
         private readonly Stack<OperationBuilder> executeStack = new Stack<OperationBuilder>();
         private OperationBuilder currentBuilder;

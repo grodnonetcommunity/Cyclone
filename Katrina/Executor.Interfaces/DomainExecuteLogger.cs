@@ -2,11 +2,11 @@
 
 namespace AV.Cyclone.Katrina.Executor.Interfaces
 {
-    public class DomainExecuteLogger : MarshalByRefObject, IExecuteLogger
+    public class DomainExecuteLogger : MarshalByRefObject, IExecuteLoggerHelper
     {
-        private readonly IExecuteLogger executeLogger;
+        private readonly IExecuteLoggerHelper executeLogger;
 
-        public DomainExecuteLogger(IExecuteLogger executeLogger)
+        public DomainExecuteLogger(IExecuteLoggerHelper executeLogger)
         {
             this.executeLogger = executeLogger;
         }

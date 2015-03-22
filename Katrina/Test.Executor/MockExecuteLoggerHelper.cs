@@ -3,7 +3,7 @@ using AV.Cyclone.Katrina.Executor.Interfaces;
 
 namespace Test.Executor
 {
-    public class MockExecuteLogger : IExecuteLogger
+    public class MockExecuteLoggerHelper : IExecuteLoggerHelper
     {
         public readonly List<string> assigns = new List<string>();
 

@@ -85,9 +85,9 @@ namespace AV.Cyclone.Katrina.Executor
             }
         }
 
-        public void SetExecuteLogger(IExecuteLogger executeLogger)
+        public void SetExecuteLogger(IExecuteLoggerHelper executeLogger)
         {
-            Context.ExecuteLogger = executeLogger;
+            Context.ExecuteLoggerHelper = executeLogger;
         }
 
         public void Execute(string compilationName, string[] files, string className, string methodName)
@@ -146,7 +146,7 @@ namespace AV.Cyclone.Katrina.Executor
                         classAssemblyIndex = i;
                 }
 
-                loader.SetExecuteLogger(new DomainExecuteLogger(Context.ExecuteLogger));
+                loader.SetExecuteLogger(new DomainExecuteLogger(Context.ExecuteLoggerHelper));
                 try
                 {
                     loader.Execute(classAssemblyIndex, className, methodName);
