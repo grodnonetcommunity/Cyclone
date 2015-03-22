@@ -23,6 +23,7 @@ namespace AV.Cyclone.Katrina.Executor
         private string startMethodDeclaration;
         private string startTypeDeclaration;
         private Dictionary<string, List<Execution>> operations;
+        private Dictionary<MethodReference, List<List<Operation>>> methodCalls; 
         private bool disposed;
         private Thread backgroundThread;
         private readonly AutoResetEvent waitChanges = new AutoResetEvent(false);
@@ -98,6 +99,13 @@ namespace AV.Cyclone.Katrina.Executor
             return list;
         }
 
+        public Dictionary<string, List<List<Operation>>> GetMethodCalls(string fileName)
+        {
+            var fileMethodCalls = methodCalls.Where(e => e.Key.FileName == fileName).ToList();
+            if (fileMethodCalls.Count == 0) return null;
+            return fileMethodCalls.ToDictionary(e => e.Key.MethodName, e => e.Value);
+        }
+
         private void StartThread()
         {
             backgroundThread = new Thread(BackgroundExecutor)
@@ -159,6 +167,7 @@ namespace AV.Cyclone.Katrina.Executor
                 tempOperations.Add(methodCall.FileName, methodCall.Calls.Select(mc => new Execution() {Operations = mc}).ToList());
             }
             operations = tempOperations;
+            this.methodCalls = methodCalls;
         }
 
         protected virtual void OnExecuted()
