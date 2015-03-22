@@ -49,6 +49,9 @@ namespace AV.Cyclone.Service
 
         public ICloudCollection GetClouds(IWpfTextView textView)
         {
+            if (weatherStation == null)
+                return null;
+
             ITextDocument document;
 
             if (!textDocumentFactoryService.TryGetTextDocument(textView.TextDataModel.DocumentBuffer, out document))
