@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using AV.Cyclone.Sandy.Models;
 using JetBrains.Annotations;
 
@@ -48,7 +49,7 @@ namespace Cyclon.Controls
                 if (!ReferenceEquals(lineControl.Parent, this) && lineControl.Parent != null)
                     lineControl.Parent.RemoveChild(lineControl);
 
-                SetFontSize(lineControl, scale);
+                SetFontInfo(lineControl, new FontFamily("Consolas"), scale);
 
                 contentCanvas.Children.Add(lineControl);
                 Canvas.SetLeft(lineControl, 0);
@@ -56,26 +57,28 @@ namespace Cyclon.Controls
             }
         }
 
-        private static void SetFontSize(FrameworkElement control, double scale)
+        private static void SetFontInfo(FrameworkElement control, FontFamily fontFamily, double scale)
         {
             if (control is Control)
             {
-                ((Control) control).FontSize = 12*scale;
+                ((Control)control).FontSize = 12 * scale;
+                ((Control)control).FontFamily = fontFamily;
             }
             else if (control is Panel)
             {
                 foreach (var child in ((Panel)control).Children)
                 {
-                    SetFontSize((FrameworkElement)child, scale);
+                    SetFontInfo((FrameworkElement)child, fontFamily, scale);
                 }
             }
             else if (control is TextBlock)
             {
-                ((TextBlock) control).FontSize = 12*scale;
+                ((TextBlock)control).FontSize = 12 * scale;
+                ((TextBlock)control).FontFamily = fontFamily;
             }
             else if (control is Decorator)
             {
-                SetFontSize((FrameworkElement) ((Decorator) control).Child, scale);
+                SetFontInfo((FrameworkElement)((Decorator)control).Child, fontFamily, scale);
             }
             else
             {

@@ -24,6 +24,13 @@
           <ButtonText>Start Cyclone</ButtonText>
         </Strings>
       </Button>
+      <Button guid="guidCyclonePkgCmdSet" id="cmdidCyclonePkgStopCyclone" priority="0x0100" type="Button">
+        <Parent guid="guidCyclonePkgCmdSet" id="CyclonePkgMenuGroup" />
+        <Icon guid="guidImages" id="bmpPic1" />
+        <Strings>
+          <ButtonText>Stop Cyclone</ButtonText>
+        </Strings>
+      </Button>
     </Buttons>
 
     <Bitmaps>
@@ -47,6 +54,7 @@
 
       <IDSymbol name="CyclonePkgMenuGroup" value="0x1020" />
       <IDSymbol name="cmdidCyclonePkgStartCyclone" value="0x0100" />
+      <IDSymbol name="cmdidCyclonePkgStopCyclone" value="0x0101" />
     </GuidSymbol>
 
     <GuidSymbol name="guidImages" value="{ADB7F634-0EDF-43A5-9DF2-B5F63453CD0B}">

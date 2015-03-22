@@ -26,9 +26,7 @@ namespace AV.Cyclone.Sandy.OperationParser
 
         private static readonly string[] keywordVariableNames = {"while", "if", "return"};
 
-        private static readonly SandyColorProvider sandyColorProvider = new SandyColorProvider();
-        private SandyColorProvider colorProvider = sandyColorProvider;
-        private readonly CompositeOutComponent outComponent = new CompositeOutComponent();
+        private readonly CompositeOutComponent compositeOutComponent = new CompositeOutComponent();
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -39,6 +37,7 @@ namespace AV.Cyclone.Sandy.OperationParser
             var columnsDeep = new int[deep];
             GetDeepColumns(executeTree, columnsDeep);
             var controls = new Dictionary<int, UIElement>();
+            var outComponent = new OutComponent(controls);
             foreach (var lineItem in executeTree.Lines)
             {
                 var lineNumber = lineItem.Key;
@@ -52,13 +51,13 @@ namespace AV.Cyclone.Sandy.OperationParser
                 for (var r = 0; r < variables.Count; r++)
                 {
                     grid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(0, GridUnitType.Auto) });
-                    CreateVariableTextBlock(grid, r, variables[r]);
+                    CreateVariableTextBlock(grid, outComponent, r, variables[r]);
                 }
 
                 for (var r = 0; r < variables.Count; r++)
                 {
                     var executeTreeLineItem = line.GetLineItem(variables[r]);
-                    var element = CreateElement(executeTreeLineItem, methodName + "_Values", columnsDeep, 0);
+                    var element = CreateElement(outComponent, executeTreeLineItem, methodName + "_Values", columnsDeep, 0);
 
                     Grid.SetColumn(element, 2);
                     Grid.SetRow(element, r);
@@ -70,7 +69,8 @@ namespace AV.Cyclone.Sandy.OperationParser
                 grid.Arrange(new Rect(grid.DesiredSize));
                 controls[lineNumber] = grid;
             }
-            outComponent.AddComponent(new OutComponent(controls));
+            outComponent.Freeze();
+            compositeOutComponent.AddComponent(outComponent);
         }
 
         private void GetDeepColumns(ExecuteTree executeTree, int[] columnsDeep)
@@ -130,18 +130,7 @@ namespace AV.Cyclone.Sandy.OperationParser
 
         public IOutComponent GetOutputComponents()
         {
-            return outComponent;
-        }
-
-        public SandyColorProvider ColorProvider
-        {
-            get { return colorProvider; }
-            set
-            {
-                if (Equals(value, colorProvider)) return;
-                colorProvider = value;
-                OnPropertyChanged();
-            }
+            return compositeOutComponent;
         }
 
         private List<string> GetVariables(ExecuteTreeLine line)
@@ -200,21 +189,21 @@ namespace AV.Cyclone.Sandy.OperationParser
             throw new Exception(string.Format("Unknow ExecuteTreeLineItem type: {0}", lineItem.GetType().Name));
         }
 
-        private FrameworkElement CreateElement(ExecuteTreeLineItem lineItem, string sharedScopeName, int[] columnsDeep, int deep)
+        private FrameworkElement CreateElement(OutComponent outComponent, ExecuteTreeLineItem lineItem, string sharedScopeName, int[] columnsDeep, int deep)
         {
             if (lineItem is AssignOperationExecuteTreeLineItem)
-                return CreateElement((AssignOperationExecuteTreeLineItem)lineItem);
+                return CreateElement(outComponent, (AssignOperationExecuteTreeLineItem)lineItem);
             if (lineItem is ListExecuteTreeLineItem)
-                return CreateElement((ListExecuteTreeLineItem)lineItem, sharedScopeName, columnsDeep, deep);
+                return CreateElement(outComponent, (ListExecuteTreeLineItem)lineItem, sharedScopeName, columnsDeep, deep);
             throw new Exception(string.Format("Unknow ExecuteTreeLineItem type: {0}", lineItem.GetType().Name));
         }
 
-        private Control CreateElement(AssignOperationExecuteTreeLineItem assignOperationItem)
+        private Control CreateElement(OutComponent outComponent, AssignOperationExecuteTreeLineItem assignOperationItem)
         {
-            return CreateTextBlock(assignOperationItem.AssignOperation);
+            return CreateTextBlock(outComponent, assignOperationItem.AssignOperation);
         }
 
-        private FrameworkElement CreateElement(ListExecuteTreeLineItem listItem, string sharedScopeName, int[] columnsDeep, int deep)
+        private FrameworkElement CreateElement(OutComponent outComponent, ListExecuteTreeLineItem listItem, string sharedScopeName, int[] columnsDeep, int deep)
         {
             var grid = new Grid
                        {
@@ -230,15 +219,15 @@ namespace AV.Cyclone.Sandy.OperationParser
 
             foreach (var item in listItem.Items)
             {
-                var itemElement = CreateElement(item.Value, sharedScopeName + "_I" + item.Key, columnsDeep, deep + 1);
+                var itemElement = CreateElement(outComponent, item.Value, sharedScopeName + "_I" + item.Key, columnsDeep, deep + 1);
                 var border = new Border
                 {
-                    BorderBrush = new SolidColorBrush(Colors.Black),
                     BorderThickness = new Thickness(1, 0, 1, 0),
                     Margin = new Thickness(0, 0, -1, 0),
                     Padding = new Thickness(2, 2, 2, 2),
                     Child = itemElement,
                 };
+                border.SetBinding(Border.BorderBrushProperty, CreateBinding(outComponent, ColorProviderOperatorBrush));
                 Grid.SetColumn(border, item.Key);
                 Grid.SetRow(border, 0);
                 grid.Children.Add(border);
@@ -248,27 +237,27 @@ namespace AV.Cyclone.Sandy.OperationParser
             return grid;
         }
 
-        private void CreateVariableTextBlock(Grid grid, int row, string variable)
+        private void CreateVariableTextBlock(Grid grid, OutComponent outComponent, int row, string variable)
         {
             if (Array.IndexOf(keywordVariableNames, variable) >= 0)
             {
-                AddTextBlock(grid, 0, row, variable, ColorProviderKeywordBrushPath);
+                AddTextBlock(grid, outComponent, 0, row, variable, ColorProviderKeywordBrushPath);
             }
             else
             {
-                AddTextBlock(grid, 0, row, new[] {"var ", variable}, new[] {ColorProviderKeywordBrushPath, ColorProviderIdentifierBrushPath});
-                AddTextBlock(grid, 1, row, "=", ColorProviderOperatorBrush);
+                AddTextBlock(grid, outComponent, 0, row, new[] { "var ", variable }, new[] { ColorProviderKeywordBrushPath, ColorProviderIdentifierBrushPath });
+                AddTextBlock(grid, outComponent, 1, row, "=", ColorProviderOperatorBrush);
             }
         }
 
-        private void AddTextBlock(Grid grid, int column, int row, string text, string foregroundBinding)
+        private void AddTextBlock(Grid grid, OutComponent outComponent, int column, int row, string text, string foregroundBinding)
         {
-            AddTextBlock(grid, column, row, new[] {text}, new[] {foregroundBinding});
+            AddTextBlock(grid, outComponent, column, row, new[] { text }, new[] { foregroundBinding });
         }
 
-        private void AddTextBlock(Grid grid, int column, int row, string[] texts, string[] foregroundsBinding)
+        private void AddTextBlock(Grid grid, OutComponent outComponent, int column, int row, string[] texts, string[] foregroundsBinding)
         {
-            var textBlock = CreateTextBlock(texts, foregroundsBinding);
+            var textBlock = CreateTextBlock(outComponent, texts, foregroundsBinding);
 
             Grid.SetColumn(textBlock, column);
             Grid.SetRow(textBlock, row);
@@ -276,30 +265,30 @@ namespace AV.Cyclone.Sandy.OperationParser
             grid.Children.Add(textBlock);
         }
 
-        private Control CreateTextBlock(AssignOperation assignOperation)
+        private Control CreateTextBlock(OutComponent outComponent, AssignOperation assignOperation)
         {
-            return CreateTextBlock(assignOperation.VariableValue);
+            return CreateTextBlock(outComponent, assignOperation.VariableValue);
         }
 
-        private Control CreateTextBlock(object value)
+        private Control CreateTextBlock(OutComponent outComponent, object value)
         {
             return new ContentControl
                    {
-                       Content = CreateTextBlock(CreateRun(value)),
+                       Content = CreateTextBlock(CreateRun(outComponent, value)),
                        FontFamily = new FontFamily("Consolas"),
                        FontSize = 12,
                        UseLayoutRounding = true
                    };
         }
 
-        private TextBlock CreateTextBlock(IReadOnlyList<string> texts, IReadOnlyList<string> foregroundsBinding)
+        private TextBlock CreateTextBlock(OutComponent outComponent, IReadOnlyList<string> texts, IReadOnlyList<string> foregroundsBinding)
         {
             var runs = new Inline[texts.Count];
             for (var i = 0; i < texts.Count; i++)
             {
                 var text = texts[i];
                 var foregroundBinding = foregroundsBinding[i];
-                runs[i] = CreateRun(text, foregroundBinding);
+                runs[i] = CreateRun(outComponent, text, foregroundBinding);
             }
 
             return CreateTextBlock(runs);
@@ -316,72 +305,70 @@ namespace AV.Cyclone.Sandy.OperationParser
                             {
                                 Margin = new Thickness(5, 0, 5, 0),
                                 VerticalAlignment = VerticalAlignment.Center,
-                                FontFamily = new FontFamily("Consolas"),
-                                FontSize = 12
                             };
             textBlock.Inlines.AddRange(runs);
             return textBlock;
         }
 
-        private IEnumerable<Run> CreateRun(object value)
+        private IEnumerable<Run> CreateRun(OutComponent outComponent, object value)
         {
             if (value == null)
             {
-                return new[] {CreateRun(null, ColorProviderKeywordBrushPath)};
+                return new[] {CreateRun(outComponent, null, ColorProviderKeywordBrushPath)};
             }
             if (value is int)
             {
-                return new[] {CreateRun(value.ToString(), ColorProviderNumberBrushPath)};
+                return new[] { CreateRun(outComponent, value.ToString(), ColorProviderNumberBrushPath) };
             }
             if (value is bool)
             {
-                return new[] {CreateRun((bool)value ? "true" : "false", ColorProviderKeywordBrushPath)};
+                return new[] { CreateRun(outComponent, (bool)value ? "true" : "false", ColorProviderKeywordBrushPath) };
             }
             if (value is string)
             {
-                return new[] {CreateRun('"' + value.ToString() + '"', ColorProviderStringBrushPath)};
+                return new[] { CreateRun(outComponent, '"' + value.ToString() + '"', ColorProviderStringBrushPath) };
             }
             if (value is char)
             {
-                return new[] {CreateRun("'" + value + "'", ColorProviderCharacterBrushPath)};
+                return new[] { CreateRun(outComponent, "'" + value + "'", ColorProviderCharacterBrushPath) };
             }
             if (value is ToStringValue)
             {
-                return new[] {CreateRun(((ToStringValue)value).Value, ColorProviderIdentifierBrushPath)};
+                return new[] { CreateRun(outComponent, ((ToStringValue)value).Value, ColorProviderIdentifierBrushPath) };
             }
             if (value.GetType().IsArray)
             {
                 var arrayRuns = new List<Run>();
-                arrayRuns.Add(CreateRun("[", ColorProviderIdentifierBrushPath));
+                arrayRuns.Add(CreateRun(outComponent, "[", ColorProviderIdentifierBrushPath));
                 // TODO: Work with multi-dimension array
                 var array = (Array)value;
                 for (var i = 0; i < array.Length; i++)
                 {
                     var item = array.GetValue(i);
-                    arrayRuns.AddRange(CreateRun(item));
+                    arrayRuns.AddRange(CreateRun(outComponent, item));
                     if (i < array.Length - 1)
                     {
-                        arrayRuns.Add(CreateRun(", ", ColorProviderIdentifierBrushPath));
+                        arrayRuns.Add(CreateRun(outComponent, ", ", ColorProviderIdentifierBrushPath));
                     }
                 }
-                arrayRuns.Add(CreateRun("]", ColorProviderIdentifierBrushPath));
+                arrayRuns.Add(CreateRun(outComponent, "]", ColorProviderIdentifierBrushPath));
                 return arrayRuns;
             }
-            return new[] {CreateRun(value.ToString(), ColorProviderIdentifierBrushPath)};
+            return new[] { CreateRun(outComponent, value.ToString(), ColorProviderIdentifierBrushPath) };
         }
 
-        private Run CreateRun(string text, string path)
+        private Run CreateRun(OutComponent outComponent, string text, string path)
         {
             var varRun = new Run(text);
-            varRun.SetBinding(TextElement.ForegroundProperty, CreateBinding(path));
+            varRun.SetBinding(TextElement.ForegroundProperty, CreateBinding(outComponent, path));
             return varRun;
         }
 
-        private Binding CreateBinding(string path)
+        private Binding CreateBinding(OutComponent outComponent, string path)
         {
             return new Binding(path)
             {
-                Source = this,
+                Source = outComponent,
             };
         }
         [NotifyPropertyChangedInvocator]

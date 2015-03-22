@@ -14,14 +14,16 @@ namespace AV.Cyclone.Service
     public sealed class CycloneService : ICycloneService
     {
         private readonly ITextDocumentFactoryService textDocumentFactoryService;
+        private readonly ColorProviderService colorProviderService;
         private readonly Dispatcher dispatcher;
         private Dictionary<string, ICloudCollection> clouds = new Dictionary<string, ICloudCollection>();
         private WeatherStation weatherStation;
 
         [ImportingConstructor]
-        private CycloneService(ITextDocumentFactoryService textDocumentFactoryService)
+        private CycloneService(ITextDocumentFactoryService textDocumentFactoryService, ColorProviderService colorProviderService)
         {
             this.textDocumentFactoryService = textDocumentFactoryService;
+            this.colorProviderService = colorProviderService;
             this.dispatcher = Dispatcher.CurrentDispatcher;
         }
 
@@ -33,6 +35,12 @@ namespace AV.Cyclone.Service
             weatherStation = new WeatherStation(solutionPath, projectName, filePath, lineNumber);
             weatherStation.Executed += WeatherStationOnExecuted;
             weatherStation.Start();
+        }
+
+        public void StopCyclone()
+        {
+            DisposeWeatherStation();
+            OnChanged();
         }
 
         public void UpdateFile(ITextView textView, string content)
@@ -73,7 +81,8 @@ namespace AV.Cyclone.Service
             var outComponent = generator.GetOutputComponents();
 
             cloudCollection = new OperationsCloudCollection(outComponent);
-            //cloudCollection.SetColorProvider(colorProviderService.GetColorProvider(textView));
+            cloudCollection = new CycloneCloudCollection(cloudCollection, textView);
+            cloudCollection.SetColorProvider(colorProviderService.GetColorProvider(textView));
             clouds.Add(document.FilePath, cloudCollection);
             return cloudCollection;
         }
@@ -90,6 +99,7 @@ namespace AV.Cyclone.Service
             {
                 weatherStation.Executed -= WeatherStationOnExecuted;
                 weatherStation.Dispose();
+                weatherStation = null;
             }
         }
 

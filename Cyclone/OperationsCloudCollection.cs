@@ -33,6 +33,7 @@ namespace AV.Cyclone
 
         public void SetColorProvider(SandyColorProvider colorProvider)
         {
+            this.outComponent.SetColorProvider(colorProvider);
         }
     }
 }

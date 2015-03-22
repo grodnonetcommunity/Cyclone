@@ -22,6 +22,14 @@ namespace AV.Cyclone.Sandy.Models
             }
         }
 
+        public void SetColorProvider(SandyColorProvider newColorProvider)
+        {
+            foreach (var outComponent in outComponents)
+            {
+                outComponent.SetColorProvider(newColorProvider);
+            }
+        }
+
         public void AddComponent(IOutComponent outComponent)
         {
             outComponents.Add(outComponent);

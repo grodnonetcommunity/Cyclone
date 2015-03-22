@@ -11,5 +11,7 @@ namespace AV.Cyclone.Sandy.Models
         int Count { get; }
 
         UIElement this[int index] { get; }
+
+        void SetColorProvider(SandyColorProvider newColorProvider);
     }
 }
