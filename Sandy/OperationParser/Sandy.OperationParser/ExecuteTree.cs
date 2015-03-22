@@ -178,7 +178,7 @@ namespace AV.Cyclone.Sandy.OperationParser
                 else if (operation is LoopOperation)
                 {
                     var loopOperation = (LoopOperation)operation;
-                    result.Add(loopOperation.Operations.Values.Select(e => Generate(methodName, e)).ToList());
+                    result.Add(loopOperation.Operations.Select(e => Generate(methodName, e)).ToList());
                 }
             }
             return result;

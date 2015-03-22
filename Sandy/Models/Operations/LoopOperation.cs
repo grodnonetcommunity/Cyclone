@@ -6,13 +6,13 @@ namespace AV.Cyclone.Sandy.Models.Operations
     {
         public LoopOperation()
         {
-            this.Operations = new Dictionary<int, IList<Operation>>();
+            this.Operations = new List<IList<Operation>>();
         }
 
         /// <summary>
         /// Key is a number of iteration
         /// Value is a list of operations for particular operation
         /// </summary>
-        public Dictionary<int, IList<Operation>> Operations { get; set; }
+        public IList<IList<Operation>> Operations { get; set; }
     }
 }
