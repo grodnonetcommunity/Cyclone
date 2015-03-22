@@ -2,18 +2,18 @@
 
 namespace AV.Cyclone.Katrina.Executor.Interfaces
 {
-    public class DomainExecuteLogger : MarshalByRefObject, IExecuteLogger
+    public class SerializerExecuteLogger : IExecuteLogger
     {
         private readonly IExecuteLogger executeLogger;
 
-        public DomainExecuteLogger(IExecuteLogger executeLogger)
+        public SerializerExecuteLogger(IExecuteLogger executeLogger)
         {
             this.executeLogger = executeLogger;
         }
 
         public void LogAssign(string expression, string fileNme, int lineNumber, object value)
         {
-            executeLogger.LogAssign(expression, fileNme, lineNumber, value);
+            executeLogger.LogAssign(expression, fileNme, lineNumber, SerializeValue(value));
         }
 
         public void BeginMethod(string methodName, string fileName, int lineNumber)
@@ -39,6 +39,22 @@ namespace AV.Cyclone.Katrina.Executor.Interfaces
         public void EndLoop(string fileName, int lineNumber)
         {
             executeLogger.EndLoop(fileName, lineNumber);
+        }
+
+        private static object SerializeValue(object value)
+        {
+            if (value == null) return null;
+            var type = value.GetType();
+            if (IsSupportedType(type)) return value;
+            return new ToStringValue(value.ToString());
+        }
+
+        private static bool IsSupportedType(Type type)
+        {
+            if (type.IsPrimitive) return true;
+            if (type.IsArray) return IsSupportedType(type.GetElementType());
+            if (type == typeof(string)) return true;
+            return false;
         }
     }
 }

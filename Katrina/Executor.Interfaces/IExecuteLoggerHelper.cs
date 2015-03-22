@@ -1,8 +1,8 @@
 ﻿namespace AV.Cyclone.Katrina.Executor.Interfaces
 {
-    public interface IExecuteLogger
+    public interface IExecuteLoggerHelper
     {
-        void LogAssign(string expression, string fileNme, int lineNumber, object value);
+        T LogAssign<T>(string expression, string fileNme, int lineNumber, T value);
 
         void BeginMethod(string methodName, string fileName, int lineNumber);
 

@@ -6,11 +6,12 @@ namespace Test.Executor
     public class MockExecuteLogger : IExecuteLogger
     {
         public readonly List<string> assigns = new List<string>();
+        public readonly List<object> values = new List<object>();
 
-        public T LogAssign<T>(string expression, string fileNme, int lineNumber, T value)
+        public void LogAssign(string expression, string fileNme, int lineNumber, object value)
         {
             assigns.Add(string.Format("{0} = {1}", expression, value));
-            return value;
+            values.Add(value);
         }
 
         public void BeginMethod(string methodName, string fileName, int lineNumber)

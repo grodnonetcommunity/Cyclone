@@ -96,7 +96,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CodeExecutorTest.cs" />
-    <Compile Include="ExecuteLoggerTest.cs" />
     <Compile Include="ForecastErrorTest.cs" />
     <Compile Include="ForecastExecutorTest.cs" />
     <Compile Include="OperationsExecuteLoggerTest.cs" />

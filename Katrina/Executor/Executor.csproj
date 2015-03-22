@@ -91,7 +91,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BaseExecuteLogger.cs" />
     <Compile Include="CodeExecutor.cs" />
     <Compile Include="ForecastExecutor.cs" />
     <Compile Include="ForecastItem.cs" />

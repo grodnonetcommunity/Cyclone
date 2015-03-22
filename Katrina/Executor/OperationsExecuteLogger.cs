@@ -18,7 +18,7 @@ namespace AV.Cyclone.Katrina.Executor
             MethodCalls = new Dictionary<MethodReference, List<List<Operation>>>();
         }
 
-        public T LogAssign<T>(string expression, string fileNme, int lineNumber, T value)
+        public void LogAssign(string expression, string fileNme, int lineNumber, object value)
         {
             var assignOperation = new AssignOperation
             {
@@ -28,7 +28,6 @@ namespace AV.Cyclone.Katrina.Executor
                 VariableValue = value
             };
             currentBuilder.Add(assignOperation);
-            return value;
         }
 
         public void BeginMethod(string methodName, string fileName, int lineNumber)

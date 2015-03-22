@@ -17,7 +17,8 @@ namespace AV.Cyclone.Katrina.Executor.Interfaces
 
         public void SetExecuteLogger(IExecuteLogger executeLogger)
         {
-            Context.ExecuteLogger = executeLogger;
+            var serializerExecuteLogger = new SerializerExecuteLogger(executeLogger);
+            Context.ExecuteLoggerHelper = new BaseExecuteLoggerHelper(serializerExecuteLogger);
         }
 
         public void Execute(int assemblyIndex, string className, string methodName)

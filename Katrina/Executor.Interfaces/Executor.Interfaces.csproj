@@ -46,11 +46,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyLoader.cs" />
+    <Compile Include="BaseExecuteLoggerHelper.cs" />
     <Compile Include="Context.cs" />
     <Compile Include="DomainExecuteLogger.cs" />
     <Compile Include="IExecuteLogger.cs" />
+    <Compile Include="IExecuteLoggerHelper.cs" />
     <Compile Include="MethodReference.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SerializerExecuteLogger.cs" />
+    <Compile Include="ToStringValue.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Key.snk" />
