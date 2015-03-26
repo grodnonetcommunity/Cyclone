@@ -24,6 +24,8 @@ namespace AV.Cyclone.Katrina.Executor
         private string startTypeDeclaration;
         private Dictionary<string, List<Execution>> operations;
         private Dictionary<MethodReference, List<List<Operation>>> methodCalls; 
+        private object changesSync = new object();
+        private Dictionary<string, string> changes = new Dictionary<string, string>();
         private bool disposed;
         private Thread backgroundThread;
         private readonly AutoResetEvent waitChanges = new AutoResetEvent(false);
@@ -83,12 +85,10 @@ namespace AV.Cyclone.Katrina.Executor
 
         public void FileUpdated(string fileName, string content)
         {
-            var newSyntaxTree = CSharpSyntaxTree.ParseText(content).WithFilePath(fileName);
-            if (newSyntaxTree.GetDiagnostics().Any(d => d.Severity == DiagnosticSeverity.Error)) return;
-            var newSyntaxTreeRoot = newSyntaxTree.GetRoot();
-            var visitor = new AddExecuteLoggerVisitor();
-            newSyntaxTreeRoot = visitor.Visit(newSyntaxTreeRoot);
-            codeExecutor.UpdateFile(fileName, CSharpSyntaxTree.Create((CSharpSyntaxNode)newSyntaxTreeRoot).WithFilePath(fileName));
+            lock (changesSync)
+            {
+                changes[fileName] = content;
+            }
             waitChanges.Set();
         }
 
@@ -124,6 +124,7 @@ namespace AV.Cyclone.Katrina.Executor
 
             do
             {
+                ApplyChanges();
                 var executeThread = new Thread(Execute);
                 executeThread.Start();
                 if (!executeThread.Join(TimeSpan.FromSeconds(50)))
@@ -140,6 +141,30 @@ namespace AV.Cyclone.Katrina.Executor
                 }
                 waitChanges.WaitOne();
             } while (!disposed);
+        }
+
+        private void ApplyChanges()
+        {
+            Dictionary<string, string> changesCopy;
+            lock (changesSync)
+            {
+                changesCopy = changes;
+                changes = new Dictionary<string, string>();
+            }
+            foreach (var fileChanges in changesCopy)
+            {
+                ApplyChanges(fileChanges.Key, fileChanges.Value);
+            }
+        }
+
+        private void ApplyChanges(string fileName, string content)
+        {
+            var newSyntaxTree = CSharpSyntaxTree.ParseText(content).WithFilePath(fileName);
+            if (newSyntaxTree.GetDiagnostics().Any(d => d.Severity == DiagnosticSeverity.Error)) return;
+            var newSyntaxTreeRoot = newSyntaxTree.GetRoot();
+            var visitor = new AddExecuteLoggerVisitor();
+            newSyntaxTreeRoot = visitor.Visit(newSyntaxTreeRoot);
+            codeExecutor.UpdateFile(fileName, CSharpSyntaxTree.Create((CSharpSyntaxNode)newSyntaxTreeRoot).WithFilePath(fileName));
         }
 
         private void Execute()
