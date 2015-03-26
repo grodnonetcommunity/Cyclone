@@ -44,7 +44,6 @@ namespace AV.Cyclone.Margin
         private void UpdateClouds()
         {
             CloudCollection = cycloneService.GetClouds(textView);
-            textView.TextBuffer.Changed += TextBufferOnChanged;
         }
 
         public ICloudCollection CloudCollection
@@ -52,8 +51,13 @@ namespace AV.Cyclone.Margin
             get { return marginContent.CloudCollection; }
             set
             {
+                var oldValue = marginContent.CloudCollection;
                 marginContent.CloudCollection = value;
                 marginContent.Width = marginContent.CloudCollection == null ? 0 : Double.NaN;
+                if (oldValue == null && value != null)
+                    textView.TextBuffer.Changed += TextBufferOnChanged;
+                if (oldValue != null && value == null)
+                    textView.TextBuffer.Changed -= TextBufferOnChanged;
             }
         }
 
