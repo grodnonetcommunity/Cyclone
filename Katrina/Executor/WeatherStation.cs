@@ -124,28 +124,31 @@ namespace AV.Cyclone.Katrina.Executor
 
             do
             {
-                ApplyChanges();
-                var executeThread = new Thread(Execute);
-                executeThread.Start();
-                if (!executeThread.Join(TimeSpan.FromSeconds(50)))
+                if (ApplyChanges())
                 {
-                    executeThread.Abort();
-                    if (Context.ExecuteLoggerHelper != null && Context.ExecuteLoggerHelper is OperationsExecuteLogger)
+                    var executeThread = new Thread(Execute);
+                    executeThread.Start();
+                    if (!executeThread.Join(TimeSpan.FromSeconds(50)))
                     {
-                        var operationsExecuteLogger = ((OperationsExecuteLogger)Context.ExecuteLoggerHelper);
-                        operationsExecuteLogger.CollapseExecutor();
-                        UpdateOperations(operationsExecuteLogger.MethodCalls);
+                        executeThread.Abort();
+                        if (Context.ExecuteLoggerHelper != null && Context.ExecuteLoggerHelper is OperationsExecuteLogger)
+                        {
+                            var operationsExecuteLogger = ((OperationsExecuteLogger)Context.ExecuteLoggerHelper);
+                            operationsExecuteLogger.CollapseExecutor();
+                            UpdateOperations(operationsExecuteLogger.MethodCalls);
 
-                        OnExecuted();
+                            OnExecuted();
+                        }
                     }
                 }
                 waitChanges.WaitOne();
             } while (!disposed);
         }
 
-        private void ApplyChanges()
+        private bool ApplyChanges()
         {
             Dictionary<string, string> changesCopy;
+            var result = true;
             lock (changesSync)
             {
                 changesCopy = changes;
@@ -153,18 +156,20 @@ namespace AV.Cyclone.Katrina.Executor
             }
             foreach (var fileChanges in changesCopy)
             {
-                ApplyChanges(fileChanges.Key, fileChanges.Value);
+                result &= ApplyChanges(fileChanges.Key, fileChanges.Value);
             }
+            return result;
         }
 
-        private void ApplyChanges(string fileName, string content)
+        private bool ApplyChanges(string fileName, string content)
         {
             var newSyntaxTree = CSharpSyntaxTree.ParseText(content).WithFilePath(fileName);
-            if (newSyntaxTree.GetDiagnostics().Any(d => d.Severity == DiagnosticSeverity.Error)) return;
+            if (newSyntaxTree.GetDiagnostics().Any(d => d.Severity == DiagnosticSeverity.Error)) return false;
             var newSyntaxTreeRoot = newSyntaxTree.GetRoot();
             var visitor = new AddExecuteLoggerVisitor();
             newSyntaxTreeRoot = visitor.Visit(newSyntaxTreeRoot);
             codeExecutor.UpdateFile(fileName, CSharpSyntaxTree.Create((CSharpSyntaxNode)newSyntaxTreeRoot).WithFilePath(fileName));
+            return true;
         }
 
         private void Execute()
