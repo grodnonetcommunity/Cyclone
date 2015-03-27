@@ -22,7 +22,6 @@ namespace AV.Cyclone.Katrina.Executor
         private readonly string projectName;
         private string startMethodDeclaration;
         private string startTypeDeclaration;
-        private Dictionary<string, List<Execution>> operations;
         private Dictionary<MethodReference, List<List<Operation>>> methodCalls; 
         private object changesSync = new object();
         private Dictionary<string, string> changes = new Dictionary<string, string>();
@@ -90,13 +89,6 @@ namespace AV.Cyclone.Katrina.Executor
                 changes[fileName] = content;
             }
             waitChanges.Set();
-        }
-
-        public List<Execution> GetOperations(string fileName)
-        {
-            List<Execution> list;
-            if (!operations.TryGetValue(fileName, out list)) return null;
-            return list;
         }
 
         public Dictionary<string, List<List<Operation>>> GetMethodCalls(string fileName)
@@ -187,16 +179,6 @@ namespace AV.Cyclone.Katrina.Executor
 
         private void UpdateOperations(Dictionary<MethodReference, List<List<Operation>>> methodCalls)
         {
-            var tempOperations = new Dictionary<string, List<Execution>>();
-            foreach (var methodCall in methodCalls.GroupBy(mc => mc.Key.FileName).Select(g => new
-            {
-                FileName = g.Key,
-                Calls = g.SelectMany(e => e.Value).ToList()
-            }))
-            {
-                tempOperations.Add(methodCall.FileName, methodCall.Calls.Select(mc => new Execution() {Operations = mc}).ToList());
-            }
-            operations = tempOperations;
             this.methodCalls = methodCalls;
         }
 

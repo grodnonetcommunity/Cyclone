@@ -25,7 +25,7 @@ namespace Test.Executor
             weatherStation.Start();
             manualResetEvent.WaitOne();
 
-            var operations = weatherStation.GetOperations(fileFullPath);
+            var operations = weatherStation.GetMethodCalls(fileFullPath);
             Assert.NotNull(operations);
         }
 
@@ -55,7 +55,7 @@ namespace Test.Executor
             weatherStation.FileUpdated(fileFullPath, File.ReadAllText(fileChangedFullPath));
             resetEvent.WaitOne();
 
-            var operations = weatherStation.GetOperations(testFullPath);
+            var operations = weatherStation.GetMethodCalls(testFullPath);
             Assert.NotNull(operations);
         }
 
