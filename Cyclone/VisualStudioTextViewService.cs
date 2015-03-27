@@ -47,7 +47,7 @@ namespace AV.Cyclone
                 yield return new LineInfo
                 {
                     LineNumber = lineNumber,
-                    TextTop = viewLine.TextTop - textView.ViewportTop
+                    TextTop = viewLine.Top - textView.ViewportTop
                 };
             }
         }

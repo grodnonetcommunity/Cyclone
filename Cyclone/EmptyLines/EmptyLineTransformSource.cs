@@ -53,8 +53,9 @@ namespace AV.Cyclone.EmptyLines
 
             if (line.TextHeight < height)
             {
-                return new LineTransform(line.LineTransform.TopSpace,
-                    line.LineTransform.BottomSpace + (height - line.Height), line.LineTransform.VerticalScale);
+                var delta = (height - line.Height);
+                return new LineTransform(line.LineTransform.TopSpace + delta / 2,
+                    line.LineTransform.BottomSpace + delta / 2, line.LineTransform.VerticalScale);
             }
 
             return line.LineTransform;
