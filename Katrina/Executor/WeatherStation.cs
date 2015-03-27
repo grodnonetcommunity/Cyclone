@@ -127,7 +127,7 @@ namespace AV.Cyclone.Katrina.Executor
                     {
                         executeThread.Abort();
                     }
-                    UpdateOperations(executeLogger.MethodCalls);
+                    UpdateMethodCalls(executeLogger.MethodCalls);
                     OnExecuted();
                 }
                 waitChanges.WaitOne();
@@ -168,7 +168,7 @@ namespace AV.Cyclone.Katrina.Executor
             codeExecutor.Execute(projectName, files, startTypeDeclaration, startMethodDeclaration);
         }
 
-        private void UpdateOperations(Dictionary<MethodReference, List<List<Operation>>> methodCalls)
+        private void UpdateMethodCalls(Dictionary<MethodReference, List<List<Operation>>> methodCalls)
         {
             this.methodCalls = methodCalls;
         }
