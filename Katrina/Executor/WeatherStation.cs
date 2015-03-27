@@ -118,20 +118,17 @@ namespace AV.Cyclone.Katrina.Executor
             {
                 if (ApplyChanges())
                 {
+                    var executeLogger = new OperationsExecuteLogger();
+                    codeExecutor.SetExecuteLogger(executeLogger);
+
                     var executeThread = new Thread(Execute);
                     executeThread.Start();
                     if (!executeThread.Join(TimeSpan.FromSeconds(50)))
                     {
                         executeThread.Abort();
-                        if (Context.ExecuteLoggerHelper != null && Context.ExecuteLoggerHelper is OperationsExecuteLogger)
-                        {
-                            var operationsExecuteLogger = ((OperationsExecuteLogger)Context.ExecuteLoggerHelper);
-                            operationsExecuteLogger.CollapseExecutor();
-                            UpdateOperations(operationsExecuteLogger.MethodCalls);
-
-                            OnExecuted();
-                        }
                     }
+                    UpdateOperations(executeLogger.MethodCalls);
+                    OnExecuted();
                 }
                 waitChanges.WaitOne();
             } while (!disposed);
@@ -168,13 +165,7 @@ namespace AV.Cyclone.Katrina.Executor
         {
             var files = forecastExecutor.GetReferences();
 
-            var executeLogger = new OperationsExecuteLogger();
-            codeExecutor.SetExecuteLogger(executeLogger);
             codeExecutor.Execute(projectName, files, startTypeDeclaration, startMethodDeclaration);
-
-            UpdateOperations(executeLogger.MethodCalls);
-
-            OnExecuted();
         }
 
         private void UpdateOperations(Dictionary<MethodReference, List<List<Operation>>> methodCalls)
