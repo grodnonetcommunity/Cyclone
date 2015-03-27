@@ -55,10 +55,20 @@ namespace AV.Cyclone.Margin
                 marginContent.CloudCollection = value;
                 marginContent.Width = marginContent.CloudCollection == null ? 0 : Double.NaN;
                 if (oldValue == null && value != null)
-                    textView.TextBuffer.Changed += TextBufferOnChanged;
+                    Subscribe();
                 if (oldValue != null && value == null)
-                    textView.TextBuffer.Changed -= TextBufferOnChanged;
+                    Unsubscribe();
             }
+        }
+
+        private void Subscribe()
+        {
+            textView.TextBuffer.Changed += TextBufferOnChanged;
+        }
+
+        private void Unsubscribe()
+        {
+            textView.TextBuffer.Changed -= TextBufferOnChanged;
         }
 
         private void ThrowIfDisposed()
@@ -117,6 +127,7 @@ namespace AV.Cyclone.Margin
             {
                 GC.SuppressFinalize(this);
                 VSColorTheme.ThemeChanged -= VsColorThemeOnThemeChanged;
+                Unsubscribe();
                 isDisposed = true;
             }
         }
