@@ -119,14 +119,6 @@ namespace AV.Cyclone.Katrina.Executor
                     }
                 }
 
-                if (files != null)
-                {
-                    foreach (var file in files)
-                    {
-                        File.Copy(file, Path.Combine(tempDir, Path.GetFileName(file)));
-                    }
-                }
-
                 var assemblyLoaderAssemblyFileName = Path.Combine(tempDir, typeof(AssemblyLoader).Assembly.GetName().Name + ".dll");
                 if (!File.Exists(assemblyLoaderAssemblyFileName))
                     File.Copy(typeof (AssemblyLoader).Assembly.Location, assemblyLoaderAssemblyFileName);
@@ -149,6 +141,15 @@ namespace AV.Cyclone.Katrina.Executor
                     var assemblyName = loader.LoadAssembly(compilationEmitResult.RawAssembly);
                     if (assemblyName.Name == compilationName)
                         classAssemblyIndex = i;
+                }
+
+                if (files != null)
+                {
+                    foreach (var file in files)
+                    {
+                        //File.Copy(file, Path.Combine(tempDir, Path.GetFileName(file)));
+                        loader.LoadAssembly(AssemblyName.GetAssemblyName(file));
+                    }
                 }
 
                 loader.SetExecuteLogger(new DomainExecuteLogger(currentExecuteLogger));
@@ -184,7 +185,7 @@ namespace AV.Cyclone.Katrina.Executor
         private Assembly CurrentDomainOnAssemblyResolve(object sender, ResolveEventArgs args)
         {
             AppDomain.CurrentDomain.AssemblyResolve -= CurrentDomainOnAssemblyResolve;
-            return Assembly.Load(args.Name);
+            return typeof(AssemblyLoader).Assembly;
         }
     }
 }

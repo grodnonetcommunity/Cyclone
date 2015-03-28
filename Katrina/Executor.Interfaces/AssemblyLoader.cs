@@ -8,16 +8,18 @@ namespace AV.Cyclone.Katrina.Executor.Interfaces
     {
         private readonly List<Assembly> assemblies = new List<Assembly>();
 
-        public int LoadAssembly(AssemblyName assemblyName)
+        public AssemblyName LoadAssembly(AssemblyName assemblyName)
         {
-            var index = assemblies.Count;
-            assemblies.Add(Assembly.Load(assemblyName));
-            return index;
+            return AddAssembly(Assembly.Load(assemblyName));
         }
 
         public AssemblyName LoadAssembly(byte[] rawAssembly)
         {
-            var assembly = Assembly.Load(rawAssembly);
+            return AddAssembly(Assembly.Load(rawAssembly));
+        }
+
+        private AssemblyName AddAssembly(Assembly assembly)
+        {
             assemblies.Add(assembly);
             return assembly.GetName();
         }
