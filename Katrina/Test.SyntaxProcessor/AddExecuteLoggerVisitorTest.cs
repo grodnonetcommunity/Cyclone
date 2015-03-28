@@ -49,7 +49,7 @@ namespace Test.SyntaxProcessor
             var visitor = CreateAddExecuteLoggerVisitor();
             var newTree = visitor.Visit(tree);
 
-            AreEqualCode(@"LA(""a"","""",0,a++);", newTree);
+            AreEqualCode(@"LI(""a"","""",0,a++,a);", newTree);
         }
 
         [Test]
@@ -151,6 +151,7 @@ void M(){
             return new AddExecuteLoggerVisitor
             {
                 LogAssignMember = "LA",
+                LogPostIncrementMember = "LI",
                 BeginMethodMember = "BM",
                 EndMethodMember = "EM",
                 BeginLoopMember = "BL",

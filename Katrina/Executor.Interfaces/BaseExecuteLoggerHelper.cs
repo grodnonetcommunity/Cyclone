@@ -17,6 +17,12 @@ namespace AV.Cyclone.Katrina.Executor
             return value;
         }
 
+        public virtual T LogPostIncrement<T>(string expression, string fileNme, int lineNumber, T result, T value)
+        {
+            executeLogger.LogAssign(expression, fileNme, lineNumber, value);
+            return result;
+        }
+
         public virtual void BeginLoop(string fileName, int lineNumber)
         {
             executeLogger.BeginLoop(fileName, lineNumber);

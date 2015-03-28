@@ -4,6 +4,8 @@
     {
         T LogAssign<T>(string expression, string fileNme, int lineNumber, T value);
 
+        T LogPostIncrement<T>(string expression, string fileNme, int lineNumber, T result, T value);
+
         void BeginMethod(string methodName, string fileName, int lineNumber);
 
         void EndMethod(string methodName, string fileName, int lineNumber);

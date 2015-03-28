@@ -9,6 +9,8 @@ namespace AV.Cyclone.Katrina.SyntaxProcessor
     {
         public string LogAssignMember { get; set; }
 
+        public string LogPostIncrementMember { get; set; }
+
         public string BeginLoopMember { get; set; }
 
         public string LoopIterationMember { get; set; }
@@ -22,6 +24,7 @@ namespace AV.Cyclone.Katrina.SyntaxProcessor
         public AddExecuteLoggerVisitor(bool visitIntoStructuredTrivia = false) : base(visitIntoStructuredTrivia)
         {
             LogAssignMember = "AV.Cyclone.Katrina.Executor.Interfaces.Context.ExecuteLoggerHelper.LogAssign";
+            LogPostIncrementMember = "AV.Cyclone.Katrina.Executor.Interfaces.Context.ExecuteLoggerHelper.LogPostIncrement";
             BeginLoopMember = "AV.Cyclone.Katrina.Executor.Interfaces.Context.ExecuteLoggerHelper.BeginLoop";
             LoopIterationMember = "AV.Cyclone.Katrina.Executor.Interfaces.Context.ExecuteLoggerHelper.LoopIteration";
             EndLoopMember = "AV.Cyclone.Katrina.Executor.Interfaces.Context.ExecuteLoggerHelper.EndLoop";
@@ -62,7 +65,8 @@ namespace AV.Cyclone.Katrina.SyntaxProcessor
         {
             var variableName = node.Operand.ToString();
 
-            var invocation = CreateLogAssignInvocationExpression(node, variableName, node);
+            var operand = (ExpressionSyntax)Visit(node.Operand);
+            var invocation = CreateLogPostIncrementInvocationExpression(node, variableName, operand);
 
             return invocation;
         }
@@ -202,6 +206,30 @@ namespace AV.Cyclone.Katrina.SyntaxProcessor
                 SyntaxFactory.Argument(CreaetLiteral(variableName)),
                 SyntaxFactory.Argument(CreaetLiteral(fileName)),
                 SyntaxFactory.Argument(CreateLiteral(lineNumber)),
+                SyntaxFactory.Argument(valueExpression)
+            }));
+            return SyntaxFactory.InvocationExpression(memberAccess, arguments);
+        }
+
+        private InvocationExpressionSyntax CreateLogPostIncrementInvocationExpression(ExpressionSyntax node, string variableName,
+            ExpressionSyntax valueExpression)
+        {
+            var fileName = node.SyntaxTree.FilePath;
+            var lineNumber = node.SyntaxTree.GetLineSpan(node.Span).StartLinePosition.Line;
+
+            return CreateLogPostIncrementInvocationExpression(variableName, fileName, lineNumber, node, valueExpression);
+        }
+
+        private InvocationExpressionSyntax CreateLogPostIncrementInvocationExpression(string variableName, string fileName,
+            int lineNumber, ExpressionSyntax resultExpression, ExpressionSyntax valueExpression)
+        {
+            var memberAccess = CreateMemberAccess(LogPostIncrementMember);
+            var arguments = SyntaxFactory.ArgumentList(SyntaxFactory.SeparatedList(new[]
+            {
+                SyntaxFactory.Argument(CreaetLiteral(variableName)),
+                SyntaxFactory.Argument(CreaetLiteral(fileName)),
+                SyntaxFactory.Argument(CreateLiteral(lineNumber)),
+                SyntaxFactory.Argument(resultExpression),
                 SyntaxFactory.Argument(valueExpression)
             }));
             return SyntaxFactory.InvocationExpression(memberAccess, arguments);
