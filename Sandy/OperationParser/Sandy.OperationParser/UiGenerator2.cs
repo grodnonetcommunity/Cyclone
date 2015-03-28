@@ -24,7 +24,7 @@ namespace AV.Cyclone.Sandy.OperationParser
         private const string ColorProviderStringBrushPath = "ColorProvider.StringBrush";
         private const string ColorProviderCharacterBrushPath = "ColorProvider.CharacterBrush";
 
-        private static readonly string[] keywordVariableNames = {"while", "if", "return"};
+        private static readonly string[] keywordVariableNames = {"while", "for", "if", "return"};
 
         private readonly CompositeOutComponent compositeOutComponent = new CompositeOutComponent();
 
@@ -69,8 +69,11 @@ namespace AV.Cyclone.Sandy.OperationParser
                 grid.Arrange(new Rect(grid.DesiredSize));
                 controls[lineNumber] = grid;
             }
-            outComponent.Freeze();
-            compositeOutComponent.AddComponent(outComponent);
+            if (controls.Count > 0)
+            {
+                outComponent.Freeze();
+                compositeOutComponent.AddComponent(outComponent);
+            }
         }
 
         private void GetDeepColumns(ExecuteTree executeTree, int[] columnsDeep)
@@ -108,11 +111,13 @@ namespace AV.Cyclone.Sandy.OperationParser
 
         private int GetDeep(ExecuteTree executeTree)
         {
+            if (executeTree.Lines.Count == 0) return 1;
             return executeTree.Lines.Max(e => GetDeep(e.Value));
         }
 
         private int GetDeep(ExecuteTreeLine executeTreeLine)
         {
+            if (executeTreeLine.Executions.Count == 0) return 1;
             return executeTreeLine.Executions.Values.Max(e => GetDeep(e));
         }
 
@@ -122,8 +127,9 @@ namespace AV.Cyclone.Sandy.OperationParser
                 return 1;
             if (executeTreeLineItem is ListExecuteTreeLineItem)
             {
-                return ((ListExecuteTreeLineItem)executeTreeLineItem)
-                           .Items.Select(e => e.Value).Max(e => GetDeep(e)) + 1;
+                var items = ((ListExecuteTreeLineItem)executeTreeLineItem).Items;
+                if (items.Count == 0) return 1;
+                return items.Max(e => GetDeep(e.Value)) + 1;
             }
             throw new Exception(string.Format("Unknow ExecuteTreeLineItem type: {0}", executeTreeLineItem.GetType().Name));
         }
