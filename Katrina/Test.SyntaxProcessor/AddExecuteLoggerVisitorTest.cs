@@ -41,6 +41,30 @@ namespace Test.SyntaxProcessor
         }
 
         [Test]
+        public void PostIncrementTest()
+        {
+            var source = "a++";
+            var tree = ParseMethodBody(source);
+
+            var visitor = CreateAddExecuteLoggerVisitor();
+            var newTree = visitor.Visit(tree);
+
+            AreEqualCode(@"LI(""a"","""",0,a++,a);", newTree);
+        }
+
+        [Test]
+        public void PreIncrementTest()
+        {
+            var source = "++a";
+            var tree = ParseMethodBody(source);
+
+            var visitor = CreateAddExecuteLoggerVisitor();
+            var newTree = visitor.Visit(tree);
+
+            AreEqualCode(@"LA(""a"","""",0,++a);", newTree);
+        }
+
+        [Test]
         public void WhileLoopTest()
         {
             var source = "while (true) {}";
@@ -54,6 +78,34 @@ namespace Test.SyntaxProcessor
     {
         BL("""", 0);
         while (LA(""while"", """", 0, true))
+        {
+            {}
+            LI("""", 0);
+        }
+    }
+    finally
+    {
+        EL("""", 0);
+    }
+";
+
+            AreEqualCode(expected, newTree);
+        }
+
+        [Test]
+        public void ForLoopTest()
+        {
+            var source = "for (var i = 0; i < 10; i++) {}";
+            var tree = ParseMethodBody(source);
+
+            var visitor = CreateAddExecuteLoggerVisitor();
+            var newTree = visitor.Visit(tree);
+
+            var expected = @"
+    try
+    {
+        BL("""", 0);
+        for (var i = LA(""i"", """", 0, 0); LA(""for"", """", 0, i < 10); LA(""i"", """", 0, i++))
         {
             {}
             LI("""", 0);
@@ -99,6 +151,7 @@ void M(){
             return new AddExecuteLoggerVisitor
             {
                 LogAssignMember = "LA",
+                LogPostIncrementMember = "LI",
                 BeginMethodMember = "BM",
                 EndMethodMember = "EM",
                 BeginLoopMember = "BL",

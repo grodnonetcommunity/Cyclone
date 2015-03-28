@@ -9,6 +9,8 @@ namespace AV.Cyclone.Katrina.SyntaxProcessor
     {
         public string LogAssignMember { get; set; }
 
+        public string LogPostIncrementMember { get; set; }
+
         public string BeginLoopMember { get; set; }
 
         public string LoopIterationMember { get; set; }
@@ -22,6 +24,7 @@ namespace AV.Cyclone.Katrina.SyntaxProcessor
         public AddExecuteLoggerVisitor(bool visitIntoStructuredTrivia = false) : base(visitIntoStructuredTrivia)
         {
             LogAssignMember = "AV.Cyclone.Katrina.Executor.Interfaces.Context.ExecuteLoggerHelper.LogAssign";
+            LogPostIncrementMember = "AV.Cyclone.Katrina.Executor.Interfaces.Context.ExecuteLoggerHelper.LogPostIncrement";
             BeginLoopMember = "AV.Cyclone.Katrina.Executor.Interfaces.Context.ExecuteLoggerHelper.BeginLoop";
             LoopIterationMember = "AV.Cyclone.Katrina.Executor.Interfaces.Context.ExecuteLoggerHelper.LoopIteration";
             EndLoopMember = "AV.Cyclone.Katrina.Executor.Interfaces.Context.ExecuteLoggerHelper.EndLoop";
@@ -47,6 +50,25 @@ namespace AV.Cyclone.Katrina.SyntaxProcessor
             var invocation = CreateLogAssignInvocationExpression(node, variableName, node.Right);
 
             return node.Update(node.Left, node.OperatorToken, invocation);
+        }
+
+        public override SyntaxNode VisitPrefixUnaryExpression(PrefixUnaryExpressionSyntax node)
+        {
+            var variableName = node.Operand.ToString();
+
+            var invocation = CreateLogAssignInvocationExpression(node, variableName, node);
+
+            return invocation;
+        }
+
+        public override SyntaxNode VisitPostfixUnaryExpression(PostfixUnaryExpressionSyntax node)
+        {
+            var variableName = node.Operand.ToString();
+
+            var operand = (ExpressionSyntax)Visit(node.Operand);
+            var invocation = CreateLogPostIncrementInvocationExpression(node, variableName, operand);
+
+            return invocation;
         }
 
         public override SyntaxNode VisitIfStatement(IfStatementSyntax node)
@@ -79,6 +101,40 @@ namespace AV.Cyclone.Katrina.SyntaxProcessor
                 SyntaxFactory.ExpressionStatement(loopIterationInvocation));
 
             node = node.Update(whileKeyword, openParenToken, condition, closeParenToken, whileBody);
+
+            var tryBlock = SyntaxFactory.Block(
+                SyntaxFactory.ExpressionStatement(beginLoopInvocation),
+                node);
+
+            var finallyBlock = SyntaxFactory.FinallyClause(SyntaxFactory.Block(
+                SyntaxFactory.ExpressionStatement(endLoopInvocation)));
+
+            return SyntaxFactory.TryStatement(tryBlock, SyntaxFactory.List<CatchClauseSyntax>(), finallyBlock);
+        }
+
+        public override SyntaxNode VisitForStatement(ForStatementSyntax node)
+        {
+            var beginLoopInvocation = CreateBeginLoopInvocationExpression(node);
+            var endLoopInvocation = CreateEndLoopInvocationExpression(node);
+
+            var forKeyword = VisitToken(node.ForKeyword);
+            var openParenToken = VisitToken(node.OpenParenToken);
+            var declaration = (VariableDeclarationSyntax)Visit(node.Declaration);
+            var initializers = VisitList(node.Initializers);
+            var firstSemicolonToken = VisitToken(node.FirstSemicolonToken);
+            var condition = (ExpressionSyntax)Visit(node.Condition);
+            condition = CreateLogAssignInvocationExpression(node, "for", condition);
+            var secondSemicolonToken = VisitToken(node.SecondSemicolonToken);
+            var incrementors = VisitList(node.Incrementors);
+            var closeParenToken = VisitToken(node.CloseParenToken);
+            var statement = (StatementSyntax)Visit(node.Statement);
+
+            var loopIterationInvocation = CreateLoopIterationInvocationExpression(statement);
+            var forBody = SyntaxFactory.Block(
+                statement,
+                SyntaxFactory.ExpressionStatement(loopIterationInvocation));
+
+            node = node.Update(forKeyword, openParenToken, declaration, initializers, firstSemicolonToken, condition, secondSemicolonToken, incrementors, closeParenToken, forBody);
 
             var tryBlock = SyntaxFactory.Block(
                 SyntaxFactory.ExpressionStatement(beginLoopInvocation),
@@ -150,6 +206,30 @@ namespace AV.Cyclone.Katrina.SyntaxProcessor
                 SyntaxFactory.Argument(CreaetLiteral(variableName)),
                 SyntaxFactory.Argument(CreaetLiteral(fileName)),
                 SyntaxFactory.Argument(CreateLiteral(lineNumber)),
+                SyntaxFactory.Argument(valueExpression)
+            }));
+            return SyntaxFactory.InvocationExpression(memberAccess, arguments);
+        }
+
+        private InvocationExpressionSyntax CreateLogPostIncrementInvocationExpression(ExpressionSyntax node, string variableName,
+            ExpressionSyntax valueExpression)
+        {
+            var fileName = node.SyntaxTree.FilePath;
+            var lineNumber = node.SyntaxTree.GetLineSpan(node.Span).StartLinePosition.Line;
+
+            return CreateLogPostIncrementInvocationExpression(variableName, fileName, lineNumber, node, valueExpression);
+        }
+
+        private InvocationExpressionSyntax CreateLogPostIncrementInvocationExpression(string variableName, string fileName,
+            int lineNumber, ExpressionSyntax resultExpression, ExpressionSyntax valueExpression)
+        {
+            var memberAccess = CreateMemberAccess(LogPostIncrementMember);
+            var arguments = SyntaxFactory.ArgumentList(SyntaxFactory.SeparatedList(new[]
+            {
+                SyntaxFactory.Argument(CreaetLiteral(variableName)),
+                SyntaxFactory.Argument(CreaetLiteral(fileName)),
+                SyntaxFactory.Argument(CreateLiteral(lineNumber)),
+                SyntaxFactory.Argument(resultExpression),
                 SyntaxFactory.Argument(valueExpression)
             }));
             return SyntaxFactory.InvocationExpression(memberAccess, arguments);
