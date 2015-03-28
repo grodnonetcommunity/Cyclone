@@ -108,6 +108,40 @@ namespace AV.Cyclone.Katrina.SyntaxProcessor
             return SyntaxFactory.TryStatement(tryBlock, SyntaxFactory.List<CatchClauseSyntax>(), finallyBlock);
         }
 
+        public override SyntaxNode VisitForStatement(ForStatementSyntax node)
+        {
+            var beginLoopInvocation = CreateBeginLoopInvocationExpression(node);
+            var endLoopInvocation = CreateEndLoopInvocationExpression(node);
+
+            var forKeyword = VisitToken(node.ForKeyword);
+            var openParenToken = VisitToken(node.OpenParenToken);
+            var declaration = (VariableDeclarationSyntax)Visit(node.Declaration);
+            var initializers = VisitList(node.Initializers);
+            var firstSemicolonToken = VisitToken(node.FirstSemicolonToken);
+            var condition = (ExpressionSyntax)Visit(node.Condition);
+            condition = CreateLogAssignInvocationExpression(node, "for", condition);
+            var secondSemicolonToken = VisitToken(node.SecondSemicolonToken);
+            var incrementors = VisitList(node.Incrementors);
+            var closeParenToken = VisitToken(node.CloseParenToken);
+            var statement = (StatementSyntax)Visit(node.Statement);
+
+            var loopIterationInvocation = CreateLoopIterationInvocationExpression(statement);
+            var forBody = SyntaxFactory.Block(
+                statement,
+                SyntaxFactory.ExpressionStatement(loopIterationInvocation));
+
+            node = node.Update(forKeyword, openParenToken, declaration, initializers, firstSemicolonToken, condition, secondSemicolonToken, incrementors, closeParenToken, forBody);
+
+            var tryBlock = SyntaxFactory.Block(
+                SyntaxFactory.ExpressionStatement(beginLoopInvocation),
+                node);
+
+            var finallyBlock = SyntaxFactory.FinallyClause(SyntaxFactory.Block(
+                SyntaxFactory.ExpressionStatement(endLoopInvocation)));
+
+            return SyntaxFactory.TryStatement(tryBlock, SyntaxFactory.List<CatchClauseSyntax>(), finallyBlock);
+        }
+
         public override SyntaxNode VisitMethodDeclaration(MethodDeclarationSyntax node)
         {
             var methodName = node.Identifier.Text;

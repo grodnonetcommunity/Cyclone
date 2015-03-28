@@ -93,6 +93,34 @@ namespace Test.SyntaxProcessor
         }
 
         [Test]
+        public void ForLoopTest()
+        {
+            var source = "for (var i = 0; i < 10; i++) {}";
+            var tree = ParseMethodBody(source);
+
+            var visitor = CreateAddExecuteLoggerVisitor();
+            var newTree = visitor.Visit(tree);
+
+            var expected = @"
+    try
+    {
+        BL("""", 0);
+        for (var i = LA(""i"", """", 0, 0); LA(""for"", """", 0, i < 10); LA(""i"", """", 0, i++))
+        {
+            {}
+            LI("""", 0);
+        }
+    }
+    finally
+    {
+        EL("""", 0);
+    }
+";
+
+            AreEqualCode(expected, newTree);
+        }
+
+        [Test]
         public void MethodEnterTest()
         {
             var source = "";
