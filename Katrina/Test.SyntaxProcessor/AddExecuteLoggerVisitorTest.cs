@@ -105,8 +105,37 @@ namespace Test.SyntaxProcessor
     try
     {
         BL("""", 0);
-        for (var i = LA(""i"", """", 0, 0); LA(""for"", """", 0, i < 10); LA(""i"", """", 0, i++))
+        for (var i = LA(""i"", """", 0, 0); LA(""for"", """", 0, i < 10); LI(""i"", """", 0, i++, i))
         {
+            {}
+            LI("""", 0);
+        }
+    }
+    finally
+    {
+        EL("""", 0);
+    }
+";
+
+            AreEqualCode(expected, newTree);
+        }
+
+        [Test]
+        public void ForEachLoopTest()
+        {
+            var source = "foreach (var i in items) {}";
+            var tree = ParseMethodBody(source);
+
+            var visitor = CreateAddExecuteLoggerVisitor();
+            var newTree = visitor.Visit(tree);
+
+            var expected = @"
+    try
+    {
+        BL("""", 0);
+        foreach (var i in items)
+        {
+            LA(""i"", """", 0, i);
             {}
             LI("""", 0);
         }
@@ -142,6 +171,20 @@ void M(){
     }
 }
 ";
+
+            AreEqualCode(expected, newTree);
+        }
+
+        [Test]
+        public void ReturnUnaryIssueTest()
+        {
+            var source = "return -1;";
+            var tree = ParseMethodBody(source);
+
+            var visitor = CreateAddExecuteLoggerVisitor();
+            var newTree = visitor.Visit(tree);
+
+            var expected = @"return LA(""return"", """", 0, -1);";
 
             AreEqualCode(expected, newTree);
         }
