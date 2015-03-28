@@ -15,6 +15,13 @@ namespace AV.Cyclone.Katrina.Executor.Interfaces
             return index;
         }
 
+        public AssemblyName LoadAssembly(byte[] rawAssembly)
+        {
+            var assembly = Assembly.Load(rawAssembly);
+            assemblies.Add(assembly);
+            return assembly.GetName();
+        }
+
         public void SetExecuteLogger(IExecuteLogger executeLogger)
         {
             var serializerExecuteLogger = new SerializerExecuteLogger(executeLogger);

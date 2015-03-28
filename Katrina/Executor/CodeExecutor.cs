@@ -18,6 +18,8 @@ namespace AV.Cyclone.Katrina.Executor
         {
             public string AssemblyPath { get; set; }
 
+            public byte[] RawAssembly { get; set; }
+
             public EmitResult EmitResult { get; set; }
         }
 
@@ -103,15 +105,18 @@ namespace AV.Cyclone.Katrina.Executor
 
                 foreach (var compilation in executeCompilations)
                 {
-                    var assemblyPath = Path.Combine(tempDir, compilation.AssemblyName + ".dll");
-                    // TODO: Store emit results
-                    var emitResult = compilation.Emit(assemblyPath);
-                    if (!emitResult.Success) return;
-                    compilationEmitResults.Add(new CompilationEmitResult
+                    //var assemblyPath = Path.Combine(tempDir, compilation.AssemblyName + ".dll");
+                    using (var memoryStream = new MemoryStream())
                     {
-                        AssemblyPath = assemblyPath,
-                        EmitResult = emitResult
-                    });
+                        var emitResult = compilation.Emit(memoryStream);
+                        if (!emitResult.Success) return;
+                        compilationEmitResults.Add(new CompilationEmitResult
+                        {
+                            //AssemblyPath = assemblyPath,
+                            RawAssembly = memoryStream.ToArray(),
+                            EmitResult = emitResult
+                        });
+                    }
                 }
 
                 if (files != null)
@@ -141,8 +146,7 @@ namespace AV.Cyclone.Katrina.Executor
                 for (int i = 0; i < compilationEmitResults.Count; i++)
                 {
                     var compilationEmitResult = compilationEmitResults[i];
-                    var assemblyName = AssemblyName.GetAssemblyName(compilationEmitResult.AssemblyPath);
-                    loader.LoadAssembly(assemblyName);
+                    var assemblyName = loader.LoadAssembly(compilationEmitResult.RawAssembly);
                     if (assemblyName.Name == compilationName)
                         classAssemblyIndex = i;
                 }
