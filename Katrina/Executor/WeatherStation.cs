@@ -22,8 +22,9 @@ namespace AV.Cyclone.Katrina.Executor
         private readonly string projectName;
         private string startMethodDeclaration;
         private string startTypeDeclaration;
-        private Dictionary<string, List<Execution>> operations;
         private Dictionary<MethodReference, List<List<Operation>>> methodCalls; 
+        private object changesSync = new object();
+        private Dictionary<string, string> changes = new Dictionary<string, string>();
         private bool disposed;
         private Thread backgroundThread;
         private readonly AutoResetEvent waitChanges = new AutoResetEvent(false);
@@ -83,20 +84,11 @@ namespace AV.Cyclone.Katrina.Executor
 
         public void FileUpdated(string fileName, string content)
         {
-            var newSyntaxTree = CSharpSyntaxTree.ParseText(content).WithFilePath(fileName);
-            if (newSyntaxTree.GetDiagnostics().Any(d => d.Severity == DiagnosticSeverity.Error)) return;
-            var newSyntaxTreeRoot = newSyntaxTree.GetRoot();
-            var visitor = new AddExecuteLoggerVisitor();
-            newSyntaxTreeRoot = visitor.Visit(newSyntaxTreeRoot);
-            codeExecutor.UpdateFile(fileName, CSharpSyntaxTree.Create((CSharpSyntaxNode)newSyntaxTreeRoot).WithFilePath(fileName));
+            lock (changesSync)
+            {
+                changes[fileName] = content;
+            }
             waitChanges.Set();
-        }
-
-        public List<Execution> GetOperations(string fileName)
-        {
-            List<Execution> list;
-            if (!operations.TryGetValue(fileName, out list)) return null;
-            return list;
         }
 
         public Dictionary<string, List<List<Operation>>> GetMethodCalls(string fileName)
@@ -124,49 +116,60 @@ namespace AV.Cyclone.Katrina.Executor
 
             do
             {
-                var executeThread = new Thread(Execute);
-                executeThread.Start();
-                if (!executeThread.Join(TimeSpan.FromSeconds(50)))
+                if (ApplyChanges())
                 {
-                    executeThread.Abort();
-                    if (Context.ExecuteLoggerHelper != null && Context.ExecuteLoggerHelper is OperationsExecuteLogger)
-                    {
-                        var operationsExecuteLogger = ((OperationsExecuteLogger)Context.ExecuteLoggerHelper);
-                        operationsExecuteLogger.CollapseExecutor();
-                        UpdateOperations(operationsExecuteLogger.MethodCalls);
+                    var executeLogger = new OperationsExecuteLogger();
+                    codeExecutor.SetExecuteLogger(executeLogger);
 
-                        OnExecuted();
+                    var executeThread = new Thread(Execute);
+                    executeThread.Start();
+                    if (!executeThread.Join(TimeSpan.FromSeconds(50)))
+                    {
+                        executeThread.Abort();
                     }
+                    UpdateMethodCalls(executeLogger.MethodCalls);
+                    OnExecuted();
                 }
                 waitChanges.WaitOne();
             } while (!disposed);
+        }
+
+        private bool ApplyChanges()
+        {
+            Dictionary<string, string> changesCopy;
+            var result = true;
+            lock (changesSync)
+            {
+                changesCopy = changes;
+                changes = new Dictionary<string, string>();
+            }
+            foreach (var fileChanges in changesCopy)
+            {
+                result &= ApplyChanges(fileChanges.Key, fileChanges.Value);
+            }
+            return result;
+        }
+
+        private bool ApplyChanges(string fileName, string content)
+        {
+            var newSyntaxTree = CSharpSyntaxTree.ParseText(content).WithFilePath(fileName);
+            if (newSyntaxTree.GetDiagnostics().Any(d => d.Severity == DiagnosticSeverity.Error)) return false;
+            var newSyntaxTreeRoot = newSyntaxTree.GetRoot();
+            var visitor = new AddExecuteLoggerVisitor();
+            newSyntaxTreeRoot = visitor.Visit(newSyntaxTreeRoot);
+            codeExecutor.UpdateFile(fileName, CSharpSyntaxTree.Create((CSharpSyntaxNode)newSyntaxTreeRoot).WithFilePath(fileName));
+            return true;
         }
 
         private void Execute()
         {
             var files = forecastExecutor.GetReferences();
 
-            var executeLogger = new OperationsExecuteLogger();
-            codeExecutor.SetExecuteLogger(executeLogger);
             codeExecutor.Execute(projectName, files, startTypeDeclaration, startMethodDeclaration);
-
-            UpdateOperations(executeLogger.MethodCalls);
-
-            OnExecuted();
         }
 
-        private void UpdateOperations(Dictionary<MethodReference, List<List<Operation>>> methodCalls)
+        private void UpdateMethodCalls(Dictionary<MethodReference, List<List<Operation>>> methodCalls)
         {
-            var tempOperations = new Dictionary<string, List<Execution>>();
-            foreach (var methodCall in methodCalls.GroupBy(mc => mc.Key.FileName).Select(g => new
-            {
-                FileName = g.Key,
-                Calls = g.SelectMany(e => e.Value).ToList()
-            }))
-            {
-                tempOperations.Add(methodCall.FileName, methodCall.Calls.Select(mc => new Execution() {Operations = mc}).ToList());
-            }
-            operations = tempOperations;
             this.methodCalls = methodCalls;
         }
 
