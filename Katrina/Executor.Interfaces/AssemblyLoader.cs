@@ -41,9 +41,9 @@ namespace AV.Cyclone.Katrina.Executor.Interfaces
             Context.ExecuteLoggerHelper = new BaseExecuteLoggerHelper(serializerExecuteLogger);
         }
 
-        public void Execute(int assemblyIndex, string className, string methodName)
+        public void Execute(string assemblyName, string className, string methodName)
         {
-            var assembly = assemblies[assemblyIndex];
+            var assembly = assemblies.First(a => a.GetName().Name == assemblyName);
             var type = assembly.GetType(className, true);
             var method = type.GetMethod(methodName);
 

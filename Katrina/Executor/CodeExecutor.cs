@@ -121,13 +121,9 @@ namespace AV.Cyclone.Katrina.Executor
                             typeof (AssemblyLoader).FullName);
                 AppDomain.CurrentDomain.AssemblyResolve -= ExecutorInterfacesAssemblyResolve;
 
-                int classAssemblyIndex = -1;
-                for (int i = 0; i < compilationEmitResults.Count; i++)
+                foreach (var compilationEmitResult in compilationEmitResults)
                 {
-                    var compilationEmitResult = compilationEmitResults[i];
-                    var assemblyName = loader.LoadAssembly(compilationEmitResult.RawAssembly);
-                    if (assemblyName.Name == compilationName)
-                        classAssemblyIndex = i;
+                    loader.LoadAssembly(compilationEmitResult.RawAssembly);
                 }
 
                 if (files != null)
@@ -141,7 +137,7 @@ namespace AV.Cyclone.Katrina.Executor
                 loader.SetExecuteLogger(new DomainExecuteLogger(currentExecuteLogger));
                 try
                 {
-                    loader.Execute(classAssemblyIndex, className, methodName);
+                    loader.Execute(compilationName, className, methodName);
                 }
                 catch (TargetInvocationException)
                 {
