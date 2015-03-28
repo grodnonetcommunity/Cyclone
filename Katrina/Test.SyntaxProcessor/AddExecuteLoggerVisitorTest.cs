@@ -53,6 +53,18 @@ namespace Test.SyntaxProcessor
         }
 
         [Test]
+        public void PreIncrementTest()
+        {
+            var source = "++a";
+            var tree = ParseMethodBody(source);
+
+            var visitor = CreateAddExecuteLoggerVisitor();
+            var newTree = visitor.Visit(tree);
+
+            AreEqualCode(@"LA(""a"","""",0,++a);", newTree);
+        }
+
+        [Test]
         public void WhileLoopTest()
         {
             var source = "while (true) {}";
