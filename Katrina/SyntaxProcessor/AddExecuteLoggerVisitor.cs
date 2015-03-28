@@ -49,6 +49,15 @@ namespace AV.Cyclone.Katrina.SyntaxProcessor
             return node.Update(node.Left, node.OperatorToken, invocation);
         }
 
+        public override SyntaxNode VisitPostfixUnaryExpression(PostfixUnaryExpressionSyntax node)
+        {
+            var variableName = node.Operand.ToString();
+
+            var invocation = CreateLogAssignInvocationExpression(node, variableName, node);
+
+            return invocation;
+        }
+
         public override SyntaxNode VisitIfStatement(IfStatementSyntax node)
         {
             var ifKeyword = VisitToken(node.IfKeyword);
