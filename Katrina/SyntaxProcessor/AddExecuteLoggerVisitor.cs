@@ -146,6 +146,39 @@ namespace AV.Cyclone.Katrina.SyntaxProcessor
             return SyntaxFactory.TryStatement(tryBlock, SyntaxFactory.List<CatchClauseSyntax>(), finallyBlock);
         }
 
+        public override SyntaxNode VisitForEachStatement(ForEachStatementSyntax node)
+        {
+            var beginLoopInvocation = CreateBeginLoopInvocationExpression(node);
+            var endLoopInvocation = CreateEndLoopInvocationExpression(node);
+
+            var forEachKeyword = VisitToken(node.ForEachKeyword);
+            var openParenToken = VisitToken(node.OpenParenToken);
+            var type = (TypeSyntax)Visit(node.Type);
+            var identifier = VisitToken(node.Identifier);
+            var inKeyword = VisitToken(node.InKeyword);
+            var expression = (ExpressionSyntax)Visit(node.Expression);
+            var closeParenToken = VisitToken(node.CloseParenToken);
+            var statement = (StatementSyntax)Visit(node.Statement);
+
+            var invocation = CreateLogAssignInvocationExpression(node, identifier.ToString(), SyntaxFactory.IdentifierName(identifier)); 
+            var loopIterationInvocation = CreateLoopIterationInvocationExpression(statement);
+            var forEachBody = SyntaxFactory.Block(
+                SyntaxFactory.ExpressionStatement(invocation),
+                statement,
+                SyntaxFactory.ExpressionStatement(loopIterationInvocation));
+
+            node = node.Update(forEachKeyword, openParenToken, type, identifier, inKeyword, expression, closeParenToken, forEachBody);
+
+            var tryBlock = SyntaxFactory.Block(
+                SyntaxFactory.ExpressionStatement(beginLoopInvocation),
+                node);
+
+            var finallyBlock = SyntaxFactory.FinallyClause(SyntaxFactory.Block(
+                SyntaxFactory.ExpressionStatement(endLoopInvocation)));
+
+            return SyntaxFactory.TryStatement(tryBlock, SyntaxFactory.List<CatchClauseSyntax>(), finallyBlock);
+        }
+
         public override SyntaxNode VisitMethodDeclaration(MethodDeclarationSyntax node)
         {
             var methodName = node.Identifier.Text;

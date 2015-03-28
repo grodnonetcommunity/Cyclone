@@ -121,6 +121,35 @@ namespace Test.SyntaxProcessor
         }
 
         [Test]
+        public void ForEachLoopTest()
+        {
+            var source = "foreach (var i in items) {}";
+            var tree = ParseMethodBody(source);
+
+            var visitor = CreateAddExecuteLoggerVisitor();
+            var newTree = visitor.Visit(tree);
+
+            var expected = @"
+    try
+    {
+        BL("""", 0);
+        foreach (var i in items)
+        {
+            LA(""i"", """", 0, i);
+            {}
+            LI("""", 0);
+        }
+    }
+    finally
+    {
+        EL("""", 0);
+    }
+";
+
+            AreEqualCode(expected, newTree);
+        }
+
+        [Test]
         public void MethodEnterTest()
         {
             var source = "";
