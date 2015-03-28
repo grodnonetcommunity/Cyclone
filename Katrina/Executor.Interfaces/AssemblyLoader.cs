@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace AV.Cyclone.Katrina.Executor.Interfaces
@@ -8,11 +9,30 @@ namespace AV.Cyclone.Katrina.Executor.Interfaces
     {
         private readonly List<Assembly> assemblies = new List<Assembly>();
 
-        public int LoadAssembly(AssemblyName assemblyName)
+        public AssemblyLoader()
         {
-            var index = assemblies.Count;
-            assemblies.Add(Assembly.Load(assemblyName));
-            return index;
+            AppDomain.CurrentDomain.AssemblyResolve += CurrentDomainOnAssemblyResolve;
+        }
+
+        private Assembly CurrentDomainOnAssemblyResolve(object sender, ResolveEventArgs args)
+        {
+            return assemblies.FirstOrDefault(a => a.GetName().FullName == args.Name);
+        }
+
+        public AssemblyName LoadAssembly(AssemblyName assemblyName)
+        {
+            return AddAssembly(Assembly.Load(assemblyName));
+        }
+
+        public AssemblyName LoadAssembly(byte[] rawAssembly)
+        {
+            return AddAssembly(Assembly.Load(rawAssembly));
+        }
+
+        private AssemblyName AddAssembly(Assembly assembly)
+        {
+            assemblies.Add(assembly);
+            return assembly.GetName();
         }
 
         public void SetExecuteLogger(IExecuteLogger executeLogger)
@@ -21,9 +41,9 @@ namespace AV.Cyclone.Katrina.Executor.Interfaces
             Context.ExecuteLoggerHelper = new BaseExecuteLoggerHelper(serializerExecuteLogger);
         }
 
-        public void Execute(int assemblyIndex, string className, string methodName)
+        public void Execute(string assemblyName, string className, string methodName)
         {
-            var assembly = assemblies[assemblyIndex];
+            var assembly = assemblies.First(a => a.GetName().Name == assemblyName);
             var type = assembly.GetType(className, true);
             var method = type.GetMethod(methodName);
 
