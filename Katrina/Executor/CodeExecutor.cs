@@ -126,12 +126,20 @@ namespace AV.Cyclone.Katrina.Executor
                     loader.LoadAssembly(compilationEmitResult.RawAssembly);
                 }
 
+                var executorInterfacesWasLoaded = false;
                 if (files != null)
                 {
                     foreach (var file in files)
                     {
-                        loader.LoadAssembly(AssemblyName.GetAssemblyName(file));
+                        var assemblyName = AssemblyName.GetAssemblyName(file);
+                        if (assemblyName.FullName == typeof(AssemblyLoader).Assembly.FullName)
+                            executorInterfacesWasLoaded = true;
+                        loader.LoadAssembly(assemblyName);
                     }
+                }
+                if (!executorInterfacesWasLoaded)
+                {
+                    loader.LoadAssembly(typeof(AssemblyLoader).Assembly.GetName());
                 }
 
                 loader.SetExecuteLogger(new DomainExecuteLogger(currentExecuteLogger));
