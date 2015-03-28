@@ -16,8 +16,6 @@ namespace AV.Cyclone.Katrina.Executor
     {
         private class CompilationEmitResult
         {
-            public string AssemblyPath { get; set; }
-
             public byte[] RawAssembly { get; set; }
 
             public EmitResult EmitResult { get; set; }
@@ -95,7 +93,6 @@ namespace AV.Cyclone.Katrina.Executor
 
         public void Execute(string compilationName, string[] files, string className, string methodName)
         {
-            string tempDir = null;
             AppDomain executorDomain = null;
             try
             {
@@ -103,27 +100,21 @@ namespace AV.Cyclone.Katrina.Executor
 
                 foreach (var compilation in executeCompilations)
                 {
-                    //var assemblyPath = Path.Combine(tempDir, compilation.AssemblyName + ".dll");
                     using (var memoryStream = new MemoryStream())
                     {
                         var emitResult = compilation.Emit(memoryStream);
                         if (!emitResult.Success) return;
                         compilationEmitResults.Add(new CompilationEmitResult
                         {
-                            //AssemblyPath = assemblyPath,
                             RawAssembly = memoryStream.ToArray(),
                             EmitResult = emitResult
                         });
                     }
                 }
 
+                executorDomain = AppDomain.CreateDomain("ExecutorDomain", null);
+
                 AppDomain.CurrentDomain.AssemblyResolve += ExecutorInterfacesAssemblyResolve;
-                AppDomainSetup domaininfo = new AppDomainSetup();
-                //domaininfo.ApplicationBase = tempDir;
-                Evidence adevidence = AppDomain.CurrentDomain.Evidence;
-                executorDomain = AppDomain.CreateDomain("ExecutorDomain", adevidence, domaininfo
-                    /*new AppDomainSetup {ApplicationBase = tempDir, ApplicationTrust = AppDomain.CurrentDomain.ApplicationTrust}*/);
-                
                 var loader =
                     (AssemblyLoader)
                         executorDomain.CreateInstanceFromAndUnwrap(typeof (AssemblyLoader).Assembly.Location,
@@ -143,7 +134,6 @@ namespace AV.Cyclone.Katrina.Executor
                 {
                     foreach (var file in files)
                     {
-                        //File.Copy(file, Path.Combine(tempDir, Path.GetFileName(file)));
                         loader.LoadAssembly(AssemblyName.GetAssemblyName(file));
                     }
                 }
@@ -162,18 +152,6 @@ namespace AV.Cyclone.Katrina.Executor
                 if (executorDomain != null)
                 {
                     AppDomain.Unload(executorDomain);
-                }
-                if (!string.IsNullOrEmpty(tempDir))
-                {
-                    try
-                    {
-                        var tempDirInfo = new DirectoryInfo(tempDir);
-                        tempDirInfo.Delete(true);
-                    }
-                    catch (Exception)
-                    {
-                        Debug.WriteLine(string.Format("Delete temp folder {0} failed", tempDir));
-                    }
                 }
             }
         }
