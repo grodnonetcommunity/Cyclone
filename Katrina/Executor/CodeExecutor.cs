@@ -99,8 +99,6 @@ namespace AV.Cyclone.Katrina.Executor
             AppDomain executorDomain = null;
             try
             {
-                tempDir = Path.Combine(Path.GetTempPath(), "_Cyclon_" + Guid.NewGuid());
-                Directory.CreateDirectory(tempDir);
                 compilationEmitResults = new List<CompilationEmitResult>(executeCompilations.Count);
 
                 foreach (var compilation in executeCompilations)
@@ -119,20 +117,18 @@ namespace AV.Cyclone.Katrina.Executor
                     }
                 }
 
-                var assemblyLoaderAssemblyFileName = Path.Combine(tempDir, typeof(AssemblyLoader).Assembly.GetName().Name + ".dll");
-                if (!File.Exists(assemblyLoaderAssemblyFileName))
-                    File.Copy(typeof (AssemblyLoader).Assembly.Location, assemblyLoaderAssemblyFileName);
-                AppDomain.CurrentDomain.AssemblyResolve += CurrentDomainOnAssemblyResolve;
+                AppDomain.CurrentDomain.AssemblyResolve += ExecutorInterfacesAssemblyResolve;
                 AppDomainSetup domaininfo = new AppDomainSetup();
-                domaininfo.ApplicationBase = tempDir;
+                //domaininfo.ApplicationBase = tempDir;
                 Evidence adevidence = AppDomain.CurrentDomain.Evidence;
                 executorDomain = AppDomain.CreateDomain("ExecutorDomain", adevidence, domaininfo
                     /*new AppDomainSetup {ApplicationBase = tempDir, ApplicationTrust = AppDomain.CurrentDomain.ApplicationTrust}*/);
                 
                 var loader =
                     (AssemblyLoader)
-                        executorDomain.CreateInstanceAndUnwrap(typeof (AssemblyLoader).Assembly.FullName,
+                        executorDomain.CreateInstanceFromAndUnwrap(typeof (AssemblyLoader).Assembly.Location,
                             typeof (AssemblyLoader).FullName);
+                AppDomain.CurrentDomain.AssemblyResolve -= ExecutorInterfacesAssemblyResolve;
 
                 int classAssemblyIndex = -1;
                 for (int i = 0; i < compilationEmitResults.Count; i++)
@@ -182,10 +178,10 @@ namespace AV.Cyclone.Katrina.Executor
             }
         }
 
-        private Assembly CurrentDomainOnAssemblyResolve(object sender, ResolveEventArgs args)
+        private Assembly ExecutorInterfacesAssemblyResolve(object sender, ResolveEventArgs args)
         {
-            AppDomain.CurrentDomain.AssemblyResolve -= CurrentDomainOnAssemblyResolve;
-            return typeof(AssemblyLoader).Assembly;
+            var executorInterfaces = typeof(AssemblyLoader).Assembly;
+            return args.Name == executorInterfaces.GetName().FullName ? executorInterfaces : null;
         }
     }
 }

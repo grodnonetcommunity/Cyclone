@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace AV.Cyclone.Katrina.Executor.Interfaces
@@ -7,6 +8,16 @@ namespace AV.Cyclone.Katrina.Executor.Interfaces
     public class AssemblyLoader : MarshalByRefObject
     {
         private readonly List<Assembly> assemblies = new List<Assembly>();
+
+        public AssemblyLoader()
+        {
+            AppDomain.CurrentDomain.AssemblyResolve += CurrentDomainOnAssemblyResolve;
+        }
+
+        private Assembly CurrentDomainOnAssemblyResolve(object sender, ResolveEventArgs args)
+        {
+            return assemblies.FirstOrDefault(a => a.GetName().FullName == args.Name);
+        }
 
         public AssemblyName LoadAssembly(AssemblyName assemblyName)
         {
