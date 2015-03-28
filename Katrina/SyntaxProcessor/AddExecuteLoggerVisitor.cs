@@ -54,6 +54,9 @@ namespace AV.Cyclone.Katrina.SyntaxProcessor
 
         public override SyntaxNode VisitPrefixUnaryExpression(PrefixUnaryExpressionSyntax node)
         {
+            if (node.OperatorToken.RawKind != (int)SyntaxKind.PlusPlusToken &&
+                node.OperatorToken.RawKind != (int)SyntaxKind.MinusMinusToken) return node;
+
             var variableName = node.Operand.ToString();
 
             var invocation = CreateLogAssignInvocationExpression(node, variableName, node);
@@ -63,6 +66,9 @@ namespace AV.Cyclone.Katrina.SyntaxProcessor
 
         public override SyntaxNode VisitPostfixUnaryExpression(PostfixUnaryExpressionSyntax node)
         {
+            if (node.OperatorToken.RawKind != (int)SyntaxKind.PlusPlusToken &&
+                node.OperatorToken.RawKind != (int)SyntaxKind.MinusMinusToken) return node;
+
             var variableName = node.Operand.ToString();
 
             var operand = (ExpressionSyntax)Visit(node.Operand);
