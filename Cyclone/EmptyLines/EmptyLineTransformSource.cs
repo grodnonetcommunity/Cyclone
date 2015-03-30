@@ -51,11 +51,13 @@ namespace AV.Cyclone.EmptyLines
             var lineNumber = line.Snapshot.GetLineNumberFromPosition(line.Start.Position);
             var height = cloudCollection.GetHeight(lineNumber);
 
-            if (line.TextHeight < height)
+            if (line.Height < height)
             {
                 var delta = (height - line.Height);
-                return new LineTransform(line.LineTransform.TopSpace + delta / 2,
-                    line.LineTransform.BottomSpace + delta / 2, line.LineTransform.VerticalScale);
+                var topDelta = delta / 2;
+                var bottomDelta = delta - topDelta;
+                return new LineTransform(line.LineTransform.TopSpace + topDelta,
+                    line.LineTransform.BottomSpace + bottomDelta, line.LineTransform.VerticalScale);
             }
 
             return line.LineTransform;
