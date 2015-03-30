@@ -93,6 +93,32 @@ namespace Test.SyntaxProcessor
         }
 
         [Test]
+        public void DoWhileLoopTest()
+        {
+            var source = "do {} while (true);";
+            var tree = ParseMethodBody(source);
+
+            var visitor = CreateAddExecuteLoggerVisitor();
+            var newTree = visitor.Visit(tree);
+
+            var expected = @"
+    try
+    {
+        BL("""", 0);
+        do
+        {
+        } while (LI(""do"", """", 0, true));
+    }
+    finally
+    {
+        EL("""", 0);
+    }
+";
+
+            AreEqualCode(expected, newTree);
+        }
+
+        [Test]
         public void ForLoopTest()
         {
             var source = "for (var i = 0; i < 10; i++) {}";

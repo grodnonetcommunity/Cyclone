@@ -118,6 +118,32 @@ namespace AV.Cyclone.Katrina.SyntaxProcessor
             return SyntaxFactory.TryStatement(tryBlock, SyntaxFactory.List<CatchClauseSyntax>(), finallyBlock);
         }
 
+        public override SyntaxNode VisitDoStatement(DoStatementSyntax node)
+        {
+            var beginLoopInvocation = CreateBeginLoopInvocationExpression(node);
+            var endLoopInvocation = CreateEndLoopInvocationExpression(node);
+
+            var doKeyword = VisitToken(node.DoKeyword);
+            var statement = (StatementSyntax)Visit(node.Statement);
+            var whileKeyword = VisitToken(node.WhileKeyword);
+            var openParenToken = VisitToken(node.OpenParenToken);
+            var condition = (ExpressionSyntax)Visit(node.Condition);
+            condition = CreateLoopIterationInvocationExpression(condition, "do", condition);
+            var closeParenToken = VisitToken(node.CloseParenToken);
+            var semicolonToken = VisitToken(node.SemicolonToken);
+
+            node = node.Update(doKeyword, statement, whileKeyword, openParenToken, condition, closeParenToken, semicolonToken);
+
+            var tryBlock = SyntaxFactory.Block(
+                SyntaxFactory.ExpressionStatement(beginLoopInvocation),
+                node);
+
+            var finallyBlock = SyntaxFactory.FinallyClause(SyntaxFactory.Block(
+                SyntaxFactory.ExpressionStatement(endLoopInvocation)));
+
+            return SyntaxFactory.TryStatement(tryBlock, SyntaxFactory.List<CatchClauseSyntax>(), finallyBlock);
+        }
+
         public override SyntaxNode VisitForStatement(ForStatementSyntax node)
         {
             var beginLoopInvocation = CreateBeginLoopInvocationExpression(node);
@@ -367,6 +393,28 @@ namespace AV.Cyclone.Katrina.SyntaxProcessor
             {
                 SyntaxFactory.Argument(CreaetLiteral(fileName)),
                 SyntaxFactory.Argument(CreateLiteral(lineNumber)),
+            }));
+            return SyntaxFactory.InvocationExpression(memberAccess, arguments);
+        }
+
+        private InvocationExpressionSyntax CreateLoopIterationInvocationExpression(SyntaxNode node, string loopName, ExpressionSyntax valueExpression)
+        {
+            var fileName = node.SyntaxTree.FilePath;
+            var lineNumber = node.SyntaxTree.GetLineSpan(node.Span).StartLinePosition.Line;
+
+            return CreateLoopIterationInvocationExpression(loopName, fileName, lineNumber, valueExpression);
+        }
+
+        private InvocationExpressionSyntax CreateLoopIterationInvocationExpression(string loopName, string fileName,
+            int lineNumber, ExpressionSyntax valueExpression)
+        {
+            var memberAccess = CreateMemberAccess(LoopIterationMember);
+            var arguments = SyntaxFactory.ArgumentList(SyntaxFactory.SeparatedList(new[]
+            {
+                SyntaxFactory.Argument(CreaetLiteral(loopName)),
+                SyntaxFactory.Argument(CreaetLiteral(fileName)),
+                SyntaxFactory.Argument(CreateLiteral(lineNumber)),
+                SyntaxFactory.Argument(valueExpression)
             }));
             return SyntaxFactory.InvocationExpression(memberAccess, arguments);
         }

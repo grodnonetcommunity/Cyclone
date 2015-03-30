@@ -24,7 +24,7 @@ namespace AV.Cyclone.Sandy.OperationParser
         private const string ColorProviderStringBrushPath = "ColorProvider.StringBrush";
         private const string ColorProviderCharacterBrushPath = "ColorProvider.CharacterBrush";
 
-        private static readonly string[] keywordVariableNames = {"while", "for", "if", "return"};
+        private static readonly string[] keywordVariableNames = {"while", "do", "for", "if", "return"};
 
         private readonly CompositeOutComponent compositeOutComponent = new CompositeOutComponent();
 

@@ -1,4 +1,6 @@
-﻿namespace AV.Cyclone.Katrina.Executor.Interfaces
+﻿using System.Collections.Generic;
+
+namespace AV.Cyclone.Katrina.Executor.Interfaces
 {
     public interface IExecuteLoggerHelper
     {
@@ -13,6 +15,8 @@
         void BeginLoop(string fileName, int lineNumber);
 
         void LoopIteration(string fileName, int lineNumber);
+
+        T LoopIteration<T>(string expression, string fileName, int lineNumber, T value);
 
         void EndLoop(string fileName, int lineNumber);
     }
