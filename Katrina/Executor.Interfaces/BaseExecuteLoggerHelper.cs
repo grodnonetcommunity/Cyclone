@@ -64,7 +64,7 @@ namespace AV.Cyclone.Katrina.Executor
             var frame = stackTrace.GetFrame(stackTrace.FrameCount - 1);
             var fileName = frame.GetFileName();
             var lineNumber = frame.GetFileLineNumber();
-            executeLogger.LogAssign("exception", fileName, lineNumber - 1, exception.Message);
+            executeLogger.LogAssign("exception", fileName, lineNumber - 1, exception);
         }
     }
 }

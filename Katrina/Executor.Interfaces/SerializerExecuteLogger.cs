@@ -46,6 +46,8 @@ namespace AV.Cyclone.Katrina.Executor.Interfaces
             if (value == null) return null;
             var type = value.GetType();
             if (IsSupportedType(type)) return value;
+            if (type.IsSubclassOf(typeof(Exception)) || type == typeof(Exception))
+                return new ToStringValue(((Exception)value).Message);
             return new ToStringValue(value.ToString());
         }
 
