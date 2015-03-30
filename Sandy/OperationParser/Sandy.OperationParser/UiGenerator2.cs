@@ -22,7 +22,7 @@ namespace AV.Cyclone.Sandy.OperationParser
         private const string ColorProviderIdentifierBrushPath = "ColorProvider.IdentifierBrush";
         private const string ColorProviderNumberBrushPath = "ColorProvider.NumberBrush";
         private const string ColorProviderStringBrushPath = "ColorProvider.StringBrush";
-        private const string ColorProviderCharacterBrushPath = "ColorProvider.CharacterBrush";
+        private const string ColorProviderCharacterBrushPath = "ColorProvider.StringBrush";
 
         private static readonly string[] keywordVariableNames = {"while", "do", "for", "if", "return"};
 
