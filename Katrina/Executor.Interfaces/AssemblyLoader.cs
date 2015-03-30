@@ -59,7 +59,7 @@ namespace AV.Cyclone.Katrina.Executor.Interfaces
             catch (TargetInvocationException e)
             {
                 var stackTraceString = e.InnerException.StackTrace;
-                var stackTrace = new StackTrace(e.InnerException);
+                var stackTrace = new StackTrace(e.InnerException, true);
                 var frame = stackTrace.GetFrame(stackTrace.FrameCount - 1);
                 var line = frame.GetFileLineNumber();
                 var fileName = frame.GetFileName();
