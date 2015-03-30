@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using AV.Cyclone.Katrina.Executor.Interfaces;
@@ -157,7 +158,7 @@ namespace AV.Cyclone.Katrina.Executor
             var newSyntaxTreeRoot = newSyntaxTree.GetRoot();
             var visitor = new AddExecuteLoggerVisitor();
             newSyntaxTreeRoot = visitor.Visit(newSyntaxTreeRoot);
-            codeExecutor.UpdateFile(fileName, CSharpSyntaxTree.Create((CSharpSyntaxNode)newSyntaxTreeRoot).WithFilePath(fileName));
+            codeExecutor.UpdateFile(fileName, CSharpSyntaxTree.Create((CSharpSyntaxNode)newSyntaxTreeRoot, encoding: Encoding.UTF8).WithFilePath(fileName));
             return true;
         }
 
