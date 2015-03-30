@@ -191,6 +191,11 @@ void M(){
         BM(""M"", """", 0);
         {;}
     }
+    catch (System.Exception e)
+    {
+        CE(e);
+        throw;
+    }
     finally
     {
         EM(""M"", """", 0);
@@ -225,7 +230,8 @@ void M(){
                 EndMethodMember = "EM",
                 BeginLoopMember = "BL",
                 LoopIterationMember = "LI",
-                EndLoopMember = "EL"
+                EndLoopMember = "EL",
+                CatchExceptionMember = "CE",
             };
         }
 
