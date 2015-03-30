@@ -107,9 +107,7 @@ namespace Test.SyntaxProcessor
         BL("""", 0);
         do
         {
-            {}
-            LI("""", 0);
-        } while (LA(""do"", """", 0, true));
+        } while (LI(""do"", """", 0, true));
     }
     finally
     {

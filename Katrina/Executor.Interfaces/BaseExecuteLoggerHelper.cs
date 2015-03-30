@@ -1,4 +1,5 @@
-﻿using AV.Cyclone.Katrina.Executor.Interfaces;
+﻿using System.Collections.Generic;
+using AV.Cyclone.Katrina.Executor.Interfaces;
 
 namespace AV.Cyclone.Katrina.Executor
 {
@@ -31,6 +32,13 @@ namespace AV.Cyclone.Katrina.Executor
         public virtual void LoopIteration(string fileName, int lineNumber)
         {
             executeLogger.LoopIteration(fileName, lineNumber);
+        }
+
+        public virtual T LoopIteration<T>(string expression, string fileName, int lineNumber, T value)
+        {
+            executeLogger.LogAssign(expression, fileName, lineNumber, value);
+            executeLogger.LoopIteration(fileName, lineNumber);
+            return value;
         }
 
         public virtual void EndLoop(string fileName, int lineNumber)
