@@ -52,7 +52,7 @@
     <Compile Include="ExecuteTree.cs" />
     <Compile Include="SparseArray.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UiGenerator2.cs" />
+    <Compile Include="UiGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Katrina\Executor.Interfaces\Executor.Interfaces.csproj">

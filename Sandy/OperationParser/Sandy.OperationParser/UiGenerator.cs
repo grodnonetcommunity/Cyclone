@@ -15,7 +15,7 @@ using JetBrains.Annotations;
 
 namespace AV.Cyclone.Sandy.OperationParser
 {
-    public class UiGenerator2 : INotifyPropertyChanged, IUIGenerator
+    public class UiGenerator : INotifyPropertyChanged, IUIGenerator
     {
         private const string ColorProviderKeywordBrushPath = "ColorProvider.KeywordBrush";
         private const string ColorProviderOperatorBrush = "ColorProvider.OperatorBrush";

@@ -43,7 +43,7 @@ namespace AV.Cyclone.Sandy.UITests
             InitializeComponent();
             var methodName = "BinarySearch";
 
-            var generator = new UiGenerator2();
+            var generator = new UiGenerator();
             foreach (var methodCall in executeLogger.MethodCalls)
             {
                 var executeTree = ExecuteTree.Generate(methodCall.Key.MethodName, methodCall.Value);

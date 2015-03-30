@@ -72,7 +72,7 @@ namespace AV.Cyclone.Service
             var methodCalls = weatherStation.GetMethodCalls(document.FilePath);
             if (methodCalls == null)
                 return null;
-            var generator = new UiGenerator2();
+            var generator = new UiGenerator();
             foreach (var methodCall in methodCalls)
             {
                 var executeTree = ExecuteTree.Generate(methodCall.Key, methodCall.Value);
