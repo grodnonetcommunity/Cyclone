@@ -21,6 +21,8 @@ namespace AV.Cyclone.Katrina.SyntaxProcessor
 
         public string EndMethodMember { get; set; }
 
+        public string CatchExceptionMember { get; set; }
+
         public AddExecuteLoggerVisitor(bool visitIntoStructuredTrivia = false) : base(visitIntoStructuredTrivia)
         {
             LogAssignMember = "AV.Cyclone.Katrina.Executor.Interfaces.Context.ExecuteLoggerHelper.LogAssign";
@@ -30,6 +32,7 @@ namespace AV.Cyclone.Katrina.SyntaxProcessor
             EndLoopMember = "AV.Cyclone.Katrina.Executor.Interfaces.Context.ExecuteLoggerHelper.EndLoop";
             BeginMethodMember = "AV.Cyclone.Katrina.Executor.Interfaces.Context.ExecuteLoggerHelper.BeginMethod";
             EndMethodMember = "AV.Cyclone.Katrina.Executor.Interfaces.Context.ExecuteLoggerHelper.EndMethod";
+            CatchExceptionMember = "AV.Cyclone.Katrina.Executor.Interfaces.Context.ExecuteLoggerHelper.CatchException";
         }
 
         public override SyntaxNode VisitVariableDeclarator(VariableDeclaratorSyntax node)
@@ -237,9 +240,17 @@ namespace AV.Cyclone.Katrina.SyntaxProcessor
             var finallyBlock = SyntaxFactory.FinallyClause(SyntaxFactory.Block(
                 SyntaxFactory.ExpressionStatement(endLoopInvocation)));
 
+            var exceptionType = SyntaxFactory.ParseTypeName(typeof(Exception).FullName);
+            var exceptionVariable = SyntaxFactory.Identifier("e");
+            var catchDeclaration = SyntaxFactory.CatchDeclaration(exceptionType, exceptionVariable.WithLeadingTrivia(SyntaxFactory.Space));
+            var catchClause = SyntaxFactory.CatchClause(
+                catchDeclaration, null,
+                SyntaxFactory.Block(SyntaxFactory.ExpressionStatement(CreateCatchExceptionInvocationExpression(exceptionVariable)),
+                                    SyntaxFactory.ThrowStatement()));
+
             var tryFinallyBlock = SyntaxFactory.Block(
-                SyntaxFactory.TryStatement(tryBlock, SyntaxFactory.List<CatchClauseSyntax>(),
-                    finallyBlock));
+                SyntaxFactory.TryStatement(tryBlock, SyntaxFactory.List(new[] {catchClause}),
+                                           finallyBlock));
 
             var semicolonToken = VisitToken(node.SemicolonToken);
             return node.Update(attributeLists, modifiers, returnType, explicitInterfaceSpecifier, identifier,
@@ -445,6 +456,16 @@ namespace AV.Cyclone.Katrina.SyntaxProcessor
                     SyntaxFactory.IdentifierName(parts[i]));
             }
             return part;
+        }
+
+        private InvocationExpressionSyntax CreateCatchExceptionInvocationExpression(SyntaxToken exceptionVariable)
+        {
+            var memberAccess = CreateMemberAccess(CatchExceptionMember);
+            var arguments = SyntaxFactory.ArgumentList(SyntaxFactory.SeparatedList(new[]
+            {
+                SyntaxFactory.Argument(SyntaxFactory.IdentifierName(exceptionVariable)),
+            }));
+            return SyntaxFactory.InvocationExpression(memberAccess, arguments);
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace AV.Cyclone.Katrina.Executor.Interfaces
 {
@@ -19,5 +20,7 @@ namespace AV.Cyclone.Katrina.Executor.Interfaces
         T LoopIteration<T>(string expression, string fileName, int lineNumber, T value);
 
         void EndLoop(string fileName, int lineNumber);
+
+        void CatchException(Exception exception);
     }
 }

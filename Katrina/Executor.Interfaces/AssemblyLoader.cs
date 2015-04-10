@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 
@@ -24,9 +25,9 @@ namespace AV.Cyclone.Katrina.Executor.Interfaces
             return AddAssembly(Assembly.Load(assemblyName));
         }
 
-        public AssemblyName LoadAssembly(byte[] rawAssembly)
+        public AssemblyName LoadAssembly(byte[] rawAssembly, byte[] pdbAssembly)
         {
-            return AddAssembly(Assembly.Load(rawAssembly));
+            return AddAssembly(Assembly.Load(rawAssembly, pdbAssembly));
         }
 
         private AssemblyName AddAssembly(Assembly assembly)
@@ -51,7 +52,18 @@ namespace AV.Cyclone.Katrina.Executor.Interfaces
             if (!method.IsStatic)
                 target = Activator.CreateInstance(type);
 
-            method.Invoke(target, null);
+            try
+            {
+                method.Invoke(target, null);
+            }
+            catch (TargetInvocationException e)
+            {
+                var stackTraceString = e.InnerException.StackTrace;
+                var stackTrace = new StackTrace(e.InnerException, true);
+                var frame = stackTrace.GetFrame(stackTrace.FrameCount - 1);
+                var line = frame.GetFileLineNumber();
+                var fileName = frame.GetFileName();
+            }
         }
     }
 }

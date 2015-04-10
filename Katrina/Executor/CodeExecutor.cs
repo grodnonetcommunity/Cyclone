@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Security.Policy;
+using System.Text;
 using AV.Cyclone.Katrina.Executor.Interfaces;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -17,6 +18,8 @@ namespace AV.Cyclone.Katrina.Executor
         private class CompilationEmitResult
         {
             public byte[] RawAssembly { get; set; }
+            
+            public byte[] PdbAssembly { get; set; }
 
             public EmitResult EmitResult { get; set; }
         }
@@ -60,7 +63,7 @@ namespace AV.Cyclone.Katrina.Executor
         {
             ForecastItem forecastItem;
             if (!forecastItems.TryGetValue(fileName, out forecastItem)) return;
-            var newSyntaxTree = CSharpSyntaxTree.ParseText(content).WithFilePath(fileName);
+            var newSyntaxTree = CSharpSyntaxTree.ParseText(content, encoding: Encoding.UTF8).WithFilePath(fileName);
             if (newSyntaxTree.GetDiagnostics().Any(d => d.Severity == DiagnosticSeverity.Error)) return;
 
             var oldCompilation = forecastItem.Compilation;
@@ -100,13 +103,15 @@ namespace AV.Cyclone.Katrina.Executor
 
                 foreach (var compilation in executeCompilations)
                 {
-                    using (var memoryStream = new MemoryStream())
+                    using (var assemblyMemoryStream = new MemoryStream())
+                    using (var pdbMemoryStream = new MemoryStream())
                     {
-                        var emitResult = compilation.Emit(memoryStream);
+                        var emitResult = compilation.Emit(assemblyMemoryStream, pdbMemoryStream);
                         if (!emitResult.Success) return;
                         compilationEmitResults.Add(new CompilationEmitResult
                         {
-                            RawAssembly = memoryStream.ToArray(),
+                            RawAssembly = assemblyMemoryStream.ToArray(),
+                            PdbAssembly = pdbMemoryStream.ToArray(),
                             EmitResult = emitResult
                         });
                     }
@@ -123,7 +128,7 @@ namespace AV.Cyclone.Katrina.Executor
 
                 foreach (var compilationEmitResult in compilationEmitResults)
                 {
-                    loader.LoadAssembly(compilationEmitResult.RawAssembly);
+                    loader.LoadAssembly(compilationEmitResult.RawAssembly, compilationEmitResult.PdbAssembly);
                 }
 
                 var executorInterfacesWasLoaded = false;

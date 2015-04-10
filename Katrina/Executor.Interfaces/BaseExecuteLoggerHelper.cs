@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using AV.Cyclone.Katrina.Executor.Interfaces;
 
 namespace AV.Cyclone.Katrina.Executor
@@ -54,6 +56,15 @@ namespace AV.Cyclone.Katrina.Executor
         public virtual void EndMethod(string methodName, string fileName, int lineNumber)
         {
             executeLogger.EndMethod(methodName, fileName, lineNumber);
+        }
+
+        public virtual void CatchException(Exception exception)
+        {
+            var stackTrace = new StackTrace(exception, true);
+            var frame = stackTrace.GetFrame(stackTrace.FrameCount - 1);
+            var fileName = frame.GetFileName();
+            var lineNumber = frame.GetFileLineNumber();
+            executeLogger.LogAssign("exception", fileName, lineNumber - 1, exception);
         }
     }
 }

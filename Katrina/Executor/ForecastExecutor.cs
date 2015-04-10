@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using AV.Cyclone.Katrina.Executor.Interfaces;
 using AV.Cyclone.Katrina.SyntaxProcessor;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Text;
 
 namespace AV.Cyclone.Katrina.Executor
 {
@@ -113,9 +115,12 @@ namespace AV.Cyclone.Katrina.Executor
                     return null;
                 }
                 var newRoot = logAssignmentRewriter.Visit(syntaxTree.GetRoot());
+                var newSyntaxTree = CSharpSyntaxTree.Create((CSharpSyntaxNode)newRoot, encoding: Encoding.UTF8);
                 project = project.RemoveDocument(document.Id);
+                var newDocument = document.WithSyntaxRoot(newSyntaxTree.GetRoot());
                 var newId = DocumentId.CreateNewId(project.Id, (string)null);
-                project = project.Solution.AddDocument(newId, document.Name, newRoot, document.Folders, document.FilePath).GetDocument(newId).Project;
+                var newDocument1 = project.Solution.AddDocument(newId, document.Name, SourceText.From(newRoot.GetText().ToString(), Encoding.UTF8), document.Folders, document.FilePath).GetDocument(newId);
+                project = newDocument1.Project;
             }
             return project;
         }
