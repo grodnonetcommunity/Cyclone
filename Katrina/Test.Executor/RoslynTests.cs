@@ -30,7 +30,7 @@ namespace Test.Executor
                     .WithFilePath(testFilePath);
             }
 
-            var mscorlibReference = MetadataReference.CreateFromAssembly(typeof(Object).Assembly);
+            var mscorlibReference = MetadataReference.CreateFromFile(typeof(Object).Assembly.Location);
             var nuinitReference = MetadataReference.CreateFromFile(GetFullFileName(nunitAssmeblyPath));
 
             var compilationOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary);

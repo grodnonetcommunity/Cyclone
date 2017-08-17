@@ -1,13 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.21005.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26730.3
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sandy", "Sandy", "{3B592471-1C2B-4105-B570-C8B9B41E08C9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Katrina", "Katrina", "{ED2644FD-9E00-4264-B59D-D244ECC7004B}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cyclone", "Cyclone\Cyclone.csproj", "{838807FC-FABA-4715-B581-703813D94FB9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sandy.Models", "Sandy\Models\Sandy.Models.csproj", "{1EC05C9F-3034-4313-A94E-98ED1490D688}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sandy", "Sandy", "{3B592471-1C2B-4105-B570-C8B9B41E08C9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sandy.OperationParser", "Sandy\OperationParser\Sandy.OperationParser\Sandy.OperationParser.csproj", "{CD037061-7951-472F-B404-53A17300B346}"
 EndProject
@@ -16,8 +18,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sandy.UITests", "Sandy\UITests\Sandy.UITests\Sandy.UITests.csproj", "{9E393C16-47E4-4279-A9CC-A71D32BF8D8C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyntaxProcessor", "Katrina\SyntaxProcessor\SyntaxProcessor.csproj", "{293805D7-C134-41F2-9A91-D75C3A9A4351}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Katrina", "Katrina", "{ED2644FD-9E00-4264-B59D-D244ECC7004B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Executor", "Katrina\Executor\Executor.csproj", "{5530B901-F932-4C51-9230-8008423FFFB7}"
 EndProject
@@ -93,5 +93,8 @@ Global
 		{FA9622F9-ABCB-4BCB-A337-CA11AF9546BA} = {ED2644FD-9E00-4264-B59D-D244ECC7004B}
 		{8891FECC-2CF7-4EB2-8D9A-455EE10DAA73} = {ED2644FD-9E00-4264-B59D-D244ECC7004B}
 		{6F280E7F-1D20-4780-839F-8F799C6DE089} = {ED2644FD-9E00-4264-B59D-D244ECC7004B}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {AC3014D1-060B-4728-B6A3-787C1A38AACB}
 	EndGlobalSection
 EndGlobal

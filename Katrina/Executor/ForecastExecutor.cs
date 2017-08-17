@@ -15,7 +15,7 @@ namespace AV.Cyclone.Katrina.Executor
         private readonly Solution solution;
 
         private static readonly MetadataReference assemblyLoader =
-            MetadataReference.CreateFromAssembly(typeof (AssemblyLoader).Assembly);
+            MetadataReference.CreateFromFile(typeof(AssemblyLoader).Assembly.Location);
 
         private Dictionary<Project, Project> projectMapping;
         private Project startupProject;
@@ -96,7 +96,7 @@ namespace AV.Cyclone.Katrina.Executor
                 {
                     changedProject = changedProject
                         .RemoveProjectReference(reference)
-                        .AddProjectReference(new ProjectReference(projectMapping[project.Solution.GetProject(reference.ProjectId)].Id, reference.Aliases));
+                        .AddProjectReference(new ProjectReference(projectMapping[project.Solution.GetProject(reference.ProjectId)].Id));
                     projectMapping[project] = changedProject;
                 }
             }

@@ -4,7 +4,6 @@ using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.InteropServices;
-using AV.Cyclone.Katrina.Executor;
 using AV.Cyclone.Service;
 using EnvDTE;
 using EnvDTE80;

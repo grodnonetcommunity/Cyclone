@@ -1,19 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
-	<Metadata>
-		<Identity Id="90692408-765a-405e-927a-a8eaebe81bbd" Version="0.0.1" Language="en-US" Publisher="AV" />
-		<DisplayName>Cyclone</DisplayName>
-		<Description xml:space="preserve">Information about my package</Description>
-	</Metadata>
-	<Installation InstalledByMsi="false">
-		<InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="[14.0]" />
-	</Installation>
-	<Dependencies>
-		<Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.5,)" />
-		<Dependency Id="Microsoft.VisualStudio.MPF.14.0" DisplayName="Visual Studio MPF 14.0" d:Source="Installed" Version="[14.0]" />
-	</Dependencies>
-	<Assets>
-		<Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
-		<Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%|" />
-	</Assets>
+    <Metadata>
+        <Identity Id="90692408-765a-405e-927a-a8eaebe81bbd" Version="0.0.1" Language="en-US" Publisher="AV" />
+        <DisplayName>Cyclone</DisplayName>
+        <Description xml:space="preserve">Information about my package</Description>
+    </Metadata>
+    <Installation InstalledByMsi="false">
+        <InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="[14.0]" />
+    </Installation>
+    <Dependencies>
+        <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.5,)" />
+        <Dependency Id="Microsoft.VisualStudio.MPF.14.0" DisplayName="Visual Studio MPF 14.0" d:Source="Installed" Version="[14.0]" />
+    </Dependencies>
+    <Assets>
+        <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
+        <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%|" />
+    </Assets>
+    <Prerequisites>
+        <Prerequisite Id="Microsoft.VisualStudio.Component.ManagedDesktop.Prerequisites" Version="[15.0.26621.2,16.0)" DisplayName=".NET desktop development tools" />
+        <Prerequisite Id="Microsoft.Net.Component.4.6.TargetingPack" Version="[15.0.26621.2,16.0)" DisplayName=".NET Framework 4.6 targeting pack" />
+        <Prerequisite Id="Microsoft.VisualStudio.Component.Roslyn.LanguageServices" Version="[15.0.26711.1,16.0)" DisplayName="C# and Visual Basic" />
+    </Prerequisites>
 </PackageManifest>

@@ -14,7 +14,7 @@ namespace Test.Executor
         {
             get
             {
-                return MetadataReference.CreateFromAssembly(typeof (object).Assembly);
+                return MetadataReference.CreateFromFile(typeof (object).Assembly.Location);
             }
         }
 
@@ -22,7 +22,7 @@ namespace Test.Executor
         {
             get
             {
-                return MetadataReference.CreateFromAssembly(typeof(Context).Assembly);
+                return MetadataReference.CreateFromFile(typeof(Context).Assembly.Location);
             }
         }
 
